@@ -29,10 +29,10 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" className="text-love-heart hover:text-love-deep">
+            <Button variant="ghost" className="text-love-heart hover:text-love-deep" onClick={() => window.location.href = '/auth'}>
               Sign In
             </Button>
-            <Button variant="love">
+            <Button variant="love" onClick={() => window.location.href = '/auth'}>
               Get Started
             </Button>
           </div>
@@ -81,8 +81,8 @@ const Header = () => {
                 About
               </a>
               <div className="flex flex-col gap-2 pt-4">
-                <Button variant="ghost" className="text-love-heart w-full">Sign In</Button>
-                <Button variant="love" className="w-full">Get Started</Button>
+                <Button variant="ghost" className="text-love-heart w-full" onClick={() => window.location.href = '/auth'}>Sign In</Button>
+                <Button variant="love" className="w-full" onClick={() => window.location.href = '/auth'}>Get Started</Button>
               </div>
             </nav>
           </div>
