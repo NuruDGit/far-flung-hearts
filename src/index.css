@@ -17,24 +17,40 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 350 85% 60%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 10 100% 92%;
+    --secondary-foreground: 350 85% 40%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 10 100% 95%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 340 75% 55%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 340 25% 88%;
+    --input: 340 25% 88%;
+    --ring: 350 85% 60%;
+
+    /* Love Beyond Borders Design Tokens */
+    --love-gradient: linear-gradient(135deg, hsl(350, 85%, 60%), hsl(340, 75%, 55%));
+    --love-gradient-soft: linear-gradient(135deg, hsl(10, 100%, 92%), hsl(350, 85%, 85%));
+    --heart-red: 350 85% 60%;
+    --coral-pink: 10 100% 85%;
+    --soft-peach: 25 100% 95%;
+    --deep-pink: 340 75% 55%;
+    
+    /* Animations */
+    --transition-love: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --bounce-heart: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Shadows */
+    --shadow-love: 0 8px 32px hsl(350 85% 60% / 0.15);
+    --shadow-card: 0 4px 16px hsl(340 25% 88% / 0.3);
 
     --radius: 0.5rem;
 
@@ -56,33 +72,39 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 340 20% 8%;
+    --foreground: 10 100% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 340 15% 12%;
+    --card-foreground: 10 100% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 340 15% 12%;
+    --popover-foreground: 10 100% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 350 85% 65%;
+    --primary-foreground: 340 20% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 340 15% 15%;
+    --secondary-foreground: 10 100% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 340 15% 15%;
+    --muted-foreground: 340 10% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 340 75% 60%;
+    --accent-foreground: 10 100% 95%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 340 15% 20%;
+    --input: 340 15% 20%;
+    --ring: 350 85% 65%;
+    
+    /* Dark mode love tokens */
+    --love-gradient: linear-gradient(135deg, hsl(350, 85%, 65%), hsl(340, 75%, 60%));
+    --love-gradient-soft: linear-gradient(135deg, hsl(340, 30%, 20%), hsl(350, 40%, 25%));
+    --shadow-love: 0 8px 32px hsl(350 85% 40% / 0.25);
+    --shadow-card: 0 4px 16px hsl(340 20% 10% / 0.5);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -101,5 +123,46 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+@layer components {
+  .love-gradient {
+    background: var(--love-gradient);
+  }
+  
+  .love-gradient-soft {
+    background: var(--love-gradient-soft);
+  }
+  
+  .heart-beat {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes heartbeat {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.1); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.05); }
+    70% { transform: scale(1); }
+  }
+  
+  .pulse-love {
+    animation: pulse-love 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-love {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
   }
 }

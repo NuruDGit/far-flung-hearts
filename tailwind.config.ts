@@ -47,6 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        love: {
+          heart: "hsl(var(--heart-red))",
+          coral: "hsl(var(--coral-pink))",
+          peach: "hsl(var(--soft-peach))",
+          deep: "hsl(var(--deep-pink))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -80,10 +86,36 @@ export default {
             height: "0",
           },
         },
+        heartbeat: {
+          '0%': { transform: 'scale(1)' },
+          '14%': { transform: 'scale(1.1)' },
+          '28%': { transform: 'scale(1)' },
+          '42%': { transform: 'scale(1.05)' },
+          '70%': { transform: 'scale(1)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'pulse-love': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        heartbeat: "heartbeat 1.5s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
+        'pulse-love': "pulse-love 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      backgroundImage: {
+        'love-gradient': 'var(--love-gradient)',
+        'love-gradient-soft': 'var(--love-gradient-soft)',
+      },
+      boxShadow: {
+        'love': 'var(--shadow-love)',
+        'card': 'var(--shadow-card)',
       },
     },
   },
