@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MessageSquare, Heart, Clock, Gift, Camera, Globe, GamepadIcon } from "lucide-react";
+import { Calendar, MessageSquare, HelpCircle, Clock, Gift, Vault, Globe, GamepadIcon } from "lucide-react";
 
 const FeatureSection = () => {
   const features = [
@@ -16,7 +16,7 @@ const FeatureSection = () => {
       color: "love-deep"
     },
     {
-      icon: Heart,
+      icon: HelpCircle,
       title: "Daily Questions",
       description: "Deepen your connection with thoughtful prompts designed for couples.",
       color: "love-coral"
@@ -34,7 +34,7 @@ const FeatureSection = () => {
       color: "love-deep"
     },
     {
-      icon: Camera,
+      icon: Vault,
       title: "Memory Vault",
       description: "Securely store your precious photos and messages in an encrypted vault.",
       color: "love-coral"
@@ -65,7 +65,7 @@ const FeatureSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <Card key={index} className="group hover:shadow-love transition-all duration-300 hover:-translate-y-1 border-0 bg-white/80 backdrop-blur-sm">
               <CardContent className="p-6 text-center">

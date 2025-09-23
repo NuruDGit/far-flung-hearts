@@ -14,7 +14,7 @@ const Header = () => {
             <div className="love-gradient rounded-full p-2">
               <Heart className="text-white" size={24} />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+            <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
               Love Beyond Borders
             </span>
           </div>
@@ -52,13 +52,37 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-love-coral/20">
             <nav className="flex flex-col gap-4">
-              <a href="#features" className="text-foreground hover:text-love-heart transition-colors">Features</a>
-              <a href="#how-it-works" className="text-foreground hover:text-love-heart transition-colors">How It Works</a>
-              <a href="#pricing" className="text-foreground hover:text-love-heart transition-colors">Pricing</a>
-              <a href="#about" className="text-foreground hover:text-love-heart transition-colors">About</a>
+              <a 
+                href="#features" 
+                className="text-foreground hover:text-love-heart transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Features
+              </a>
+              <a 
+                href="#how-it-works" 
+                className="text-foreground hover:text-love-heart transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                How It Works
+              </a>
+              <a 
+                href="#pricing" 
+                className="text-foreground hover:text-love-heart transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Pricing
+              </a>
+              <a 
+                href="#about" 
+                className="text-foreground hover:text-love-heart transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </a>
               <div className="flex flex-col gap-2 pt-4">
-                <Button variant="ghost" className="text-love-heart">Sign In</Button>
-                <Button variant="love">Get Started</Button>
+                <Button variant="ghost" className="text-love-heart w-full">Sign In</Button>
+                <Button variant="love" className="w-full">Get Started</Button>
               </div>
             </nav>
           </div>
