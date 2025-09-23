@@ -61,6 +61,9 @@ const PairSetup = () => {
   const createPair = async () => {
     setLoading(true);
     try {
+      // Ensure profile exists before creating pair
+      await ensureProfileExists();
+      
       const code = generateInviteCode();
       
       // Create pair
@@ -99,6 +102,33 @@ const PairSetup = () => {
     }
   };
 
+  const ensureProfileExists = async () => {
+    try {
+      // Check if profile exists
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      // Create profile if it doesn't exist
+      if (!profile) {
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email,
+            display_name: user.email?.split('@')[0] || 'User',
+          });
+
+        if (error) throw error;
+      }
+    } catch (error) {
+      console.error('Error ensuring profile exists:', error);
+      throw error;
+    }
+  };
+
   const joinPair = async () => {
     if (!inviteCode.trim()) {
       toast.error('Please enter an invite code');
@@ -107,6 +137,8 @@ const PairSetup = () => {
 
     setLoading(true);
     try {
+      // Ensure profile exists before joining pair
+      await ensureProfileExists();
       // Find valid invite
       const { data: invite, error: inviteError } = await supabase
         .from('pair_invites')

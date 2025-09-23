@@ -33,24 +33,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
-        setUser(session?.user ?? null);
         
-        // Create profile if user signs up
+        // Create profile if user signs in and doesn't have one yet
         if (event === 'SIGNED_IN' && session?.user && !user) {
-          setTimeout(() => {
-            createProfile(session.user);
-          }, 0);
+          await ensureProfile(session.user);
         }
         
+        setUser(session?.user ?? null);
         setLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
+      
+      // Ensure profile exists for existing session
+      if (session?.user) {
+        await ensureProfile(session.user);
+      }
+      
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -58,17 +62,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const createProfile = async (user: User) => {
+  const ensureProfile = async (user: User) => {
     try {
-      await supabase
+      // Check if profile already exists
+      const { data: existingProfile } = await supabase
         .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          display_name: user.email?.split('@')[0] || 'User',
-        });
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      // Only create if doesn't exist
+      if (!existingProfile) {
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email,
+            display_name: user.email?.split('@')[0] || 'User',
+          });
+        
+        if (error) {
+          console.error('Error creating profile:', error);
+          throw error;
+        }
+      }
     } catch (error) {
-      console.error('Error creating profile:', error);
+      console.error('Error ensuring profile:', error);
+      throw error;
     }
   };
 
