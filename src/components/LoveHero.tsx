@@ -16,12 +16,12 @@ const LoveHero = () => {
         <Heart className="absolute bottom-20 right-20 text-love-heart animate-float opacity-35" size={18} />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 pt-24 md:pt-32 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <div className="text-center lg:text-left space-y-8">
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight">
                 Keep Your Love Story Alive
               </h1>
               <p className="text-xl text-muted-foreground max-w-lg">
