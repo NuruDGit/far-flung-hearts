@@ -281,13 +281,13 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
               <p className="text-sm text-muted-foreground">
                 What are you both working towards in your relationship?
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {RELATIONSHIP_GOALS.map((goal) => (
                   <Button
                     key={goal}
                     type="button"
                     variant={profile.relationship_goals === goal ? "default" : "outline"}
-                    className={`justify-start ${
+                    className={`justify-start text-left h-auto py-3 px-4 whitespace-normal ${
                       profile.relationship_goals === goal
                         ? 'bg-love-heart hover:bg-love-coral text-white'
                         : 'hover:bg-love-light hover:border-love-heart hover:text-love-deep'
