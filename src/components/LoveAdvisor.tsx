@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -29,7 +29,16 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -49,7 +58,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
       const { data, error } = await supabase.functions.invoke('love-advisor', {
         body: {
           message: inputMessage,
-          context: pairId ? 'User is in an active relationship pair' : 'User is seeking relationship advice'
+          pairId: pairId
         }
       });
 
@@ -83,9 +92,16 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col max-h-[600px]">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+      <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+           style={{ scrollBehavior: 'smooth' }}
+           ref={(el) => {
+             if (el) {
+               el.scrollTop = el.scrollHeight;
+             }
+           }}
+      >
         {messages.map((message) => (
           <div
             key={message.id}
@@ -138,6 +154,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
       
       {/* Input Area */}
