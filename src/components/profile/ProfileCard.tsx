@@ -33,7 +33,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
   return (
     <Card className="bg-white/95 backdrop-blur border-love-soft shadow-lg hover:shadow-xl transition-all duration-300">
       <CardContent className="p-4 sm:p-6">
-        <div className="flex items-start space-x-4">
+        <div className="flex flex-col items-center space-y-4">
           {/* Avatar */}
           <div className="relative">
             <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 ring-love-light">
@@ -48,8 +48,8 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
           </div>
 
           {/* Profile Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-2">
+          <div className="w-full text-center">
+            <div className="flex flex-col items-center justify-center mb-2">
               <h3 className="text-lg sm:text-xl font-bold text-love-deep truncate">
                 {profile.display_name || 'Anonymous'}
               </h3>
@@ -58,7 +58,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                   variant="outline"
                   size="sm"
                   onClick={onEdit}
-                  className="shrink-0 whitespace-nowrap hover:bg-love-light hover:border-love-heart hover:text-love-deep"
+                  className="mt-2 shrink-0 whitespace-nowrap hover:bg-love-light hover:border-love-heart hover:text-love-deep"
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   <span className="hidden sm:inline">Edit</span>
@@ -67,7 +67,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
             </div>
 
             {/* Join Date */}
-            <div className="flex items-center text-sm text-muted-foreground mb-3">
+            <div className="flex items-center justify-center text-sm text-muted-foreground mb-3">
               <Calendar className="h-4 w-4 mr-1" />
               {formatJoinDate(profile.created_at)}
             </div>
@@ -81,7 +81,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
 
             {/* Relationship Goals */}
             {profile.relationship_goals && (
-              <div className="flex items-center mb-4">
+              <div className="flex items-center justify-center mb-4">
                 <Heart className="h-4 w-4 mr-2 text-love-heart" />
                 <span className="text-sm font-medium text-love-deep">
                   Looking for: {profile.relationship_goals}
@@ -93,7 +93,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
             {profile.interests && profile.interests.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium text-love-deep">Interests</p>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap justify-center gap-1">
                   {profile.interests.slice(0, 6).map((interest, index) => (
                     <Badge 
                       key={index} 
