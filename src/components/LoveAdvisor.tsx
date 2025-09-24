@@ -142,7 +142,15 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                   : 'bg-gray-100 text-gray-900'
               }`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-line break-words">{message.text}</p>
+              <div 
+                className="text-sm leading-relaxed whitespace-pre-line break-words"
+                dangerouslySetInnerHTML={{
+                  __html: message.text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>')
+                }}
+              />
               <span className={`text-xs mt-1 block opacity-70`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
