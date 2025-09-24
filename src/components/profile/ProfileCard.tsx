@@ -47,13 +47,89 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
 
   const formatLocation = () => {
     if (profile.city && profile.country) {
-      return `${profile.city}, ${profile.country}`;
+      return profile.city;
     } else if (profile.city) {
       return profile.city;
-    } else if (profile.country) {
-      return profile.country;
     }
     return null;
+  };
+
+  const getCountryFlag = (country?: string) => {
+    if (!country) return null;
+    
+    const countryFlags: { [key: string]: string } = {
+      'United States': '🇺🇸',
+      'Canada': '🇨🇦',
+      'United Kingdom': '🇬🇧',
+      'Australia': '🇦🇺',
+      'Germany': '🇩🇪',
+      'France': '🇫🇷',
+      'Italy': '🇮🇹',
+      'Spain': '🇪🇸',
+      'Japan': '🇯🇵',
+      'China': '🇨🇳',
+      'India': '🇮🇳',
+      'Brazil': '🇧🇷',
+      'Mexico': '🇲🇽',
+      'Netherlands': '🇳🇱',
+      'Sweden': '🇸🇪',
+      'Norway': '🇳🇴',
+      'Denmark': '🇩🇰',
+      'Finland': '🇫🇮',
+      'South Korea': '🇰🇷',
+      'Singapore': '🇸🇬',
+      'New Zealand': '🇳🇿',
+      'South Africa': '🇿🇦',
+      'Argentina': '🇦🇷',
+      'Chile': '🇨🇱',
+      'Colombia': '🇨🇴',
+      'Peru': '🇵🇪',
+      'Venezuela': '🇻🇪',
+      'Nigeria': '🇳🇬',
+      'Egypt': '🇪🇬',
+      'Kenya': '🇰🇪',
+      'Morocco': '🇲🇦',
+      'Algeria': '🇩🇿',
+      'Tunisia': '🇹🇳',
+      'Ghana': '🇬🇭',
+      'Turkey': '🇹🇷',
+      'Russia': '🇷🇺',
+      'Ukraine': '🇺🇦',
+      'Poland': '🇵🇱',
+      'Czech Republic': '🇨🇿',
+      'Hungary': '🇭🇺',
+      'Romania': '🇷🇴',
+      'Bulgaria': '🇧🇬',
+      'Croatia': '🇭🇷',
+      'Serbia': '🇷🇸',
+      'Greece': '🇬🇷',
+      'Portugal': '🇵🇹',
+      'Belgium': '🇧🇪',
+      'Switzerland': '🇨🇭',
+      'Austria': '🇦🇹',
+      'Ireland': '🇮🇪',
+      'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+      'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+      'Iceland': '🇮🇸',
+      'Thailand': '🇹🇭',
+      'Philippines': '🇵🇭',
+      'Indonesia': '🇮🇩',
+      'Malaysia': '🇲🇾',
+      'Vietnam': '🇻🇳',
+      'Israel': '🇮🇱',
+      'Saudi Arabia': '🇸🇦',
+      'UAE': '🇦🇪',
+      'Pakistan': '🇵🇰',
+      'Bangladesh': '🇧🇩',
+      'Sri Lanka': '🇱🇰',
+      'Iran': '🇮🇷',
+      'Iraq': '🇮🇶',
+      'Jordan': '🇯🇴',
+      'Lebanon': '🇱🇧',
+      'Syria': '🇸🇾'
+    };
+    
+    return countryFlags[country] || '🌍';
   };
 
   return (
@@ -95,6 +171,9 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1" />
                     {formatLocation()}
+                    {getCountryFlag(profile.country) && (
+                      <span className="ml-1">{getCountryFlag(profile.country)}</span>
+                    )}
                   </div>
                 )}
               </div>
