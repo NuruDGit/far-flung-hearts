@@ -58,7 +58,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                   variant="outline"
                   size="sm"
                   onClick={onEdit}
-                  className="shrink-0 hover:bg-love-light hover:border-love-heart"
+                  className="shrink-0 hover:bg-love-light hover:border-love-heart hover:text-love-deep"
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
