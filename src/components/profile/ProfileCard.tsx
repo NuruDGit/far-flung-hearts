@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit, MapPin, Heart, Calendar } from 'lucide-react';
+import { Edit, MapPin, Heart, Calendar, Crown } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -113,7 +113,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
             {/* Relationship Goals */}
             {profile.relationship_goals && (
               <div className="flex items-center justify-center mb-4">
-                <Heart className="h-4 w-4 mr-2 text-love-heart" />
+                <Crown className="h-4 w-4 mr-2 text-love-heart" />
                 <span className="text-sm font-medium text-love-deep text-center">
                   {profile.relationship_goals}
                 </span>
