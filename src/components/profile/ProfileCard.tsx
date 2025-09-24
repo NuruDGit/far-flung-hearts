@@ -82,19 +82,21 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
             </div>
 
 
-            {/* Birth Date */}
-            {formatBirthDate(profile.birth_date) && (
-              <div className="flex items-center justify-center text-sm text-muted-foreground mb-3">
-                <Calendar className="h-4 w-4 mr-1" />
-                {formatBirthDate(profile.birth_date)}
-              </div>
-            )}
-
-            {/* Location */}
-            {formatLocation() && (
-              <div className="flex items-center justify-center text-sm text-muted-foreground mb-3">
-                <MapPin className="h-4 w-4 mr-1" />
-                {formatLocation()}
+            {/* Age and Location */}
+            {(formatBirthDate(profile.birth_date) || formatLocation()) && (
+              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground mb-3">
+                {formatBirthDate(profile.birth_date) && (
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    {formatBirthDate(profile.birth_date)}
+                  </div>
+                )}
+                {formatLocation() && (
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {formatLocation()}
+                  </div>
+                )}
               </div>
             )}
 
