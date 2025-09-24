@@ -112,11 +112,14 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
 
             {/* Relationship Goals */}
             {profile.relationship_goals && (
-              <div className="flex items-center justify-center mb-4">
-                <Crown className="h-4 w-4 mr-2 text-love-heart" />
-                <span className="text-sm font-medium text-love-deep text-center">
-                  {profile.relationship_goals}
-                </span>
+              <div className="mb-4">
+                <p className="text-sm font-bold text-muted-foreground text-center mb-2">Relationship Goal</p>
+                <div className="flex items-center justify-center">
+                  <Crown className="h-4 w-4 mr-2 text-love-heart" />
+                  <span className="text-sm font-medium text-love-deep text-center">
+                    {profile.relationship_goals}
+                  </span>
+                </div>
               </div>
             )}
 
