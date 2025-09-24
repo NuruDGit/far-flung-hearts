@@ -32,11 +32,11 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
 
   return (
     <Card className="bg-white/95 backdrop-blur border-love-soft shadow-lg hover:shadow-xl transition-all duration-300">
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex items-start space-x-4">
           {/* Avatar */}
           <div className="relative">
-            <Avatar className="h-20 w-20 ring-2 ring-love-light">
+            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 ring-love-light">
               <AvatarImage 
                 src={!imageError ? profile.avatar_url : undefined} 
                 onError={() => setImageError(true)}
@@ -50,7 +50,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
           {/* Profile Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xl font-bold text-love-deep truncate">
+              <h3 className="text-lg sm:text-xl font-bold text-love-deep truncate">
                 {profile.display_name || 'Anonymous'}
               </h3>
               {isOwnProfile && (
@@ -58,10 +58,10 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                   variant="outline"
                   size="sm"
                   onClick={onEdit}
-                  className="shrink-0 hover:bg-love-light hover:border-love-heart hover:text-love-deep"
+                  className="shrink-0 whitespace-nowrap hover:bg-love-light hover:border-love-heart hover:text-love-deep"
                 >
                   <Edit className="h-4 w-4 mr-1" />
-                  Edit
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
               )}
             </div>

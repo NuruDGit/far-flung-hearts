@@ -86,16 +86,16 @@ export const ProfilePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-love-light to-love-soft">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate('/app')}
-            className="mr-4 hover:bg-love-light hover:text-love-deep"
+            className="mr-0 sm:mr-4 hover:bg-love-light hover:text-love-deep w-max"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to App
           </Button>
-          <h1 className="text-3xl font-bold text-love-deep">Your Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-love-deep">Your Profile</h1>
         </div>
 
         {/* Profile Card */}
