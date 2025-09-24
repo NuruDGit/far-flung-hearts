@@ -90,7 +90,7 @@ export const ProfilePage = () => {
           <Button
             variant="ghost"
             onClick={() => navigate('/app')}
-            className="mr-4 hover:bg-love-light"
+            className="mr-4 hover:bg-love-light hover:text-love-deep"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to App
