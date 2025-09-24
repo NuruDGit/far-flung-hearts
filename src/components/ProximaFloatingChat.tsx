@@ -57,8 +57,8 @@ const ProximaFloatingChat = () => {
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-2xl w-[95vw] h-[80vh] p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="sm:max-w-2xl w-[95vw] h-[600px] max-h-[80vh] p-0 flex flex-col">
+        <DialogHeader className="p-6 pb-4 flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-love-heart">
             <Avatar className="h-8 w-8">
               <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
@@ -70,7 +70,7 @@ const ProximaFloatingChat = () => {
           </DialogTitle>
         </DialogHeader>
         
-        <div className="flex-1 p-6 pt-0">
+        <div className="flex-1 overflow-hidden p-6 pt-0">
           <LoveAdvisor pairId={pair?.id} />
         </div>
       </DialogContent>

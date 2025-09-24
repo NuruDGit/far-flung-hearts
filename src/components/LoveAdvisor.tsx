@@ -92,15 +92,11 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col max-h-[600px]">
+    <div className="h-full flex flex-col">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-           style={{ scrollBehavior: 'smooth' }}
-           ref={(el) => {
-             if (el) {
-               el.scrollTop = el.scrollHeight;
-             }
-           }}
+      <div 
+        className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 max-h-[400px] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+        style={{ scrollBehavior: 'smooth' }}
       >
         {messages.map((message) => (
           <div
@@ -157,8 +153,8 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Input Area */}
-      <div className="border-t pt-4">
+      {/* Input Area - Fixed at bottom */}
+      <div className="border-t pt-4 bg-white sticky bottom-0">
         <div className="flex gap-2">
           <Textarea
             value={inputMessage}
