@@ -79,17 +79,6 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               <h3 className="text-lg sm:text-xl font-bold text-love-deep truncate">
                 {profile.display_name || 'Anonymous'}
               </h3>
-              {isOwnProfile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onEdit}
-                  className="mt-2 shrink-0 whitespace-nowrap hover:bg-love-light hover:border-love-heart hover:text-love-deep"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Edit</span>
-                </Button>
-              )}
             </div>
 
             {/* Join Date */}
