@@ -1,1 +1,4 @@
 project_id = "smatdnlednyhqsypmzzl"
+
+[functions.love-advisor]
+verify_jwt = false
