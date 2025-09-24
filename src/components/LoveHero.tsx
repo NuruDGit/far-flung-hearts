@@ -22,7 +22,7 @@ const LoveHero = () => {
           <div className="text-center lg:text-left space-y-8">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight">
-                Love Beyond Borders
+                Keep Your Love Story Alive
               </h1>
               <p className="text-xl text-muted-foreground max-w-lg">
                 Bridge the distance with your special someone. Stay connected, share moments, and count down to your next reunion.
