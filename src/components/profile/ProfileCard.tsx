@@ -1,0 +1,122 @@
+import { useState } from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Edit, MapPin, Heart, Calendar } from 'lucide-react';
+
+interface Profile {
+  id: string;
+  display_name: string;
+  bio?: string;
+  interests?: string[];
+  relationship_goals?: string;
+  avatar_url?: string;
+  created_at?: string;
+}
+
+interface ProfileCardProps {
+  profile: Profile;
+  isOwnProfile?: boolean;
+  onEdit?: () => void;
+}
+
+export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCardProps) => {
+  const [imageError, setImageError] = useState(false);
+
+  const formatJoinDate = (dateString?: string) => {
+    if (!dateString) return 'Recently joined';
+    const date = new Date(dateString);
+    return `Joined ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+  };
+
+  return (
+    <Card className="bg-white/95 backdrop-blur border-love-soft shadow-lg hover:shadow-xl transition-all duration-300">
+      <CardContent className="p-6">
+        <div className="flex items-start space-x-4">
+          {/* Avatar */}
+          <div className="relative">
+            <Avatar className="h-20 w-20 ring-2 ring-love-light">
+              <AvatarImage 
+                src={!imageError ? profile.avatar_url : undefined} 
+                onError={() => setImageError(true)}
+              />
+              <AvatarFallback className="bg-love-light text-love-deep text-xl font-semibold">
+                {profile.display_name?.charAt(0).toUpperCase() || '💝'}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+
+          {/* Profile Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xl font-bold text-love-deep truncate">
+                {profile.display_name || 'Anonymous'}
+              </h3>
+              {isOwnProfile && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onEdit}
+                  className="shrink-0 hover:bg-love-light hover:border-love-heart"
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
+              )}
+            </div>
+
+            {/* Join Date */}
+            <div className="flex items-center text-sm text-muted-foreground mb-3">
+              <Calendar className="h-4 w-4 mr-1" />
+              {formatJoinDate(profile.created_at)}
+            </div>
+
+            {/* Bio */}
+            {profile.bio && (
+              <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+                {profile.bio}
+              </p>
+            )}
+
+            {/* Relationship Goals */}
+            {profile.relationship_goals && (
+              <div className="flex items-center mb-4">
+                <Heart className="h-4 w-4 mr-2 text-love-heart" />
+                <span className="text-sm font-medium text-love-deep">
+                  Looking for: {profile.relationship_goals}
+                </span>
+              </div>
+            )}
+
+            {/* Interests */}
+            {profile.interests && profile.interests.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-love-deep">Interests</p>
+                <div className="flex flex-wrap gap-1">
+                  {profile.interests.slice(0, 6).map((interest, index) => (
+                    <Badge 
+                      key={index} 
+                      variant="secondary"
+                      className="text-xs bg-love-light text-love-deep hover:bg-love-soft"
+                    >
+                      {interest}
+                    </Badge>
+                  ))}
+                  {profile.interests.length > 6 && (
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs border-love-soft text-love-deep"
+                    >
+                      +{profile.interests.length - 6} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
