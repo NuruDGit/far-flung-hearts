@@ -97,7 +97,7 @@ export const ProfilePage = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl sm:text-3xl font-bold text-love-deep text-center">Your Profile</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-love-deep">Your Profile</h1>
         </div>
 
         {/* Profile Card */}

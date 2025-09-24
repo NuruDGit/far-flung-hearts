@@ -133,17 +133,19 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light to-love-soft flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl bg-white/95 backdrop-blur shadow-xl">
-        <CardHeader className="text-center relative">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/app')}
-            className="absolute left-0 top-0 hover:bg-love-light hover:text-love-deep"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <CardTitle className="text-3xl font-bold text-love-deep">
-            Complete Your Profile
-          </CardTitle>
+        <CardHeader className="relative">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/app')}
+              className="hover:bg-love-light hover:text-love-deep p-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <CardTitle className="text-xl sm:text-2xl font-bold text-love-deep">
+              Complete Your Profile
+            </CardTitle>
+          </div>
           <p className="text-muted-foreground">
             Let's personalize your experience and help you find meaningful connections
           </p>
