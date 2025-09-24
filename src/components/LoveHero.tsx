@@ -24,7 +24,7 @@ const LoveHero = () => {
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight">
                 Keep Your Love Story Alive
               </h1>
-              <p className="text-xl text-muted-foreground max-w-lg text-center mx-auto">
+              <p className="text-xl text-muted-foreground max-w-lg text-center lg:text-left mx-auto lg:mx-0">
                 Bridge the distance with your special someone. Stay connected, share moments, and count down to your next reunion.
               </p>
             </div>
