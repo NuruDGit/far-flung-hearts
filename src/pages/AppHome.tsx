@@ -3,6 +3,7 @@ import { Navigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Clock, Zap, Camera, LogOut, Users, Plus } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
@@ -156,9 +157,12 @@ const AppHome = () => {
           <Card className="mb-6 bg-white/80 backdrop-blur-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-love-gradient flex items-center justify-center">
-                  <Heart className="text-white" size={20} />
-                </div>
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src={partner.avatar_url} />
+                  <AvatarFallback className="bg-love-gradient text-white">
+                    {partner.display_name?.charAt(0).toUpperCase() || <Heart size={20} />}
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <h2 className="text-lg font-semibold">{partner.display_name}</h2>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
