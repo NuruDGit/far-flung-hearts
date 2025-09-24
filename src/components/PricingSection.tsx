@@ -87,7 +87,7 @@ const PricingSection = () => {
               )}
               
               <CardHeader className="text-center pb-6">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${plan.popular ? 'love-gradient' : 'love-gradient-soft'} mb-4`}>
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mx-auto ${plan.popular ? 'love-gradient' : 'love-gradient-soft'} mb-4`}>
                   <plan.icon className="text-white" size={28} />
                 </div>
                 <CardTitle className="text-2xl font-bold text-foreground">{plan.name}</CardTitle>
