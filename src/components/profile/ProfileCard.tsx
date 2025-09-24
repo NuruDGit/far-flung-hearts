@@ -57,92 +57,115 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
   const getCountryFlag = (country?: string) => {
     if (!country) return null;
     
-    // Normalize country name for better matching
+    // Normalize country name for ISO code mapping
     const normalizedCountry = country.toLowerCase().trim();
     
-    const countryFlags: { [key: string]: string } = {
+    const countryToIsoCode: { [key: string]: string } = {
       // Major countries with common variations
-      'united states': '🇺🇸',
-      'usa': '🇺🇸',
-      'us': '🇺🇸',
-      'america': '🇺🇸',
-      'canada': '🇨🇦',
-      'united kingdom': '🇬🇧',
-      'uk': '🇬🇧',
-      'britain': '🇬🇧',
-      'england': '🇬🇧',
-      'australia': '🇦🇺',
-      'germany': '🇩🇪',
-      'france': '🇫🇷',
-      'italy': '🇮🇹',
-      'spain': '🇪🇸',
-      'japan': '🇯🇵',
-      'china': '🇨🇳',
-      'india': '🇮🇳',
-      'brazil': '🇧🇷',
-      'mexico': '🇲🇽',
-      'netherlands': '🇳🇱',
-      'sweden': '🇸🇪',
-      'norway': '🇳🇴',
-      'denmark': '🇩🇰',
-      'finland': '🇫🇮',
-      'south korea': '🇰🇷',
-      'korea': '🇰🇷',
-      'singapore': '🇸🇬',
-      'new zealand': '🇳🇿',
-      'south africa': '🇿🇦',
-      'argentina': '🇦🇷',
-      'chile': '🇨🇱',
-      'colombia': '🇨🇴',
-      'peru': '🇵🇪',
-      'venezuela': '🇻🇪',
-      'nigeria': '🇳🇬',
-      'egypt': '🇪🇬',
-      'kenya': '🇰🇪',
-      'morocco': '🇲🇦',
-      'algeria': '🇩🇿',
-      'tunisia': '🇹🇳',
-      'ghana': '🇬🇭',
-      'turkey': '🇹🇷',
-      'russia': '🇷🇺',
-      'ukraine': '🇺🇦',
-      'poland': '🇵🇱',
-      'czech republic': '🇨🇿',
-      'hungary': '🇭🇺',
-      'romania': '🇷🇴',
-      'bulgaria': '🇧🇬',
-      'croatia': '🇭🇷',
-      'serbia': '🇷🇸',
-      'greece': '🇬🇷',
-      'portugal': '🇵🇹',
-      'belgium': '🇧🇪',
-      'switzerland': '🇨🇭',
-      'austria': '🇦🇹',
-      'ireland': '🇮🇪',
-      'scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
-      'wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
-      'iceland': '🇮🇸',
-      'thailand': '🇹🇭',
-      'philippines': '🇵🇭',
-      'indonesia': '🇮🇩',
-      'malaysia': '🇲🇾',
-      'vietnam': '🇻🇳',
-      'israel': '🇮🇱',
-      'saudi arabia': '🇸🇦',
-      'uae': '🇦🇪',
-      'united arab emirates': '🇦🇪',
-      'pakistan': '🇵🇰',
-      'bangladesh': '🇧🇩',
-      'sri lanka': '🇱🇰',
-      'iran': '🇮🇷',
-      'iraq': '🇮🇶',
-      'jordan': '🇯🇴',
-      'lebanon': '🇱🇧',
-      'syria': '🇸🇾'
+      'united states': 'us',
+      'usa': 'us',
+      'us': 'us',
+      'america': 'us',
+      'canada': 'ca',
+      'united kingdom': 'gb',
+      'uk': 'gb',
+      'britain': 'gb',
+      'england': 'gb',
+      'australia': 'au',
+      'germany': 'de',
+      'france': 'fr',
+      'italy': 'it',
+      'spain': 'es',
+      'japan': 'jp',
+      'china': 'cn',
+      'india': 'in',
+      'brazil': 'br',
+      'mexico': 'mx',
+      'netherlands': 'nl',
+      'sweden': 'se',
+      'norway': 'no',
+      'denmark': 'dk',
+      'finland': 'fi',
+      'south korea': 'kr',
+      'korea': 'kr',
+      'singapore': 'sg',
+      'new zealand': 'nz',
+      'south africa': 'za',
+      'argentina': 'ar',
+      'chile': 'cl',
+      'colombia': 'co',
+      'peru': 'pe',
+      'venezuela': 've',
+      'nigeria': 'ng',
+      'egypt': 'eg',
+      'kenya': 'ke',
+      'morocco': 'ma',
+      'algeria': 'dz',
+      'tunisia': 'tn',
+      'ghana': 'gh',
+      'turkey': 'tr',
+      'russia': 'ru',
+      'ukraine': 'ua',
+      'poland': 'pl',
+      'czech republic': 'cz',
+      'hungary': 'hu',
+      'romania': 'ro',
+      'bulgaria': 'bg',
+      'croatia': 'hr',
+      'serbia': 'rs',
+      'greece': 'gr',
+      'portugal': 'pt',
+      'belgium': 'be',
+      'switzerland': 'ch',
+      'austria': 'at',
+      'ireland': 'ie',
+      'scotland': 'gb-sct',
+      'wales': 'gb-wls',
+      'iceland': 'is',
+      'thailand': 'th',
+      'philippines': 'ph',
+      'indonesia': 'id',
+      'malaysia': 'my',
+      'vietnam': 'vn',
+      'israel': 'il',
+      'saudi arabia': 'sa',
+      'uae': 'ae',
+      'united arab emirates': 'ae',
+      'pakistan': 'pk',
+      'bangladesh': 'bd',
+      'sri lanka': 'lk',
+      'iran': 'ir',
+      'iraq': 'iq',
+      'jordan': 'jo',
+      'lebanon': 'lb',
+      'syria': 'sy'
     };
     
-    const flag = countryFlags[normalizedCountry];
-    return flag || `🏳️`;
+    const isoCode = countryToIsoCode[normalizedCountry];
+    return isoCode;
+  };
+
+  const FlagIcon = ({ country }: { country?: string }) => {
+    const isoCode = getCountryFlag(country);
+    
+    if (!isoCode) return <span className="text-xs">🏳️</span>;
+    
+    return (
+      <img 
+        src={`https://flagcdn.com/w20/${isoCode}.png`}
+        alt={`${country} flag`}
+        className="w-4 h-3 object-cover rounded-sm"
+        onError={(e) => {
+          // Fallback to emoji if SVG fails to load
+          const target = e.target as HTMLImageElement;
+          target.style.display = 'none';
+          const fallback = document.createElement('span');
+          fallback.textContent = '🏳️';
+          fallback.className = 'text-xs';
+          target.parentNode?.insertBefore(fallback, target);
+        }}
+      />
+    );
   };
 
   return (
@@ -182,11 +205,9 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                 )}
                 {formatLocation() && (
                   <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-1" />
+                    <MapPin className="h-4 w-4 mr-1 text-love-heart" />
                     {formatLocation()}
-                    {getCountryFlag(profile.country) && (
-                      <span className="ml-1">{getCountryFlag(profile.country)}</span>
-                    )}
+                    <FlagIcon country={profile.country} />
                   </div>
                 )}
               </div>
