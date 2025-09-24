@@ -33,30 +33,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
-        
-        // Create profile if user signs in and doesn't have one yet
-        if (event === 'SIGNED_IN' && session?.user && !user) {
-          await ensureProfile(session.user);
-        }
-        
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Create profile if user signs in and doesn't have one yet
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Use setTimeout to avoid blocking the auth state change
+          setTimeout(() => {
+            ensureProfile(session.user);
+          }, 0);
+        }
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
       
       // Ensure profile exists for existing session
       if (session?.user) {
-        await ensureProfile(session.user);
+        setTimeout(() => {
+          ensureProfile(session.user);
+        }, 0);
       }
-      
-      setUser(session?.user ?? null);
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
