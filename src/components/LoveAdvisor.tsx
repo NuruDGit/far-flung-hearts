@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Bot, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import proximaAvatar from '@/assets/proxima-avatar.jpg';
 
 interface Message {
   id: string;
@@ -90,9 +92,12 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
           >
             {!message.isUser && (
-              <div className="w-8 h-8 rounded-full bg-love-coral/10 flex items-center justify-center flex-shrink-0">
-                <Bot className="h-4 w-4 text-love-coral" />
-              </div>
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+                <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                  <Bot className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
             )}
             
             <div
@@ -118,9 +123,12 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         
         {isLoading && (
           <div className="flex gap-3 justify-start">
-            <div className="w-8 h-8 rounded-full bg-love-coral/10 flex items-center justify-center flex-shrink-0">
-              <Bot className="h-4 w-4 text-love-coral" />
-            </div>
+            <Avatar className="w-8 h-8 flex-shrink-0">
+              <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+              <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                <Bot className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             <div className="bg-gray-100 p-3 rounded-lg">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
