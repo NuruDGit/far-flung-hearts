@@ -42,7 +42,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
       age--;
     }
-    return `${age} years old`;
+    return `${age} years`;
   };
 
   const formatLocation = () => {
@@ -176,7 +176,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground mb-3">
                 {formatBirthDate(profile.birth_date) && (
                   <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
+                    <Calendar className="h-4 w-4 mr-1 text-love-heart" />
                     {formatBirthDate(profile.birth_date)}
                   </div>
                 )}
