@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 const PairSetup = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose');
   const [inviteCode, setInviteCode] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
@@ -215,6 +216,13 @@ const PairSetup = () => {
               variant="outline"
             >
               Join Existing Pair
+            </Button>
+            <Button 
+              onClick={() => navigate('/app')}
+              className="w-full" 
+              variant="ghost"
+            >
+              Skip for Now - Explore Solo
             </Button>
           </CardContent>
         </Card>
