@@ -16,7 +16,7 @@ interface Task {
   title: string;
   notes?: string;
   due_at?: string;
-  status_column: 'todo' | 'in_progress' | 'complete';
+  status_column: 'todo' | 'doing' | 'done';
   pair_id: string;
 }
 
@@ -37,8 +37,8 @@ export default function GoalsPage() {
 
   const columns = {
     todo: { title: 'To Do', tasks: tasks.filter(t => t.status_column === 'todo') },
-    in_progress: { title: 'In Progress', tasks: tasks.filter(t => t.status_column === 'in_progress') },
-    complete: { title: 'Complete', tasks: tasks.filter(t => t.status_column === 'complete') }
+    doing: { title: 'In Progress', tasks: tasks.filter(t => t.status_column === 'doing') },
+    done: { title: 'Complete', tasks: tasks.filter(t => t.status_column === 'done') }
   };
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function GoalsPage() {
 
       setTasks((tasksResponse.data || []).map(task => ({
         ...task,
-        status_column: task.status_column as 'todo' | 'in_progress' | 'complete'
+        status_column: task.status_column as 'todo' | 'doing' | 'done'
       })));
       setGoals(goalsResponse.data || []);
     } catch (error) {
@@ -108,7 +108,7 @@ export default function GoalsPage() {
     const task = tasks.find(t => t.id === draggableId);
     if (!task) return;
 
-    const newStatus = destination.droppableId as 'todo' | 'in_progress' | 'complete';
+    const newStatus = destination.droppableId as 'todo' | 'doing' | 'done';
     
     try {
       const { error } = await supabase

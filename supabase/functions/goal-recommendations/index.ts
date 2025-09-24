@@ -103,7 +103,15 @@ serve(async (req) => {
     console.log('Generated content:', generatedContent);
 
     try {
-      const parsedContent = JSON.parse(generatedContent);
+      // Clean the response by removing markdown code blocks if present
+      let cleanedContent = generatedContent.trim();
+      if (cleanedContent.startsWith('```json')) {
+        cleanedContent = cleanedContent.replace(/^```json\n/, '').replace(/\n```$/, '');
+      } else if (cleanedContent.startsWith('```')) {
+        cleanedContent = cleanedContent.replace(/^```\n/, '').replace(/\n```$/, '');
+      }
+      
+      const parsedContent = JSON.parse(cleanedContent);
       return new Response(JSON.stringify({ 
         success: true, 
         recommendations: parsedContent 
@@ -112,10 +120,13 @@ serve(async (req) => {
       });
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
+      console.error('Content that failed to parse:', generatedContent);
       return new Response(JSON.stringify({ 
-        success: true, 
-        recommendations: generatedContent 
+        success: false,
+        error: 'Failed to parse AI response as JSON',
+        raw_content: generatedContent
       }), {
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
