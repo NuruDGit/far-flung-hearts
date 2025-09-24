@@ -68,7 +68,7 @@ const LoveHero = () => {
                 alt="Couple connecting across distance" 
                 className="w-full h-auto object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-love-heart/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-love-heart/20 to-transparent mb-8"></div>
             </div>
             
             {/* Floating UI elements */}
