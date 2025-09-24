@@ -113,7 +113,7 @@ const AppHome = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
       <AppNavigation />
-      <div className="container mx-auto p-4 max-w-md pt-6">
+      <div className="container mx-auto p-4 max-w-md pt-6 pb-24">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
