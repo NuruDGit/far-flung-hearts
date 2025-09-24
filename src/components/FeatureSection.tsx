@@ -66,17 +66,32 @@ const FeatureSection = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feature, index) => (
-            <Card key={index} className="group hover:shadow-love transition-all duration-300 hover:-translate-y-1 border-0 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-${feature.color} to-${feature.color}/70 mb-4 group-hover:animate-heartbeat`}>
-                  <feature.icon className="text-white" size={28} />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {features.map((feature, index) => {
+            const getIconBgClass = (color: string) => {
+              switch(color) {
+                case 'love-heart':
+                  return 'bg-gradient-to-br from-love-heart to-love-heart/70';
+                case 'love-deep':
+                  return 'bg-gradient-to-br from-love-deep to-love-deep/70';
+                case 'love-coral':
+                  return 'bg-gradient-to-br from-love-coral to-love-coral/70';
+                default:
+                  return 'bg-gradient-to-br from-love-heart to-love-heart/70';
+              }
+            };
+
+            return (
+              <Card key={index} className="group hover:shadow-love transition-all duration-300 hover:-translate-y-1 border-0 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${getIconBgClass(feature.color)} mb-4 group-hover:animate-heartbeat`}>
+                    <feature.icon className="text-white" size={28} />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </section>
