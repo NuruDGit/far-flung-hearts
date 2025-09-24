@@ -16,6 +16,9 @@ interface Profile {
   relationship_goals?: string;
   avatar_url?: string;
   created_at?: string;
+  birth_date?: string;
+  city?: string;
+  country?: string;
 }
 
 export const ProfilePage = () => {
@@ -51,7 +54,7 @@ export const ProfilePage = () => {
       setProfile(data);
       
       // If profile is incomplete, show setup
-      if (!data.display_name || !data.bio || !data.interests?.length || !data.relationship_goals) {
+      if (!data.display_name || !data.bio || !data.interests?.length || !data.relationship_goals || !data.birth_date || !data.city || !data.country) {
         setIsEditing(true);
       }
     } catch (error) {

@@ -13,6 +13,9 @@ interface Profile {
   relationship_goals?: string;
   avatar_url?: string;
   created_at?: string;
+  birth_date?: string;
+  city?: string;
+  country?: string;
 }
 
 interface ProfileCardProps {
@@ -28,6 +31,29 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
     if (!dateString) return 'Recently joined';
     const date = new Date(dateString);
     return `Joined ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+  };
+
+  const formatBirthDate = (dateString?: string) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+      age--;
+    }
+    return `${age} years old`;
+  };
+
+  const formatLocation = () => {
+    if (profile.city && profile.country) {
+      return `${profile.city}, ${profile.country}`;
+    } else if (profile.city) {
+      return profile.city;
+    } else if (profile.country) {
+      return profile.country;
+    }
+    return null;
   };
 
   return (
@@ -72,9 +98,25 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               {formatJoinDate(profile.created_at)}
             </div>
 
+            {/* Birth Date */}
+            {formatBirthDate(profile.birth_date) && (
+              <div className="flex items-center justify-center text-sm text-muted-foreground mb-3">
+                <Calendar className="h-4 w-4 mr-1" />
+                {formatBirthDate(profile.birth_date)}
+              </div>
+            )}
+
+            {/* Location */}
+            {formatLocation() && (
+              <div className="flex items-center justify-center text-sm text-muted-foreground mb-3">
+                <MapPin className="h-4 w-4 mr-1" />
+                {formatLocation()}
+              </div>
+            )}
+
             {/* Bio */}
             {profile.bio && (
-              <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+              <p className="text-muted-foreground text-sm mb-4 leading-relaxed text-center">
                 {profile.bio}
               </p>
             )}
@@ -83,8 +125,8 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
             {profile.relationship_goals && (
               <div className="flex items-center justify-center mb-4">
                 <Heart className="h-4 w-4 mr-2 text-love-heart" />
-                <span className="text-sm font-medium text-love-deep">
-                  Looking for: {profile.relationship_goals}
+                <span className="text-sm font-medium text-love-deep text-center">
+                  {profile.relationship_goals}
                 </span>
               </div>
             )}

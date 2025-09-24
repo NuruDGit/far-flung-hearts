@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, MapPin, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 const INTERESTS = [
@@ -18,12 +18,12 @@ const INTERESTS = [
 ];
 
 const RELATIONSHIP_GOALS = [
-  'Casual Dating',
-  'Serious Relationship', 
-  'Long-term Partnership',
-  'Marriage',
-  'Just Friends',
-  'Not Sure Yet'
+  'Building Our Future Together',
+  'Strengthening Our Bond', 
+  'Planning Marriage',
+  'Just Enjoying Each Other',
+  'Working Through Distance',
+  'Exploring Our Connection'
 ];
 
 interface Profile {
@@ -32,6 +32,9 @@ interface Profile {
   interests: string[];
   relationship_goals: string;
   avatar_url?: string;
+  birth_date?: string;
+  city?: string;
+  country?: string;
 }
 
 export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
@@ -43,7 +46,10 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
     bio: '',
     interests: [],
     relationship_goals: '',
-    avatar_url: ''
+    avatar_url: '',
+    birth_date: '',
+    city: '',
+    country: ''
   });
 
   const handleInterestToggle = (interest: string) => {
@@ -103,7 +109,10 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
           bio: profile.bio,
           interests: profile.interests,
           relationship_goals: profile.relationship_goals,
-          avatar_url: profile.avatar_url
+          avatar_url: profile.avatar_url,
+          birth_date: profile.birth_date || null,
+          city: profile.city || null,
+          country: profile.country || null
         })
         .eq('id', user.id);
 
@@ -176,6 +185,50 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
               />
             </div>
 
+            {/* Birth Date */}
+            <div className="space-y-2">
+              <Label htmlFor="birth_date" className="text-love-deep flex items-center">
+                <Calendar className="h-4 w-4 mr-1" />
+                Birth Date
+              </Label>
+              <Input
+                id="birth_date"
+                type="date"
+                value={profile.birth_date}
+                onChange={(e) => setProfile(prev => ({ ...prev, birth_date: e.target.value }))}
+                className="focus:border-love-heart focus:ring-love-heart"
+              />
+            </div>
+
+            {/* Location */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-love-deep flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  City
+                </Label>
+                <Input
+                  id="city"
+                  value={profile.city}
+                  onChange={(e) => setProfile(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="Your city"
+                  className="focus:border-love-heart focus:ring-love-heart"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country" className="text-love-deep">
+                  Country
+                </Label>
+                <Input
+                  id="country"
+                  value={profile.country}
+                  onChange={(e) => setProfile(prev => ({ ...prev, country: e.target.value }))}
+                  placeholder="Your country"
+                  className="focus:border-love-heart focus:ring-love-heart"
+                />
+              </div>
+            </div>
+
             {/* Bio */}
             <div className="space-y-2">
               <Label htmlFor="bio" className="text-love-deep">
@@ -223,8 +276,11 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             {/* Relationship Goals */}
             <div className="space-y-3">
               <Label className="text-love-deep">
-                What are you looking for?
+                Relationship Goals
               </Label>
+              <p className="text-sm text-muted-foreground">
+                What are you both working towards in your relationship?
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 {RELATIONSHIP_GOALS.map((goal) => (
                   <Button
