@@ -34,7 +34,12 @@ const LoveHero = () => {
                 Start Your Journey
                 <Heart className="ml-2" size={20} />
               </Button>
-              <Button variant="loveOutline" size="lg" className="text-lg px-8 py-6">
+              <Button 
+                variant="loveOutline" 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              >
                 Learn More
               </Button>
             </div>
