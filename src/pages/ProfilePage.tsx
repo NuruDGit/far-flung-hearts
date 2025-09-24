@@ -95,8 +95,7 @@ export const ProfilePage = () => {
             onClick={() => navigate('/app')}
             className="mr-0 sm:mr-4 hover:bg-love-light hover:text-love-deep w-max"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to App
+            <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl sm:text-3xl font-bold text-love-deep text-center">Your Profile</h1>
         </div>
