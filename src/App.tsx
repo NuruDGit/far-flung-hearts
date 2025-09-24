@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PairSetup from "./pages/PairSetup";
 import AppHome from "./pages/AppHome";
+import MessagesPage from "./pages/MessagesPage";
 import MoodPage from "./pages/MoodPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/pair-setup" element={<PairSetup />} />
             <Route path="/app" element={<AppHome />} />
+            <Route path="/app/messages" element={<MessagesPage />} />
             <Route path="/app/mood" element={<MoodPage />} />
             <Route path="/app/profile" element={<ProfilePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
