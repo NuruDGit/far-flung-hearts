@@ -7,6 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/auth/AuthProvider';
 import proximaAvatar from '@/assets/proxima-avatar.jpg';
+import { BookCard } from './BookCard';
+import { BookRecommendations } from './BookRecommendations';
 
 interface Message {
   id: string;
@@ -151,6 +153,11 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                     .replace(/\n/g, '<br>')
                 }}
               />
+              
+              {/* Render book recommendations if present */}
+              {message.text.includes('📚 BOOK_RECOMMENDATION:') && (
+                <BookRecommendations messageText={message.text} />
+              )}
               <span className={`text-xs mt-1 block opacity-70`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
