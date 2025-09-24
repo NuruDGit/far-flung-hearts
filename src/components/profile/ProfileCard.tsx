@@ -207,7 +207,9 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1 text-love-heart" />
                     {formatLocation()}
-                    <FlagIcon country={profile.country} />
+                    <span className="ml-2">
+                      <FlagIcon country={profile.country} />
+                    </span>
                   </div>
                 )}
               </div>
