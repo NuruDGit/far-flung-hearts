@@ -31,7 +31,7 @@ const LoveHero = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button variant="love" size="lg" className="text-lg px-8 py-6">
-                Start Your Journey
+                Start Free Today
                 <Heart className="ml-2" size={20} />
               </Button>
               <Button 
