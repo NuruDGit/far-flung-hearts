@@ -123,7 +123,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
             {/* Interests */}
             {profile.interests && profile.interests.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-love-deep">Interests</p>
+                <p className="text-sm font-medium text-muted-foreground">Interests</p>
                 <div className="flex flex-wrap justify-center gap-1">
                   {profile.interests.slice(0, 6).map((interest, index) => (
                     <Badge 
