@@ -71,8 +71,8 @@ export default function GoalsPage() {
       console.log('User pair:', pairData);
 
       const [tasksResponse, goalsResponse] = await Promise.all([
-        supabase.from('goal_tasks').select('*').eq('pair_id', pairData.id).order('created_at', { ascending: false }),
-        supabase.from('goalboard').select('*').eq('pair_id', pairData.id).order('created_at', { ascending: false })
+        supabase.from('goal_tasks').select('*').eq('pair_id', pairData.id),
+        supabase.from('goalboard').select('*').eq('pair_id', pairData.id)
       ]);
 
       console.log('Tasks response:', tasksResponse);
