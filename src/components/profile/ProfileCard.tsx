@@ -26,6 +26,7 @@ interface ProfileCardProps {
 
 export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCardProps) => {
   const [imageError, setImageError] = useState(false);
+  const [showAllInterests, setShowAllInterests] = useState(false);
 
   const formatJoinDate = (dateString?: string) => {
     if (!dateString) return 'Recently joined';
@@ -240,7 +241,7 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               <div className="space-y-2">
                 <p className="text-sm font-bold text-muted-foreground">Interests</p>
                 <div className="flex flex-wrap justify-center gap-1">
-                  {profile.interests.slice(0, 6).map((interest, index) => (
+                  {(showAllInterests ? profile.interests : profile.interests.slice(0, 6)).map((interest, index) => (
                     <Badge 
                       key={index} 
                       variant="secondary"
@@ -252,9 +253,10 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
                   {profile.interests.length > 6 && (
                     <Badge 
                       variant="outline" 
-                      className="text-xs border-love-soft text-love-deep"
+                      className="text-xs border-love-soft text-love-deep hover:bg-love-light cursor-pointer transition-colors"
+                      onClick={() => setShowAllInterests(!showAllInterests)}
                     >
-                      +{profile.interests.length - 6} more
+                      {showAllInterests ? 'Show less' : `+${profile.interests.length - 6} more`}
                     </Badge>
                   )}
                 </div>
