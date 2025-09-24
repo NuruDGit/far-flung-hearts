@@ -139,8 +139,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             onClick={() => navigate('/app')}
             className="absolute left-0 top-0 hover:bg-love-light hover:text-love-deep"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            <ArrowLeft className="h-4 w-4" />
           </Button>
           <CardTitle className="text-3xl font-bold text-love-deep">
             Complete Your Profile
