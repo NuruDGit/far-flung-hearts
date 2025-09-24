@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { CreateGoalDialog } from '@/components/goals/CreateGoalDialog';
 import { CreateTaskDialog } from '@/components/goals/CreateTaskDialog';
+import { AIRecommendations } from '@/components/goals/AIRecommendations';
 
 interface Task {
   id: string;
@@ -159,6 +160,13 @@ export default function GoalsPage() {
           </div>
         </div>
       )}
+
+      <AIRecommendations
+        onGoalCreated={fetchData}
+        onTaskCreated={fetchData}
+        existingGoals={goals}
+        existingTasks={tasks}
+      />
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
