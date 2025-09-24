@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Bot, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/components/auth/AuthProvider';
 import proximaAvatar from '@/assets/proxima-avatar.jpg';
 
 interface Message {
@@ -19,6 +20,8 @@ interface LoveAdvisorProps {
 }
 
 const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -31,6 +34,26 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setUserProfile(data);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -126,9 +149,16 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             </div>
             
             {message.isUser && (
-              <div className="w-8 h-8 rounded-full bg-love-heart/10 flex items-center justify-center flex-shrink-0">
-                <User className="h-4 w-4 text-love-heart" />
-              </div>
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                <AvatarImage 
+                  src={userProfile?.avatar_url} 
+                  alt={userProfile?.display_name || userProfile?.first_name || "User"} 
+                  className="object-cover" 
+                />
+                <AvatarFallback className="bg-love-heart/10 text-love-heart">
+                  {userProfile?.display_name?.[0] || userProfile?.first_name?.[0] || <User className="h-4 w-4" />}
+                </AvatarFallback>
+              </Avatar>
             )}
           </div>
         ))}
