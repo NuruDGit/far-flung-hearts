@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PairSetup from "./pages/PairSetup";
 import AppHome from "./pages/AppHome";
+import MoodPage from "./pages/MoodPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/pair-setup" element={<PairSetup />} />
             <Route path="/app" element={<AppHome />} />
+            <Route path="/app/mood" element={<MoodPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -349,6 +349,36 @@ export type Database = {
           },
         ]
       }
+      mood_logs: {
+        Row: {
+          created_at: string
+          date: string
+          emoji: string
+          id: string
+          notes: string | null
+          pair_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          emoji: string
+          id?: string
+          notes?: string | null
+          pair_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          emoji?: string
+          id?: string
+          notes?: string | null
+          pair_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       pair_invites: {
         Row: {
           code: string
@@ -469,7 +499,10 @@ export type Database = {
           created_at: string | null
           display_name: string | null
           email: string | null
+          first_name: string | null
           id: string
+          last_name: string | null
+          phone_number: string | null
           pronouns: string | null
           tz: string | null
         }
@@ -478,7 +511,10 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           email?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
+          phone_number?: string | null
           pronouns?: string | null
           tz?: string | null
         }
@@ -487,7 +523,10 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           email?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
+          phone_number?: string | null
           pronouns?: string | null
           tz?: string | null
         }

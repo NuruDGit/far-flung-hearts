@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, additionalData?: { firstName?: string; lastName?: string; phoneNumber?: string }) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
@@ -73,12 +73,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Only create if doesn't exist
       if (!existingProfile) {
+        const displayName = user.user_metadata?.display_name || 
+                           (user.user_metadata?.first_name && user.user_metadata?.last_name 
+                             ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+                             : user.email?.split('@')[0] || 'User');
+
         const { error } = await supabase
           .from('profiles')
           .insert({
             id: user.id,
             email: user.email,
-            display_name: user.email?.split('@')[0] || 'User',
+            display_name: displayName,
+            first_name: user.user_metadata?.first_name,
+            last_name: user.user_metadata?.last_name,
+            phone_number: user.user_metadata?.phone_number
           });
         
         if (error) {
@@ -92,14 +100,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, additionalData?: { firstName?: string; lastName?: string; phoneNumber?: string }) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl
+        emailRedirectTo: redirectUrl,
+        data: {
+          first_name: additionalData?.firstName,
+          last_name: additionalData?.lastName,
+          phone_number: additionalData?.phoneNumber,
+        }
       }
     });
     

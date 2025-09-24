@@ -5,18 +5,30 @@ import { Button } from '@/components/ui/button';
 import { Heart, Clock, Zap, Camera, LogOut, Users, Plus } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
+import AppNavigation from '@/components/AppNavigation';
+import MoodLogger from '@/components/MoodLogger';
 
 const AppHome = () => {
   const { user, signOut } = useAuth();
   const [pair, setPair] = useState<any>(null);
   const [partner, setPartner] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPairAndPartner = async () => {
+    const fetchUserData = async () => {
       if (!user) return;
 
       try {
+        // Get user profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        setUserProfile(profileData);
+
         // Get pair
         const { data: pairData } = await supabase
           .from('pairs')
@@ -39,13 +51,13 @@ const AppHome = () => {
           setPartner(partnerData);
         }
       } catch (error) {
-        console.error('Error fetching pair:', error);
+        console.error('Error fetching user data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPairAndPartner();
+    fetchUserData();
   }, [user]);
 
   if (!user) {
@@ -83,15 +95,32 @@ const AppHome = () => {
     }
   ];
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const getUserDisplayName = () => {
+    if (userProfile?.first_name) {
+      return userProfile.first_name;
+    }
+    return userProfile?.display_name || 'there';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
-      <div className="container mx-auto p-4 max-w-md">
+      <AppNavigation />
+      <div className="container mx-auto p-4 max-w-md pt-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-love-deep">Good morning!</h1>
+            <h1 className="text-2xl font-bold text-love-deep">
+              {getGreeting()}, {getUserDisplayName()}!
+            </h1>
             <p className="text-muted-foreground">
-              {partner ? `Connected with ${partner.display_name}` : 'Exploring solo'}
+              {partner ? `Connected with ${partner.first_name || partner.display_name}` : 'Exploring solo'}
             </p>
           </div>
           <Button variant="ghost" size="icon" onClick={signOut}>
@@ -210,6 +239,9 @@ const AppHome = () => {
 
         {/* Today's Features */}
         <div className="space-y-3">
+          {/* Mood Logger */}
+          <MoodLogger compact={true} pairId={pair?.id} />
+
           <Card className="bg-white/80 backdrop-blur-sm">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
