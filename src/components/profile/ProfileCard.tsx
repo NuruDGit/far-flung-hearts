@@ -81,11 +81,6 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               </h3>
             </div>
 
-            {/* Join Date */}
-            <div className="flex items-center justify-center text-sm text-muted-foreground mb-3">
-              <Calendar className="h-4 w-4 mr-1" />
-              {formatJoinDate(profile.created_at)}
-            </div>
 
             {/* Birth Date */}
             {formatBirthDate(profile.birth_date) && (
