@@ -11,6 +11,7 @@ import AppHome from "./pages/AppHome";
 import MessagesPage from "./pages/MessagesPage";
 import MoodPage from "./pages/MoodPage";
 import AdvisorPage from "./pages/AdvisorPage";
+import GoalsPage from "./pages/GoalsPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/app" element={<AppHome />} />
             <Route path="/app/messages" element={<MessagesPage />} />
             <Route path="/app/mood" element={<MoodPage />} />
+            <Route path="/app/goals" element={<GoalsPage />} />
             <Route path="/app/profile" element={<ProfilePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
