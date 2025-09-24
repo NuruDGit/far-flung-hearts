@@ -234,7 +234,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
                     className={`justify-start ${
                       profile.relationship_goals === goal
                         ? 'bg-love-heart hover:bg-love-coral text-white'
-                        : 'hover:bg-love-light hover:border-love-heart'
+                        : 'hover:bg-love-light hover:border-love-heart hover:text-love-deep'
                     }`}
                     onClick={() => setProfile(prev => ({ ...prev, relationship_goals: goal }))}
                   >
