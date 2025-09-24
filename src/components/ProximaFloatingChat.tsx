@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, MessageCircle } from 'lucide-react';
 import LoveAdvisor from './LoveAdvisor';
@@ -57,7 +57,7 @@ const ProximaFloatingChat = () => {
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-2xl w-[95vw] h-[600px] max-h-[80vh] p-0 flex flex-col">
+      <DialogContent className="sm:max-w-2xl w-[95vw] h-[600px] max-h-[80vh] p-0 flex flex-col" aria-describedby="proxima-chat-description">
         <DialogHeader className="p-6 pb-4 flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-love-heart">
             <Avatar className="h-8 w-8">
@@ -68,6 +68,9 @@ const ProximaFloatingChat = () => {
             </Avatar>
             Proxima - Your Love Assistant
           </DialogTitle>
+          <DialogDescription id="proxima-chat-description" className="sr-only">
+            Chat with Proxima, your AI love assistant for relationship advice and support
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-hidden p-6 pt-0">

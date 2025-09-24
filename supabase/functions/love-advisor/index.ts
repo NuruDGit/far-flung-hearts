@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,9 +15,14 @@ serve(async (req) => {
 
   try {
     const { message, pairId } = await req.json();
+    const authHeader = req.headers.get('Authorization');
 
     if (!message) {
       throw new Error('Message is required');
+    }
+
+    if (!authHeader) {
+      throw new Error('Authorization header is required');
     }
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -24,82 +30,127 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Fetch partner data if pairId is provided
-    let partnerContext = '';
-    if (pairId) {
-      try {
-        // Get both partners' profiles
-        const { data: profiles } = await fetch(`${Deno.env.get('SUPABASE_URL')}/rest/v1/profiles?select=*&pair_id=eq.${pairId}`, {
-          headers: {
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            'apikey': Deno.env.get('SUPABASE_ANON_KEY') || '',
-          }
-        }).then(res => res.json());
-
-        // Get recent mood logs
-        const { data: moodLogs } = await fetch(`${Deno.env.get('SUPABASE_URL')}/rest/v1/mood_logs?select=*&pair_id=eq.${pairId}&order=created_at.desc&limit=10`, {
-          headers: {
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            'apikey': Deno.env.get('SUPABASE_ANON_KEY') || '',
-          }
-        }).then(res => res.json());
-
-        // Get upcoming events
-        const today = new Date().toISOString();
-        const { data: events } = await fetch(`${Deno.env.get('SUPABASE_URL')}/rest/v1/events?select=*&pair_id=eq.${pairId}&starts_at=gte.${today}&order=starts_at.asc&limit=5`, {
-          headers: {
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            'apikey': Deno.env.get('SUPABASE_ANON_KEY') || '',
-          }
-        }).then(res => res.json());
-
-        // Get pair information
-        const { data: pairInfo } = await fetch(`${Deno.env.get('SUPABASE_URL')}/rest/v1/pairs?select=*&id=eq.${pairId}`, {
-          headers: {
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            'apikey': Deno.env.get('SUPABASE_ANON_KEY') || '',
-          }
-        }).then(res => res.json());
-
-        if (profiles?.length > 0) {
-          const partnerData = profiles.map(p => ({
-            name: p.display_name || p.first_name,
-            interests: p.interests || [],
-            birthDate: p.birth_date,
-            bio: p.bio,
-            relationshipGoals: p.relationship_goals,
-            city: p.city,
-            country: p.country
-          }));
-
-          partnerContext = `
-Partner Information:
-${partnerData.map(p => `
-- Name: ${p.name || 'Not provided'}
-- Interests: ${p.interests.length > 0 ? p.interests.join(', ') : 'Not provided'}
-- Birth Date: ${p.birthDate || 'Not provided'}
-- Bio: ${p.bio || 'Not provided'}
-- Relationship Goals: ${p.relationshipGoals || 'Not provided'}
-- Location: ${p.city && p.country ? `${p.city}, ${p.country}` : 'Not provided'}
-`).join('\n')}
-
-Recent Mood Patterns:
-${moodLogs?.length > 0 ? moodLogs.map(m => `${m.emoji} on ${new Date(m.date).toLocaleDateString()}${m.notes ? ` (${m.notes})` : ''}`).join('\n') : 'No recent mood logs'}
-
-Upcoming Events:
-${events?.length > 0 ? events.map(e => `${e.title} on ${new Date(e.starts_at).toLocaleDateString()}`).join('\n') : 'No upcoming events'}
-
-Relationship Duration: ${pairInfo?.[0]?.created_at ? `Since ${new Date(pairInfo[0].created_at).toLocaleDateString()}` : 'Not available'}
-`;
-        }
-      } catch (error) {
-        console.error('Error fetching partner data:', error);
-        partnerContext = 'Partner data temporarily unavailable.';
+    // Initialize Supabase client
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: authHeader },
+        },
       }
+    );
+
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    // Fetch user data and partner data if available
+    let userData = '';
+    let partnerData = '';
+    
+    try {
+      // Get current user's profile
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (userProfile) {
+        const age = userProfile.birth_date ? 
+          Math.floor((new Date().getTime() - new Date(userProfile.birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : 
+          'not provided';
+
+        userData = `
+Your Profile:
+- Name: ${userProfile.display_name || userProfile.first_name || 'Not provided'}
+- Age: ${age}
+- Location: ${userProfile.city && userProfile.country ? `${userProfile.city}, ${userProfile.country}` : 'Not provided'}
+- Interests: ${userProfile.interests?.length > 0 ? userProfile.interests.join(', ') : 'Not provided'}
+- Bio: ${userProfile.bio || 'Not provided'}
+- Relationship Goals: ${userProfile.relationship_goals || 'Not provided'}
+- Phone: ${userProfile.phone_number || 'Not provided'}
+- Email: ${userProfile.email || 'Not provided'}
+`;
+      }
+
+      // If user has a pair, get partner's data
+      if (pairId) {
+        const { data: pair } = await supabase
+          .from('pairs')
+          .select('*')
+          .eq('id', pairId)
+          .single();
+
+        if (pair) {
+          const partnerId = pair.user_a === user.id ? pair.user_b : pair.user_a;
+          
+          const { data: partnerProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', partnerId)
+            .single();
+
+          if (partnerProfile) {
+            const partnerAge = partnerProfile.birth_date ? 
+              Math.floor((new Date().getTime() - new Date(partnerProfile.birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : 
+              'not provided';
+
+            partnerData = `
+Your Partner's Profile:
+- Name: ${partnerProfile.display_name || partnerProfile.first_name || 'Not provided'}
+- Age: ${partnerAge}
+- Location: ${partnerProfile.city && partnerProfile.country ? `${partnerProfile.city}, ${partnerProfile.country}` : 'Not provided'}
+- Interests: ${partnerProfile.interests?.length > 0 ? partnerProfile.interests.join(', ') : 'Not provided'}
+- Bio: ${partnerProfile.bio || 'Not provided'}
+- Relationship Goals: ${partnerProfile.relationship_goals || 'Not provided'}
+
+Relationship Duration: Since ${new Date(pair.created_at).toLocaleDateString()}
+`;
+
+            // Get recent mood logs for both users
+            const { data: moodLogs } = await supabase
+              .from('mood_logs')
+              .select('*')
+              .eq('pair_id', pairId)
+              .order('created_at', { ascending: false })
+              .limit(10);
+
+            if (moodLogs?.length > 0) {
+              partnerData += `
+Recent Mood Patterns:
+${moodLogs.map(m => `${m.emoji} on ${new Date(m.date).toLocaleDateString()}${m.notes ? ` (${m.notes})` : ''}`).join('\n')}
+`;
+            }
+
+            // Get upcoming events
+            const today = new Date().toISOString();
+            const { data: events } = await supabase
+              .from('events')
+              .select('*')
+              .eq('pair_id', pairId)
+              .gte('starts_at', today)
+              .order('starts_at', { ascending: true })
+              .limit(5);
+
+            if (events?.length > 0) {
+              partnerData += `
+Upcoming Events:
+${events.map(e => `${e.title} on ${new Date(e.starts_at).toLocaleDateString()}`).join('\n')}
+`;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
 
     // Create a personalized system prompt for Proxima
-    const systemPrompt = `You are Proxima, a specialized AI love assistant with deep expertise in Long Distance Relationships (LDR) and romantic partnerships. You ONLY provide guidance on relationship and love-related topics.
+    const systemPrompt = `You are Proxima, a specialized AI love assistant with deep expertise in Long Distance Relationships (LDR) and romantic partnerships. You have full access to user profile data and relationship information within this app to provide personalized advice.
 
 Your core specializations include:
 - Long Distance Relationship challenges and solutions
@@ -113,10 +164,13 @@ Your core specializations include:
 - Healthy boundaries in romantic partnerships
 - Reunion planning and visits for LDR couples
 - Technology tools for staying connected
+- Personal questions about users based on their profile data
 
-STRICT GUIDELINES:
-- ONLY discuss topics related to love, relationships, dating, and romance
-- If asked about politics, news, technology (unrelated to relationships), or any non-relationship topics, politely redirect: "I'm here to help with your relationship and love life. Let's talk about how I can support your romantic journey instead!"
+GUIDELINES:
+- You CAN and SHOULD answer personal questions about users using their profile data (age, location, interests, etc.)
+- You CAN discuss any topic related to the app, relationships, love, dating, and romance
+- Use the provided user data to give personalized, relevant advice
+- If asked about topics completely unrelated to relationships or the app (like politics, general news, science), politely redirect: "I'm here to help with your relationship and love life. Let's talk about how I can support your romantic journey instead!"
 - Be warm, supportive, and non-judgmental about relationship matters
 - Provide practical, actionable advice for couples
 - Encourage open communication between partners
@@ -124,10 +178,12 @@ STRICT GUIDELINES:
 - Focus on building healthy, loving connections
 - Keep responses concise but meaningful (2-3 paragraphs max)
 - Use a friendly, conversational tone
-- When you have partner data, use it to make personalized recommendations
-- Always bring conversations back to relationship growth and connection
+- Always use the provided profile data to personalize your responses
 
-${partnerContext ? `Current Relationship Context: ${partnerContext}` : 'User seeking general relationship advice.'}`;
+${userData}
+${partnerData}
+
+Remember: You have access to all this personal information to help provide the most relevant and personalized relationship advice possible.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
