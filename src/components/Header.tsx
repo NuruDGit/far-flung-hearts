@@ -35,7 +35,6 @@ const Header = () => {
             <a href="#features" className="text-foreground hover:text-love-heart transition-colors">Features</a>
             <a href="#how-it-works" className="text-foreground hover:text-love-heart transition-colors">How It Works</a>
             <a href="#pricing" className="text-foreground hover:text-love-heart transition-colors">Pricing</a>
-            <a href="#about" className="text-foreground hover:text-love-heart transition-colors">About</a>
           </nav>
 
           {/* Desktop CTA */}
@@ -94,13 +93,6 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
-              </a>
-              <a 
-                href="#about" 
-                className="text-foreground hover:text-love-heart transition-colors py-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
               </a>
               <div className="flex flex-col gap-2 pt-4 md:hidden">
                 <Button variant="ghost" className="text-love-heart hover:text-white w-full" onClick={() => window.location.href = '/auth'}>Sign In</Button>
