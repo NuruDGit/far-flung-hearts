@@ -89,11 +89,11 @@ export const ProfilePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-love-light to-love-soft">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="flex items-center justify-center relative mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate('/app')}
-            className="mr-0 sm:mr-4 hover:bg-love-light hover:text-love-deep w-max"
+            className="absolute left-0 hover:bg-love-light hover:text-love-deep"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
