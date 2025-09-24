@@ -29,7 +29,7 @@ export const BookRecommendations = ({ messageText }: BookRecommendationsProps) =
           const { data, error } = await supabase.functions.invoke('book-search', {
             body: { 
               bookTitle,
-              affiliateTag: 'youraffiliateID-20' // You'll need to replace this with the actual affiliate tag
+              affiliateTag: 'nurudigital20-20'
             }
           });
           
