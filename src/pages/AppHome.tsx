@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
+import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
 
 const AppHome = () => {
@@ -303,6 +304,7 @@ const AppHome = () => {
           )}
         </div>
       </div>
+      <ProximaFloatingChat />
     </div>
   );
 };

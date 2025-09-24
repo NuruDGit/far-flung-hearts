@@ -11,7 +11,6 @@ const AppNavigation = () => {
     { path: '/app', icon: Home, label: 'Home' },
     { path: '/app/messages', icon: MessageCircle, label: 'Messages' },
     { path: '/app/mood', icon: Heart, label: 'Mood' },
-    { path: '/app/advisor', icon: Bot, label: 'Advisor' },
     { path: '/app/goals', icon: Target, label: 'Goals' },
     { path: '/app/profile', icon: User, label: 'Profile' },
   ];

@@ -24,8 +24,8 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Create a personalized system prompt for love advice
-    const systemPrompt = `You are LoveBot, a wise and empathetic AI relationship advisor. You specialize in providing thoughtful, supportive guidance for couples and individuals in relationships.
+    // Create a personalized system prompt for Proxima
+    const systemPrompt = `You are Proxima, a wise and empathetic AI love assistant. You specialize in providing thoughtful, supportive guidance for couples and individuals in relationships.
 
 Your expertise includes:
 - Communication strategies and conflict resolution
