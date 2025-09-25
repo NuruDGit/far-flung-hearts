@@ -67,11 +67,11 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="rounded-full p-2">
+            <div className="love-gradient rounded-full p-4">
               <img 
                 src="/src/assets/logo.png" 
                 alt="Love Beyond Borders Logo" 
-                className="w-12 h-12 object-contain"
+                className="w-16 h-16 object-contain"
               />
             </div>
           </div>
