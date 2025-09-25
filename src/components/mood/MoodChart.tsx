@@ -142,44 +142,45 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
       legend: {
         position: 'top' as const,
         labels: {
-          color: 'hsl(var(--foreground))',
+          color: 'hsl(var(--love-deep))',
           font: {
             size: 12,
+            weight: 'normal' as const,
           }
         }
       },
       title: {
         display: true,
         text: title,
-        color: 'hsl(var(--foreground))',
+        color: 'hsl(var(--love-deep))',
         font: {
           size: 16,
           weight: 'bold' as const,
         }
       },
       tooltip: {
-        backgroundColor: 'hsl(var(--popover))',
-        titleColor: 'hsl(var(--popover-foreground))',
-        bodyColor: 'hsl(var(--popover-foreground))',
-        borderColor: 'hsl(var(--border))',
-        borderWidth: 1,
+        backgroundColor: 'hsl(var(--card))',
+        titleColor: 'hsl(var(--love-deep))',
+        bodyColor: 'hsl(var(--love-deep))',
+        borderColor: 'hsl(var(--love-coral))',
+        borderWidth: 2,
       }
     },
     scales: type !== 'doughnut' ? {
       x: {
         ticks: {
-          color: 'hsl(var(--muted-foreground))',
+          color: 'hsl(var(--love-coral))',
         },
         grid: {
-          color: 'hsl(var(--border))',
+          color: 'hsl(var(--love-coral) / 0.2)',
         }
       },
       y: {
         ticks: {
-          color: 'hsl(var(--muted-foreground))',
+          color: 'hsl(var(--love-coral))',
         },
         grid: {
-          color: 'hsl(var(--border))',
+          color: 'hsl(var(--love-coral) / 0.2)',
         },
         ...(type === 'line' && {
           min: 1,
@@ -189,7 +190,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
             callback: function(value: any) {
               const labels = { 1: '😢', 2: '😔', 3: '😐', 4: '😊', 5: '😄' };
               return labels[value as keyof typeof labels] || value;
-            }
+            },
+            color: 'hsl(var(--love-coral))',
           }
         })
       }
