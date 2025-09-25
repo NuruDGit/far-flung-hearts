@@ -38,6 +38,12 @@ export const MessageBubble = ({
   const timeAgo = formatDistanceToNow(timestamp, { addSuffix: true });
   const fullTime = format(timestamp, 'PPP p');
 
+  // Check if message is emoji only
+  const isEmojiOnly = (text: string) => {
+    const emojiRegex = /^[\p{Emoji}\s]*$/u;
+    return emojiRegex.test(text) && text.trim().length > 0;
+  };
+
   return (
     <div className={`flex items-start gap-3 mb-4 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       {!isOwn && (
@@ -51,44 +57,51 @@ export const MessageBubble = ({
       
       <div className={`flex flex-col max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
         <div className="group relative">
-          <div
-            className={`rounded-2xl px-4 py-2 shadow-sm transition-all duration-200 ${
-              isOwn
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-card border border-border'
-            }`}
-          >
-            {type === 'text' && (
-              <>
-                {/* Special rendering for love messages */}
-                {content.includes('💖 Sent you some love!') ? (
-                  <div className="flex items-center gap-2 text-center animate-scale-in">
-                    <div className="text-2xl animate-pulse">💖</div>
-                    <span className="text-sm font-medium bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
-                      Sent you some love!
-                    </span>
-                  </div>
-                ) : content.includes('👋 Thinking of you!') ? (
-                  <div className="flex items-center gap-2 text-center animate-scale-in">
-                    <div className="text-xl animate-bounce">👋</div>
-                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                      Thinking of you!
-                    </span>
-                  </div>
-                ) : (
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                    {content}
-                  </p>
-                )}
-              </>
-            )}
-            
-            {type === 'system' && (
-              <p className="text-xs text-muted-foreground italic text-center">
-                {content}
-              </p>
-            )}
-          </div>
+          {/* Emoji-only messages - no bubble */}
+          {type === 'text' && isEmojiOnly(content) ? (
+            <div className="text-4xl py-1 hover:scale-110 transition-transform duration-200">
+              {content}
+            </div>
+          ) : (
+            <div
+              className={`rounded-2xl px-4 py-2 shadow-sm transition-all duration-200 ${
+                isOwn
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-card border border-border text-foreground'
+              }`}
+            >
+              {type === 'text' && (
+                <>
+                  {/* Special rendering for love messages */}
+                  {content.includes('💖 Sent you some love!') ? (
+                    <div className="flex items-center gap-2 text-center animate-scale-in">
+                      <div className="text-2xl animate-pulse">💖</div>
+                      <span className="text-sm font-medium">
+                        Sent you some love!
+                      </span>
+                    </div>
+                  ) : content.includes('👋 Thinking of you!') ? (
+                    <div className="flex items-center gap-2 text-center animate-scale-in">
+                      <div className="text-xl animate-bounce">👋</div>
+                      <span className="text-sm font-medium">
+                        Thinking of you!
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {content}
+                    </p>
+                  )}
+                </>
+              )}
+              
+              {type === 'system' && (
+                <p className="text-xs text-muted-foreground italic text-center">
+                  {content}
+                </p>
+              )}
+            </div>
+          )}
           
           {isOwn && (onEdit || onDelete) && (
             <DropdownMenu open={showMenu} onOpenChange={setShowMenu}>
