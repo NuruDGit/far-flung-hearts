@@ -42,16 +42,20 @@ const MemoryVault = () => {
         if (pairData) {
           setPair(pairData);
 
-          // Get all media messages from the pair
-          const { data: messagesData } = await supabase
+          // Get all media messages from the pair (both from chat and memory vault)
+          const { data: messagesData, error: fetchError } = await supabase
             .from('messages')
             .select('*')
             .eq('pair_id', pairData.id)
             .eq('type', 'media')
-            .not('media_url', 'is', null)
             .order('created_at', { ascending: false });
 
-          setMemories(messagesData || []);
+          if (fetchError) {
+            console.error('Error fetching memories:', fetchError);
+          } else {
+            console.log('Initial load found', messagesData?.length || 0, 'memories');
+            setMemories(messagesData || []);
+          }
         }
       } catch (error) {
         console.error('Error fetching memories:', error);
@@ -146,7 +150,8 @@ const MemoryVault = () => {
             type: 'media',
             media_url: data.publicUrl,
             body: { 
-              caption: '',
+              attachments: [data.publicUrl],
+              text: '',
               file_name: file.name,
               file_size: file.size,
               file_type: file.type 
@@ -302,53 +307,66 @@ const MemoryVault = () => {
           </Card>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {memories.map((memory) => (
-              <Card key={memory.id} className="group overflow-hidden">
-                <div className="aspect-square relative">
-                  {memory.body?.file_type?.startsWith('image/') ? (
-                    <img
-                      src={memory.media_url}
-                      alt={memory.body?.file_name || 'Memory'}
-                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    />
-                  ) : (
-                    <video
-                      src={memory.media_url}
-                      className="w-full h-full object-cover"
-                      controls={false}
-                      muted
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                      <Button size="sm" variant="secondary" asChild>
-                        <a href={memory.media_url} target="_blank" rel="noopener noreferrer">
-                          <Download size={14} />
-                        </a>
-                      </Button>
+            {memories.map((memory) => {
+              // Get the media URL (could be direct media_url or from attachments array)
+              const mediaUrl = memory.media_url || (memory.body?.attachments && memory.body.attachments[0]);
+              const fileName = memory.body?.file_name || 'Memory';
+              const fileType = memory.body?.file_type || '';
+              
+              if (!mediaUrl) return null;
+              
+              return (
+                <Card key={memory.id} className="group overflow-hidden">
+                  <div className="aspect-square relative">
+                    {fileType.startsWith('image/') || mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                      <img
+                        src={mediaUrl}
+                        alt={fileName}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        onError={(e) => {
+                          console.error('Error loading image:', mediaUrl);
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
+                    ) : (
+                      <video
+                        src={mediaUrl}
+                        className="w-full h-full object-cover"
+                        controls={false}
+                        muted
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                        <Button size="sm" variant="secondary" asChild>
+                          <a href={mediaUrl} target="_blank" rel="noopener noreferrer">
+                            <Download size={14} />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="absolute top-2 left-2">
+                      <div className="bg-black/50 text-white rounded-full p-1">
+                        {getFileTypeIcon(fileType)}
+                      </div>
                     </div>
                   </div>
-                  <div className="absolute top-2 left-2">
-                    <div className="bg-black/50 text-white rounded-full p-1">
-                      {getFileTypeIcon(memory.body?.file_type)}
-                    </div>
-                  </div>
-                </div>
-                <CardContent className="p-3">
-                  <p className="text-xs text-muted-foreground truncate">
-                    {memory.body?.file_name || 'Unknown file'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(memory.created_at), 'MMM d, yyyy')}
-                  </p>
-                  {memory.body?.file_size && (
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(memory.body.file_size)}
+                  <CardContent className="p-3">
+                    <p className="text-xs text-muted-foreground truncate">
+                      {fileName}
                     </p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(memory.created_at), 'MMM d, yyyy')}
+                    </p>
+                    {memory.body?.file_size && (
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(memory.body.file_size)}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
