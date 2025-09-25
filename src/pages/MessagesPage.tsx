@@ -6,7 +6,7 @@ import { MessageInput } from '@/components/messages/MessageInput';
 import { VideoCallInterface } from '@/components/messages/VideoCallInterface';
 import { CallNotification } from '@/components/messages/CallNotification';
 import { useVideoCall } from '@/hooks/useVideoCall';
-import AppNavigation from '@/components/AppNavigation';
+
 import { Card } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
@@ -240,8 +240,7 @@ const MessagesPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <AppNavigation />
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)]">
+        <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading messages...</p>
@@ -254,8 +253,7 @@ const MessagesPage = () => {
   if (!pair) {
     return (
       <div className="min-h-screen bg-background">
-        <AppNavigation />
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)]">
+        <div className="flex items-center justify-center h-screen">
           <Card className="p-8 max-w-md mx-4 text-center">
             <h2 className="text-xl font-semibold mb-4">No Active Connection</h2>
             <p className="text-muted-foreground mb-6">
@@ -274,7 +272,6 @@ const MessagesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation />
       
       {/* Incoming Call Notification */}
       <CallNotification
@@ -301,12 +298,12 @@ const MessagesPage = () => {
         callDuration={callState.callDuration}
       />
 
-      <div className="max-w-4xl mx-auto h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] pb-20 lg:pb-0 flex flex-col">
+      <div className="max-w-4xl mx-auto h-screen flex flex-col">
         {/* Chat Header */}
         <div className="border-b border-border bg-background/95 backdrop-blur-sm p-4">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
-              <Link to="/app" className="md:hidden flex-shrink-0">
+              <Link to="/app" className="flex-shrink-0">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft size={20} />
                 </Button>
