@@ -304,15 +304,15 @@ const MessagesPage = () => {
       <div className="max-w-4xl mx-auto h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] pb-20 lg:pb-0 flex flex-col">
         {/* Chat Header */}
         <div className="border-b border-border bg-background/95 backdrop-blur-sm p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/app" className="md:hidden">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
+              <Link to="/app" className="md:hidden flex-shrink-0">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft size={20} />
                 </Button>
               </Link>
               
-              <Avatar className="w-10 h-10">
+              <Avatar className="w-10 h-10 flex-shrink-0">
                 <AvatarImage src={partner?.avatar_url} alt={partner?.display_name} />
                 <AvatarFallback className="bg-love-gradient text-white">
                   {partner?.display_name?.charAt(0) || 'P'}
@@ -320,7 +320,7 @@ const MessagesPage = () => {
               </Avatar>
               
               <div className="min-w-0 flex-1">
-                <h1 className="font-semibold text-base truncate">
+                <h1 className="font-semibold text-base truncate pr-2">
                   {partner?.display_name || 'Partner'}
                 </h1>
                 <div className="flex items-center gap-2">
@@ -344,7 +344,7 @@ const MessagesPage = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 flex-shrink-0">
               <Button
                 variant="outline"
                 size="sm"
