@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
+import { toast } from 'sonner';
 
 const AppHome = () => {
   const { user, signOut } = useAuth();
@@ -80,22 +81,75 @@ const AppHome = () => {
     {
       icon: Heart,
       label: "Send Love",
-      action: () => console.log("Send love tap"),
+      action: () => sendLoveMessage(),
       color: "bg-love-heart"
     },
     {
       icon: Zap,
       label: "Quick Ping",
-      action: () => console.log("Send ping"),
+      action: () => sendQuickPing(),
       color: "bg-love-coral"
     },
     {
       icon: Camera,
       label: "Share Sky",
-      action: () => console.log("Share photo"),
+      action: () => sharePhoto(),
       color: "bg-love-deep"
     }
   ];
+
+  const sendLoveMessage = async () => {
+    if (!pair || !user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          pair_id: pair.id,
+          sender_id: user.id,
+          type: 'love_tap',
+          body: { message: '💖 Sent you some love!', type: 'love_tap' }
+        });
+
+      if (error) throw error;
+      
+      toast.success('Love sent! 💕');
+    } catch (error) {
+      console.error('Error sending love:', error);
+      toast.error('Failed to send love');
+    }
+  };
+
+  const sendQuickPing = async () => {
+    if (!pair || !user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          pair_id: pair.id,
+          sender_id: user.id,
+          type: 'ping',
+          body: { message: '👋 Thinking of you!', type: 'ping' }
+        });
+
+      if (error) throw error;
+      
+      toast.success('Ping sent! 👋');
+    } catch (error) {
+      console.error('Error sending ping:', error);
+      toast.error('Failed to send ping');
+    }
+  };
+
+  const sharePhoto = () => {
+    // For now, navigate to messages where they can share photos
+    // In the future, this could open camera directly
+    toast.info('Opening messages to share a photo! 📸');
+    setTimeout(() => {
+      window.location.href = '/app/messages';
+    }, 1000);
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
