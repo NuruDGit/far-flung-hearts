@@ -52,15 +52,27 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
   };
 
   const moodColors = {
-    '😄': '#FFD700', // Gold
-    '😊': '#32CD32', // Lime Green
-    '🥰': '#FF69B4', // Hot Pink
-    '😐': '#87CEEB', // Sky Blue
-    '😔': '#4682B4', // Steel Blue
-    '😢': '#4169E1', // Royal Blue
-    '😡': '#DC143C', // Crimson
-    '😴': '#9370DB', // Medium Purple
-    '😰': '#FF6347', // Tomato
+    '😄': 'hsl(var(--love-heart))', // Excited - love heart
+    '😊': 'hsl(var(--love-coral))', // Happy - love coral
+    '🥰': 'hsl(var(--love-deep))', // Loving - love deep
+    '😐': 'hsl(var(--muted))', // Neutral - muted
+    '😔': 'hsl(var(--destructive))', // Sad - destructive
+    '😢': 'hsl(var(--destructive) / 0.8)', // Crying - destructive faded
+    '😡': 'hsl(var(--destructive) / 0.9)', // Angry - destructive strong  
+    '😴': 'hsl(var(--muted-foreground))', // Tired - muted foreground
+    '😰': 'hsl(var(--ring))', // Anxious - ring color
+  };
+
+  const moodLabels = {
+    '😄': 'Excited',
+    '😊': 'Happy', 
+    '🥰': 'Loving',
+    '😐': 'Neutral',
+    '😔': 'Sad',
+    '😢': 'Crying',
+    '😡': 'Angry',
+    '😴': 'Tired',
+    '😰': 'Anxious',
   };
 
   const processLineData = () => {
@@ -72,11 +84,11 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
         {
           label: 'Mood Score',
           data: sortedData.map(d => moodToScore[d.emoji as keyof typeof moodToScore] || 3),
-          borderColor: 'rgb(129, 140, 248)',
-          backgroundColor: 'rgba(129, 140, 248, 0.1)',
+          borderColor: 'hsl(var(--love-heart))',
+          backgroundColor: 'hsl(var(--love-heart) / 0.1)',
           tension: 0.4,
-          pointBackgroundColor: sortedData.map(d => moodColors[d.emoji as keyof typeof moodColors] || '#87CEEB'),
-          pointBorderColor: '#fff',
+          pointBackgroundColor: sortedData.map(d => moodColors[d.emoji as keyof typeof moodColors] || 'hsl(var(--muted))'),
+          pointBorderColor: 'hsl(var(--background))',
           pointBorderWidth: 2,
           pointRadius: 6,
         }
@@ -95,9 +107,9 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
       datasets: [
         {
           data: Object.values(moodCounts),
-          backgroundColor: Object.keys(moodCounts).map(emoji => moodColors[emoji as keyof typeof moodColors] || '#87CEEB'),
-          borderColor: '#fff',
-          borderWidth: 2,
+          backgroundColor: Object.keys(moodCounts).map(emoji => moodColors[emoji as keyof typeof moodColors] || 'hsl(var(--muted))'),
+          borderColor: 'hsl(var(--background))',
+          borderWidth: 3,
         }
       ]
     };
@@ -115,8 +127,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
         {
           label: 'Frequency',
           data: Object.values(moodCounts),
-          backgroundColor: Object.keys(moodCounts).map(emoji => moodColors[emoji as keyof typeof moodColors] || '#87CEEB'),
-          borderColor: Object.keys(moodCounts).map(emoji => moodColors[emoji as keyof typeof moodColors] || '#87CEEB'),
+          backgroundColor: Object.keys(moodCounts).map(emoji => moodColors[emoji as keyof typeof moodColors] || 'hsl(var(--muted))'),
+          borderColor: Object.keys(moodCounts).map(emoji => moodColors[emoji as keyof typeof moodColors] || 'hsl(var(--muted))'),
           borderWidth: 1,
         }
       ]
@@ -189,10 +201,29 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
                    processBarData();
 
   return (
-    <div className="h-64 w-full">
-      {type === 'line' && <Line data={chartData} options={chartOptions} />}
-      {type === 'bar' && <Bar data={chartData} options={chartOptions} />}
-      {type === 'doughnut' && <Doughnut data={chartData} options={chartOptions} />}
+    <div className="space-y-4">
+      {/* Legend */}
+      <div className="bg-gradient-to-r from-love-coral/5 to-love-heart/5 rounded-lg p-4 border border-love-coral/20">
+        <h4 className="text-sm font-medium mb-3 text-muted-foreground">Chart Legend</h4>
+        <div className="grid grid-cols-3 gap-2 text-xs">
+          {Object.entries(moodLabels).map(([emoji, label]) => (
+            <div key={emoji} className="flex items-center gap-2">
+              <div 
+                className="w-3 h-3 rounded-full border-2 border-background" 
+                style={{ backgroundColor: moodColors[emoji as keyof typeof moodColors] }}
+              />
+              <span className="text-muted-foreground">{emoji} {label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="h-64 w-full">
+        {type === 'line' && <Line data={chartData} options={chartOptions} />}
+        {type === 'bar' && <Bar data={chartData} options={chartOptions} />}
+        {type === 'doughnut' && <Doughnut data={chartData} options={chartOptions} />}
+      </div>
     </div>
   );
 };
