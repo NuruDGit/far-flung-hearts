@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, Activity, Users2 } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -62,6 +62,34 @@ const AppHome = () => {
 
     fetchUserData();
   }, [user]);
+
+  // Daily questions array
+  const dailyQuestions = [
+    "What made you smile today?",
+    "What are you most grateful for right now?",
+    "What's one thing you're looking forward to tomorrow?",
+    "Describe your day in three words.",
+    "What was the highlight of your week so far?",
+    "What's something new you learned recently?",
+    "How did you show kindness today?"
+  ];
+
+  // Get today's question based on current date
+  const getTodaysQuestion = () => {
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    return dailyQuestions[dayOfYear % dailyQuestions.length];
+  };
+
+  const handleAnswerQuestion = () => {
+    if (!pair) return;
+    // Navigate to messages with the question pre-filled
+    const question = getTodaysQuestion();
+    const message = `Today's Question: ${question}`;
+    localStorage.setItem('prefilledMessage', message);
+    window.location.href = '/app/messages';
+  };
 
   if (!user) {
     return <Navigate to="/auth" replace />;
@@ -305,18 +333,18 @@ const AppHome = () => {
 
           <Card className="bg-white/80 backdrop-blur-sm">
             <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-love-coral/20 flex items-center justify-center">
-                  <Activity className="text-love-coral" size={16} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold">Today's Question</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {pair ? "What made you smile today?" : "Preview: Daily questions to share together"}
-                  </p>
-                </div>
-                <Button size="sm" variant={pair ? "love" : "outline"} disabled={!pair}>
-                  {pair ? "Start" : "Preview"}
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-full bg-love-coral/20 flex items-center justify-center">
+                   <MessageSquareQuote className="text-love-coral" size={16} />
+                 </div>
+                 <div className="flex-1">
+                   <h3 className="font-semibold">Today's Question</h3>
+                   <p className="text-sm text-muted-foreground">
+                     {pair ? getTodaysQuestion() : "Preview: Daily questions to share together"}
+                   </p>
+                 </div>
+                 <Button size="sm" variant={pair ? "love" : "outline"} disabled={!pair} onClick={handleAnswerQuestion}>
+                   {pair ? "Answer" : "Preview"}
                 </Button>
               </div>
             </CardContent>
