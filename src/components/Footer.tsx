@@ -8,15 +8,19 @@ const Footer = () => {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="rounded-full p-1">
+            <div className="flex flex-col items-center lg:items-start mb-6">
+              <div className="rounded-full p-2 mb-3">
                 <img 
                   src="/src/assets/logo.png" 
                   alt="Love Beyond Borders Logo" 
-                  className="w-10 h-10 object-contain"
+                  className="w-16 h-16 object-contain filter brightness-0 invert"
                 />
               </div>
-              <span className="text-xl font-bold">Love Beyond Borders</span>
+              <div className="text-center lg:text-left">
+                <div className="text-2xl font-bold leading-tight">Love</div>
+                <div className="text-2xl font-bold leading-tight">Beyond</div>
+                <div className="text-2xl font-bold leading-tight">Borders</div>
+              </div>
             </div>
             <p className="text-white/80 mb-6 leading-relaxed">
               Connecting hearts across continents. Making long-distance relationships stronger, one day at a time.
