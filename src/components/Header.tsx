@@ -36,7 +36,7 @@ const Header = () => {
               Sign In
             </Button>
             <Button variant="love" onClick={() => window.location.href = '/auth'}>
-              Get Started
+              Get Started Free
             </Button>
           </div>
 
