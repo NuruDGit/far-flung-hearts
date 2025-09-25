@@ -313,21 +313,37 @@ const MemoryVault = () => {
               const fileName = memory.body?.file_name || 'Memory';
               const fileType = memory.body?.file_type || '';
               
-              if (!mediaUrl) return null;
+              console.log('Memory item:', { 
+                id: memory.id, 
+                mediaUrl, 
+                fileName, 
+                fileType,
+                media_url: memory.media_url,
+                attachments: memory.body?.attachments 
+              });
+              
+              if (!mediaUrl) {
+                console.log('No media URL found for memory:', memory);
+                return null;
+              }
               
               return (
                 <Card key={memory.id} className="group overflow-hidden">
                   <div className="aspect-square relative">
-                    {fileType.startsWith('image/') || mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                      <img
-                        src={mediaUrl}
-                        alt={fileName}
-                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                        onError={(e) => {
-                          console.error('Error loading image:', mediaUrl);
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
-                      />
+                     {fileType.startsWith('image/') || mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                       <img
+                         src={mediaUrl}
+                         alt={fileName}
+                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                         onLoad={() => {
+                           console.log('Image loaded successfully:', mediaUrl);
+                         }}
+                         onError={(e) => {
+                           console.error('Error loading image:', mediaUrl);
+                           console.error('Error details:', e);
+                           e.currentTarget.src = '/placeholder.svg';
+                         }}
+                       />
                     ) : (
                       <video
                         src={mediaUrl}
