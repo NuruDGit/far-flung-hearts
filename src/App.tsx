@@ -13,6 +13,7 @@ import MoodPage from "./pages/MoodPage";
 import AdvisorPage from "./pages/AdvisorPage";
 import GoalsPage from "./pages/GoalsPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import MemoryVault from "./pages/MemoryVault";
 import MoodAnalytics from "./pages/MoodAnalytics";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,8 @@ const App = () => (
             <Route path="/app/mood/analytics" element={<MoodAnalytics />} />
             <Route path="/app/goals" element={<GoalsPage />} />
             <Route path="/app/profile" element={<ProfilePage />} />
+            <Route path="/memory-vault" element={<MemoryVault />} />
+            <Route path="/app/advisor" element={<AdvisorPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

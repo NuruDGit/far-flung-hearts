@@ -362,9 +362,9 @@ const AppHome = () => {
                     {pair ? "12 photos, 3 videos" : "Your shared memories will appear here"}
                   </p>
                 </div>
-                <Button size="sm" variant="outline" disabled={!pair}>
-                  {pair ? "View" : "Preview"}
-                </Button>
+                 <Button size="sm" variant="outline" disabled={!pair} onClick={() => window.location.href = '/memory-vault'}>
+                   {pair ? "View" : "Preview"}
+                 </Button>
               </div>
             </CardContent>
           </Card>
