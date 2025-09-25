@@ -21,6 +21,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
   const [todaysMood, setTodaysMood] = useState<any>(null);
   const [partnerMood, setPartnerMood] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [motivationalQuote, setMotivationalQuote] = useState('');
 
   const moods = [
     { emoji: '😄', label: 'Excited' },
@@ -124,6 +125,24 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
     }
   };
 
+  const fetchMotivationalQuote = async (emoji: string, label: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('motivational-quote', {
+        body: { mood: emoji, moodLabel: label }
+      });
+      
+      if (error) {
+        console.error('Error fetching quote:', error);
+        setMotivationalQuote('Every moment is a fresh beginning.');
+      } else {
+        setMotivationalQuote(data.quote || 'Every moment is a fresh beginning.');
+      }
+    } catch (error) {
+      console.error('Error fetching motivational quote:', error);
+      setMotivationalQuote('Every moment is a fresh beginning.');
+    }
+  };
+
   if (compact) {
     return (
       <Card className="bg-white/80 backdrop-blur-sm">
@@ -167,21 +186,35 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {moods.map((mood) => (
               <Button
                 key={mood.emoji}
                 variant={selectedEmoji === mood.emoji ? "default" : "outline"}
-                className={`h-16 flex-col gap-1 ${
-                  selectedEmoji === mood.emoji ? 'bg-love-heart text-white' : 'hover:bg-love-coral/20'
+                className={`h-20 flex-col gap-2 ${
+                  selectedEmoji === mood.emoji 
+                    ? 'bg-love-heart text-white hover:bg-love-heart/90' 
+                    : 'hover:bg-love-coral/20 hover:text-foreground border-border'
                 }`}
-                onClick={() => setSelectedEmoji(mood.emoji)}
+                onClick={() => {
+                  setSelectedEmoji(mood.emoji);
+                  fetchMotivationalQuote(mood.emoji, mood.label);
+                }}
               >
-                <span className="text-2xl">{mood.emoji}</span>
-                <span className="text-xs">{mood.label}</span>
+                <span className="text-3xl">{mood.emoji}</span>
+                <span className="text-sm font-medium">{mood.label}</span>
               </Button>
             ))}
           </div>
+          
+          {/* Motivational Quote */}
+          {selectedEmoji && motivationalQuote && (
+            <div className="p-4 bg-gradient-to-r from-love-coral/10 to-love-heart/10 rounded-lg border border-love-coral/20">
+              <p className="text-center text-love-deep font-medium italic">
+                "{motivationalQuote}"
+              </p>
+            </div>
+          )}
           
           {selectedEmoji && (
             <div className="space-y-3">
