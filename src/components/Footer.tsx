@@ -9,11 +9,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex flex-col items-center lg:items-start mb-6">
-              <div className="rounded-full p-2 mb-3">
+              <div className="rounded-full p-2 mb-3 bg-white/10 backdrop-blur-sm">
                 <img 
                   src="/src/assets/logo.png" 
                   alt="Love Beyond Borders Logo" 
-                  className="w-16 h-16 object-contain filter brightness-0 invert"
+                  className="w-16 h-16 object-contain"
                 />
               </div>
               <div className="text-center lg:text-left">
