@@ -198,8 +198,8 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
       <CardContent>
         <Tabs defaultValue="goals" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="goals">Goal Ideas</TabsTrigger>
-            <TabsTrigger value="tasks">Task Ideas</TabsTrigger>
+            <TabsTrigger value="goals" data-tabs-trigger="goals">Goal Ideas</TabsTrigger>
+            <TabsTrigger value="tasks" data-tabs-trigger="tasks">Task Ideas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="goals" className="space-y-4">

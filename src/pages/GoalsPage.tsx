@@ -138,6 +138,18 @@ export default function GoalsPage() {
     }
   };
 
+  const scrollToAIRecommendations = () => {
+    const element = document.getElementById('ai-recommendations');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      // Switch to tasks tab
+      const taskTab = element.querySelector('[data-tabs-trigger="tasks"]') as HTMLButtonElement;
+      if (taskTab) {
+        taskTab.click();
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -171,20 +183,41 @@ export default function GoalsPage() {
         {/* Current Goals Section */}
         {goals.length > 0 && (
           <div>
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Current Goals</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Current Goals
+            </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {goals.map(goal => (
                 <Card key={goal.id} className="border-muted">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">{goal.description}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {goal.target_date && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        Target: {new Date(goal.target_date).toLocaleDateString()}
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
+                        {goal.target_date && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                            <Calendar className="h-4 w-4" />
+                            Target: {new Date(goal.target_date).toLocaleDateString()}
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <Badge variant="secondary">Active Goal</Badge>
+                          {goal.target_date && (
+                            <Badge variant="outline">
+                              {new Date(goal.target_date) > new Date() ? 'Upcoming' : 'Overdue'}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                    )}
+                      <Button 
+                        onClick={() => scrollToAIRecommendations()}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Tasks
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -193,12 +226,14 @@ export default function GoalsPage() {
         )}
 
         {/* AI Recommendations Section */}
-        <AIRecommendations
-          onGoalCreated={fetchData}
-          onTaskCreated={fetchData}
-          existingGoals={goals}
-          existingTasks={tasks}
-        />
+        <div id="ai-recommendations">
+          <AIRecommendations
+            onGoalCreated={fetchData}
+            onTaskCreated={fetchData}
+            existingGoals={goals}
+            existingTasks={tasks}
+          />
+        </div>
 
         {/* Tasks Kanban Board Section */}
         <div>
