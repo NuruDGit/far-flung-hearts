@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Calendar, User } from 'lucide-react';
+import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 import { CreateGoalDialog } from '@/components/goals/CreateGoalDialog';
+import { EditGoalDialog } from '@/components/goals/EditGoalDialog';
 import { CreateTaskDialog } from '@/components/goals/CreateTaskDialog';
 import { AIRecommendations } from '@/components/goals/AIRecommendations';
 import AppNavigation from '@/components/AppNavigation';
@@ -33,6 +36,10 @@ export default function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const [showCreateGoal, setShowCreateGoal] = useState(false);
   const [showCreateTask, setShowCreateTask] = useState(false);
+  const [showEditGoal, setShowEditGoal] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
   const { toast } = useToast();
 
   const columns = {
@@ -150,6 +157,46 @@ export default function GoalsPage() {
     }
   };
 
+  const handleEditGoal = (goal: Goal) => {
+    setSelectedGoal(goal);
+    setShowEditGoal(true);
+  };
+
+  const handleDeleteGoal = (goal: Goal) => {
+    setGoalToDelete(goal);
+    setShowDeleteAlert(true);
+  };
+
+  const confirmDeleteGoal = async () => {
+    if (!goalToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from('goalboard')
+        .delete()
+        .eq('id', goalToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Goal deleted",
+        description: "Your goal has been deleted successfully."
+      });
+
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete goal. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setShowDeleteAlert(false);
+      setGoalToDelete(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -211,14 +258,36 @@ export default function GoalsPage() {
                           )}
                         </div>
                       </div>
-                      <Button 
-                        onClick={() => scrollToAIRecommendations()}
-                        size="sm"
-                        variant="outline"
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Tasks
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          onClick={() => scrollToAIRecommendations()}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          Tasks
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="sm" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditGoal(goal)}>
+                              <Edit2 className="h-4 w-4 mr-2" />
+                              Edit Goal
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteGoal(goal)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Goal
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -302,11 +371,39 @@ export default function GoalsPage() {
           onGoalCreated={fetchData}
         />
 
+        <EditGoalDialog
+          open={showEditGoal}
+          onOpenChange={setShowEditGoal}
+          onGoalUpdated={fetchData}
+          goal={selectedGoal}
+        />
+
         <CreateTaskDialog
           open={showCreateTask}
           onOpenChange={setShowCreateTask}
           onTaskCreated={fetchData}
         />
+
+        {/* Delete Confirmation Alert */}
+        <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Goal</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this goal? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmDeleteGoal}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );
