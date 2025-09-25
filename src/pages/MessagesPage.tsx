@@ -275,7 +275,7 @@ const MessagesPage = () => {
         callDuration={callState.callDuration}
       />
 
-      <div className="max-w-4xl mx-auto h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col">
+      <div className="max-w-4xl mx-auto h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] pb-20 lg:pb-0 flex flex-col">
         {/* Chat Header */}
         <div className="border-b border-border bg-background/95 backdrop-blur-sm p-4">
           <div className="flex items-center justify-between">
