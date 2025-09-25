@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Upload, Camera, Video, Heart, Calendar, Download, Trash2 } from 'lucide-react';
+import { Upload, Camera, Video, Heart, Calendar, Download, Trash2, Archive } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
@@ -273,7 +273,7 @@ const MemoryVault = () => {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <Heart className="mx-auto mb-2 text-pink-500" size={20} />
+              <Archive className="mx-auto mb-2 text-love-heart" size={20} />
               <p className="text-sm text-muted-foreground">Total</p>
               <p className="font-semibold">{memories.length}</p>
             </CardContent>
