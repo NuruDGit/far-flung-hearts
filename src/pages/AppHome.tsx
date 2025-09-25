@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2 } from 'lucide-react';
@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 
 const AppHome = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [pair, setPair] = useState<any>(null);
   const [partner, setPartner] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -362,7 +363,7 @@ const AppHome = () => {
                     {pair ? "12 photos, 3 videos" : "Your shared memories will appear here"}
                   </p>
                 </div>
-                 <Button size="sm" variant="outline" disabled={!pair} onClick={() => window.location.href = '/memory-vault'}>
+                 <Button size="sm" variant="outline" disabled={!pair} onClick={() => navigate('/memory-vault')}>
                    {pair ? "View" : "Preview"}
                  </Button>
               </div>
