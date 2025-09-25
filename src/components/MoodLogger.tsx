@@ -6,6 +6,7 @@ import { Heart, Calendar } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface MoodLoggerProps {
   compact?: boolean;
@@ -14,6 +15,7 @@ interface MoodLoggerProps {
 
 const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [selectedEmoji, setSelectedEmoji] = useState('');
   const [notes, setNotes] = useState('');
   const [todaysMood, setTodaysMood] = useState<any>(null);
@@ -146,7 +148,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
                 )}
               </div>
             </div>
-            <Button size="sm" variant="love" onClick={() => window.location.href = '/app/mood'}>
+            <Button size="sm" variant="love" onClick={() => navigate('/app/mood')}>
               {todaysMood ? 'Edit' : 'Log'}
             </Button>
           </div>
