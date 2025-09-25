@@ -76,7 +76,7 @@ export const MessageInput = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="p-1 h-6 w-6 text-muted-foreground hover:text-foreground"
+                  className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
                 >
                   <Smile size={14} />
                 </Button>
@@ -101,7 +101,7 @@ export const MessageInput = ({
             <Button
               variant="ghost"
               size="sm"
-              className="p-1 h-6 w-6 text-muted-foreground hover:text-foreground"
+              className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
               title="Attach file (coming soon)"
             >
               <Paperclip size={14} />
