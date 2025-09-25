@@ -37,7 +37,7 @@ const StatsSection = () => {
             Bringing the World Together
           </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            Join millions of couples who have found their perfect match across continents
+            Join millions of couples strengthening their long-distance relationships across continents
           </p>
         </div>
 
