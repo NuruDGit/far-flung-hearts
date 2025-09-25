@@ -72,13 +72,15 @@ serve(async (req) => {
             content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Return only the quote text, no quotation marks or extra formatting.`
           }
         ],
-        temperature: 0.8,
+        temperature: 0.2,
         top_p: 0.9,
         max_tokens: 50,
         return_images: false,
         return_related_questions: false,
+        search_domain_filter: [],
+        search_recency_filter: 'month',
         frequency_penalty: 1,
-        presence_penalty: 0.5
+        presence_penalty: 0
       }),
     });
 

@@ -100,15 +100,17 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
         if (error) throw error;
         toast.success('Mood updated!');
       } else {
-        // Create new mood log
+        // Use upsert to handle potential duplicates
         const { error } = await supabase
           .from('mood_logs')
-          .insert({
+          .upsert({
             user_id: user.id,
             pair_id: pairId || null,
             emoji: selectedEmoji,
             notes,
             date: today
+          }, {
+            onConflict: 'user_id,date'
           });
         
         if (error) throw error;
