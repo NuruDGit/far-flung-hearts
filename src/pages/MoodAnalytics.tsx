@@ -227,9 +227,9 @@ const MoodAnalytics = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Avatar className="w-5 h-5">
+                    <Avatar className="w-8 h-8 ring-2 ring-love-coral ring-offset-2">
                       <AvatarImage src={userProfile?.avatar_url} />
-                      <AvatarFallback className="text-xs bg-love-heart text-white">
+                      <AvatarFallback className="text-sm bg-love-heart text-white font-medium">
                         {userProfile?.display_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -269,7 +269,12 @@ const MoodAnalytics = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Users2 className="text-love-coral" size={20} />
+                      <Avatar className="w-8 h-8 ring-2 ring-love-coral ring-offset-2">
+                        <AvatarImage src={partnerProfile?.avatar_url} />
+                        <AvatarFallback className="text-sm bg-love-heart text-white font-medium">
+                          {partnerProfile?.display_name?.charAt(0) || 'P'}
+                        </AvatarFallback>
+                      </Avatar>
                       Partner's Recent Moods
                     </CardTitle>
                   </CardHeader>
