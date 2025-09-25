@@ -20,7 +20,7 @@ const AppNavigation = () => {
   return (
     <>
       {/* Desktop Navigation - Top Bar */}
-      <div className="hidden md:block w-full bg-white/80 backdrop-blur-sm border-b border-love-coral/20 sticky top-0 z-40">
+      <div className="hidden lg:block w-full bg-white/80 backdrop-blur-sm border-b border-love-coral/20 sticky top-0 z-40">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
@@ -52,8 +52,26 @@ const AppNavigation = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation - Bottom Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+      {/* Tablet/Mobile Top Logo Bar */}
+      <div className="lg:hidden w-full bg-white/80 backdrop-blur-sm border-b border-love-coral/20 sticky top-0 z-40">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center h-16">
+            <div className="flex items-center gap-2">
+              <div className="rounded-full p-1">
+                <img 
+                  src="/src/assets/logo.png" 
+                  alt="Love Beyond Borders Logo" 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+              <span className="font-bold text-love-deep">Love Beyond Borders</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tablet/Mobile Navigation - Bottom Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50">
         <div className="bg-white/95 backdrop-blur-sm border-t border-love-coral/20">
           <div className="flex items-center justify-around py-2">
             {navItems.map((item) => (
@@ -72,8 +90,8 @@ const AppNavigation = () => {
         </div>
       </div>
 
-      {/* Mobile spacing for bottom navigation */}
-      <div className="md:hidden h-20"></div>
+      {/* Tablet/Mobile spacing for bottom navigation */}
+      <div className="lg:hidden h-20"></div>
     </>
   );
 };
