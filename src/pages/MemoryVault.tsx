@@ -280,7 +280,7 @@ const MemoryVault = () => {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <Calendar className="mx-auto mb-2 text-blue-500" size={20} />
+              <Calendar className="mx-auto mb-2 text-love-coral" size={20} />
               <p className="text-sm text-muted-foreground">This Month</p>
               <p className="font-semibold">
                 {memories.filter(m => {
