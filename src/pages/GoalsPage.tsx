@@ -157,6 +157,70 @@ export default function GoalsPage() {
     }
   };
 
+  const getGoalStatus = (goal: Goal) => {
+    if (!goal.target_date) return 'no-date';
+    
+    const targetDate = new Date(goal.target_date);
+    const today = new Date();
+    const diffTime = targetDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'overdue';
+    if (diffDays <= 7) return 'due-soon';
+    if (diffDays <= 30) return 'upcoming';
+    return 'on-track';
+  };
+
+  const getGoalStatusColors = (status: string) => {
+    switch (status) {
+      case 'overdue':
+        return {
+          border: 'border-destructive',
+          background: 'bg-destructive/5',
+          badge: 'destructive'
+        };
+      case 'due-soon':
+        return {
+          border: 'border-orange-500',
+          background: 'bg-orange-50 dark:bg-orange-950/20',
+          badge: 'default'
+        };
+      case 'upcoming':
+        return {
+          border: 'border-yellow-500',
+          background: 'bg-yellow-50 dark:bg-yellow-950/20',
+          badge: 'secondary'
+        };
+      case 'on-track':
+        return {
+          border: 'border-green-500',
+          background: 'bg-green-50 dark:bg-green-950/20',
+          badge: 'secondary'
+        };
+      default:
+        return {
+          border: 'border-muted',
+          background: 'bg-card',
+          badge: 'outline'
+        };
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'overdue':
+        return 'Overdue';
+      case 'due-soon':
+        return 'Due Soon';
+      case 'upcoming':
+        return 'Upcoming';
+      case 'on-track':
+        return 'On Track';
+      default:
+        return 'No Target Date';
+    }
+  };
+
   const handleEditGoal = (goal: Goal) => {
     setSelectedGoal(goal);
     setShowEditGoal(true);
@@ -235,29 +299,31 @@ export default function GoalsPage() {
               Current Goals
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {goals.map(goal => (
-                <Card key={goal.id} className="border-muted">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                          <Calendar className="h-4 w-4" />
-                          {goal.target_date ? (
-                            <>Target: {new Date(goal.target_date).toLocaleDateString()}</>
-                          ) : (
-                            <>No target date set</>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge variant="secondary">Active Goal</Badge>
-                          {goal.target_date && (
-                            <Badge variant="outline">
-                              {new Date(goal.target_date) > new Date() ? 'Upcoming' : 'Overdue'}
+              {goals.map(goal => {
+                const status = getGoalStatus(goal);
+                const colors = getGoalStatusColors(status);
+                
+                return (
+                  <Card key={goal.id} className={`${colors.border} ${colors.background}`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                            <Calendar className="h-4 w-4" />
+                            {goal.target_date ? (
+                              <>Target: {new Date(goal.target_date).toLocaleDateString()}</>
+                            ) : (
+                              <>No target date set</>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <Badge variant="secondary">Active Goal</Badge>
+                            <Badge variant={colors.badge as any}>
+                              {getStatusLabel(status)}
                             </Badge>
-                          )}
+                          </div>
                         </div>
-                      </div>
                       <div className="flex items-center gap-2">
                         <Button 
                           onClick={() => scrollToAIRecommendations()}
@@ -291,7 +357,8 @@ export default function GoalsPage() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
