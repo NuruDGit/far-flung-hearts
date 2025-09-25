@@ -317,43 +317,46 @@ export default function GoalsPage() {
                               <>No target date set</>
                             )}
                           </div>
-                          <div className="flex gap-2">
-                            <Badge variant="secondary">Active Goal</Badge>
-                            <Badge variant={colors.badge as any}>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="secondary" className="text-xs px-2 py-1">
+                              Active Goal
+                            </Badge>
+                            <Badge variant={colors.badge as any} className="text-xs px-2 py-1">
                               {getStatusLabel(status)}
                             </Badge>
                           </div>
                         </div>
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          onClick={() => scrollToAIRecommendations()}
-                          size="sm"
-                          variant="outline"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Tasks
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditGoal(goal)}>
-                              <Edit2 className="h-4 w-4 mr-2" />
-                              Edit Goal
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleDeleteGoal(goal)}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Goal
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                        <div className="flex items-center gap-1">
+                          <Button 
+                            onClick={() => scrollToAIRecommendations()}
+                            size="sm"
+                            variant="outline"
+                            className="h-8 px-3 text-xs"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Tasks
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleEditGoal(goal)}>
+                                <Edit2 className="h-4 w-4 mr-2" />
+                                Edit Goal
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleDeleteGoal(goal)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete Goal
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                     </div>
                   </CardContent>
                 </Card>
