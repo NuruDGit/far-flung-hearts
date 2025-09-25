@@ -216,7 +216,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
             </div>
           )}
           
-          {selectedEmoji && (
+          {selectedEmoji && !todaysMood && (
             <div className="space-y-3">
               <Textarea
                 placeholder="Any notes about your mood today? (optional)"
@@ -231,7 +231,19 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
                 className="w-full"
                 variant="love"
               >
-                {loading ? 'Saving...' : (todaysMood ? 'Update Mood' : 'Save Mood')}
+                {loading ? 'Saving...' : 'Save Mood'}
+              </Button>
+            </div>
+          )}
+
+          {todaysMood && (
+            <div className="text-center">
+              <Button 
+                onClick={() => setTodaysMood(null)} 
+                variant="outline"
+                className="w-full"
+              >
+                Edit Today's Mood
               </Button>
             </div>
           )}
