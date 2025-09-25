@@ -61,10 +61,10 @@ const AppNavigation = () => {
                 <img 
                   src="/src/assets/logo.png" 
                   alt="Love Beyond Borders Logo" 
-                  className="w-8 h-8 object-contain"
+                  className="w-10 h-10 md:w-12 md:h-12 object-contain"
                 />
               </div>
-              <span className="font-bold text-love-deep">Love Beyond Borders</span>
+              <span className="font-bold text-love-deep text-lg md:text-xl">Love Beyond Borders</span>
             </div>
           </div>
         </div>
