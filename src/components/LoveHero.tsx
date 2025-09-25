@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Heart, Calendar, MessageCircle, Gift } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 
 const LoveHero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background with gradient overlay */}
@@ -30,7 +33,12 @@ const LoveHero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button variant="love" size="lg" className="text-lg px-8 py-6">
+              <Button 
+                variant="love" 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => navigate('/auth')}
+              >
                 Start Free Today
                 <Heart className="ml-2" size={20} />
               </Button>
