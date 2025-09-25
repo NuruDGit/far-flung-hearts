@@ -8,8 +8,9 @@ import { CallNotification } from '@/components/messages/CallNotification';
 import { useVideoCall } from '@/hooks/useVideoCall';
 import AppNavigation from '@/components/AppNavigation';
 import { Card } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Phone, Video, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Phone, Video, MoreVertical, UserX, Bell, BellOff, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -46,6 +47,8 @@ const MessagesPage = () => {
   const [pair, setPair] = useState<Pair | null>(null);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [isOnline, setIsOnline] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   
   // Video call functionality
   const {
@@ -211,6 +214,29 @@ const MessagesPage = () => {
     }
   };
 
+  const handleBlockUser = () => {
+    setIsBlocked(!isBlocked);
+    toast({
+      title: isBlocked ? "User unblocked" : "User blocked",
+      description: isBlocked ? "You can now receive messages from this user" : "You will no longer receive messages from this user"
+    });
+  };
+
+  const handleToggleMute = () => {
+    setIsMuted(!isMuted);
+    toast({
+      title: isMuted ? "Notifications enabled" : "Notifications muted", 
+      description: isMuted ? "You'll now receive notifications" : "You won't receive notifications for this chat"
+    });
+  };
+
+  const handleViewProfile = () => {
+    toast({
+      title: "View Profile",
+      description: "Profile view coming soon"
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -293,8 +319,8 @@ const MessagesPage = () => {
                 </AvatarFallback>
               </Avatar>
               
-              <div>
-                <h1 className="font-semibold text-lg">
+              <div className="min-w-0 flex-1">
+                <h1 className="font-semibold text-base truncate">
                   {partner?.display_name || 'Partner'}
                 </h1>
                 <div className="flex items-center gap-2">
@@ -304,32 +330,75 @@ const MessagesPage = () => {
                   >
                     {isOnline ? 'Online' : 'Offline'}
                   </Badge>
+                  {isMuted && (
+                    <Badge variant="outline" className="text-xs">
+                      Muted
+                    </Badge>
+                  )}
+                  {isBlocked && (
+                    <Badge variant="destructive" className="text-xs">
+                      Blocked
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={startVoiceCall}
-                className="p-2"
+                className="p-2 h-8 w-8"
                 title="Start voice call"
+                disabled={isBlocked}
               >
-                <Phone size={16} />
+                <Phone size={14} />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={startVideoCall}
-                className="p-2"
+                className="p-2 h-8 w-8"
                 title="Start video call"
+                disabled={isBlocked}
               >
-                <Video size={16} />
+                <Video size={14} />
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <MoreVertical size={16} />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="p-2 h-8 w-8">
+                    <MoreVertical size={14} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleViewProfile}>
+                    <User className="mr-2 h-4 w-4" />
+                    View Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleToggleMute}>
+                    {isMuted ? (
+                      <>
+                        <Bell className="mr-2 h-4 w-4" />
+                        Unmute Notifications
+                      </>
+                    ) : (
+                      <>
+                        <BellOff className="mr-2 h-4 w-4" />
+                        Mute Notifications
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleBlockUser}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <UserX className="mr-2 h-4 w-4" />
+                    {isBlocked ? 'Unblock User' : 'Block User'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
