@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -181,7 +181,7 @@ const AppHome = () => {
                   <p className="font-semibold">{new Date().toLocaleTimeString()}</p>
                 </div>
                 <div>
-                  <Heart className="h-5 w-5 mx-auto mb-1 text-love-heart" />
+                  <Flame className="h-5 w-5 mx-auto mb-1 text-orange-500" />
                   <p className="text-sm text-muted-foreground">Streak</p>
                   <p className="font-semibold">7 days</p>
                 </div>
