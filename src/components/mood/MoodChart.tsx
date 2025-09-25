@@ -52,9 +52,9 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
   };
 
   const moodColors = {
-    '😄': 'hsl(var(--love-heart))', // Excited - love heart
-    '😊': 'hsl(var(--love-coral))', // Happy - love coral
-    '🥰': 'hsl(var(--love-deep))', // Loving - love deep
+    '😄': 'hsl(var(--heart-red))', // Excited - heart red
+    '😊': 'hsl(var(--coral-pink))', // Happy - coral pink
+    '🥰': 'hsl(var(--deep-pink))', // Loving - deep pink
     '😐': 'hsl(var(--muted))', // Neutral - muted
     '😔': 'hsl(var(--destructive))', // Sad - destructive
     '😢': 'hsl(var(--destructive) / 0.8)', // Crying - destructive faded
@@ -84,8 +84,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
         {
           label: 'Mood Score',
           data: sortedData.map(d => moodToScore[d.emoji as keyof typeof moodToScore] || 3),
-          borderColor: 'hsl(var(--love-heart))',
-          backgroundColor: 'hsl(var(--love-heart) / 0.1)',
+          borderColor: 'hsl(var(--heart-red))',
+          backgroundColor: 'hsl(var(--heart-red) / 0.1)',
           tension: 0.4,
           pointBackgroundColor: sortedData.map(d => moodColors[d.emoji as keyof typeof moodColors] || 'hsl(var(--muted))'),
           pointBorderColor: 'hsl(var(--background))',
@@ -142,7 +142,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
       legend: {
         position: 'top' as const,
         labels: {
-          color: 'hsl(var(--love-deep))',
+          color: 'hsl(var(--deep-pink))',
           font: {
             size: 12,
             weight: 'normal' as const,
@@ -152,7 +152,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
       title: {
         display: true,
         text: title,
-        color: 'hsl(var(--love-deep))',
+        color: 'hsl(var(--deep-pink))',
         font: {
           size: 16,
           weight: 'bold' as const,
@@ -160,27 +160,27 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
       },
       tooltip: {
         backgroundColor: 'hsl(var(--card))',
-        titleColor: 'hsl(var(--love-deep))',
-        bodyColor: 'hsl(var(--love-deep))',
-        borderColor: 'hsl(var(--love-coral))',
+        titleColor: 'hsl(var(--deep-pink))',
+        bodyColor: 'hsl(var(--deep-pink))',
+        borderColor: 'hsl(var(--coral-pink))',
         borderWidth: 2,
       }
     },
     scales: type !== 'doughnut' ? {
       x: {
         ticks: {
-          color: 'hsl(var(--love-coral))',
+          color: 'hsl(var(--coral-pink))',
         },
         grid: {
-          color: 'hsl(var(--love-coral) / 0.2)',
+          color: 'hsl(var(--coral-pink) / 0.2)',
         }
       },
       y: {
         ticks: {
-          color: 'hsl(var(--love-coral))',
+          color: 'hsl(var(--coral-pink))',
         },
         grid: {
-          color: 'hsl(var(--love-coral) / 0.2)',
+          color: 'hsl(var(--coral-pink) / 0.2)',
         },
         ...(type === 'line' && {
           min: 1,
@@ -191,7 +191,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
               const labels = { 1: '😢', 2: '😔', 3: '😐', 4: '😊', 5: '😄' };
               return labels[value as keyof typeof labels] || value;
             },
-            color: 'hsl(var(--love-coral))',
+            color: 'hsl(var(--coral-pink))',
           }
         })
       }
@@ -205,7 +205,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ data, type, title, period }) => {
   return (
     <div className="space-y-4">
       {/* Legend */}
-      <div className="bg-gradient-to-r from-love-coral/5 to-love-heart/5 rounded-lg p-4 border border-love-coral/20">
+      <div className="bg-gradient-to-r from-coral-pink/5 to-heart-red/5 rounded-lg p-4 border border-coral-pink/20">
         <h4 className="text-sm font-medium mb-3 text-muted-foreground">Chart Legend</h4>
         <div className="grid grid-cols-3 gap-2 text-xs">
           {Object.entries(moodLabels).map(([emoji, label]) => (
