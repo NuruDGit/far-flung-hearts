@@ -67,8 +67,12 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="love-gradient rounded-full p-3">
-              <Heart className="text-white" size={32} />
+            <div className="rounded-full p-2">
+              <img 
+                src="/src/assets/logo.png" 
+                alt="Love Beyond Borders Logo" 
+                className="w-12 h-12 object-contain"
+              />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
