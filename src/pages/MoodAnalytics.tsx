@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,6 +31,7 @@ interface Pair {
 interface Profile {
   id: string;
   display_name?: string;
+  avatar_url?: string;
 }
 
 const MoodAnalytics = () => {
@@ -40,6 +42,7 @@ const MoodAnalytics = () => {
   const [todayPartnerMood, setTodayPartnerMood] = useState<MoodData | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -99,6 +102,15 @@ const MoodAnalytics = () => {
         
         setTodayPartnerMood(todayMood);
       }
+
+      // Get user's own profile
+      const { data: userProfileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      setUserProfile(userProfileData);
 
       // Get mood data for selected period
       const { start, end } = getDateRange();
@@ -215,7 +227,12 @@ const MoodAnalytics = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Calendar className="text-love-heart" size={20} />
+                    <Avatar className="w-5 h-5">
+                      <AvatarImage src={userProfile?.avatar_url} />
+                      <AvatarFallback className="text-xs bg-love-heart text-white">
+                        {userProfile?.display_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
                     Your Recent Moods
                   </CardTitle>
                 </CardHeader>
