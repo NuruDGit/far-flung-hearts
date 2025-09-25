@@ -359,9 +359,9 @@ const AppHome = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold">Memory Vault</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {pair ? "12 photos, 3 videos" : "Your shared memories will appear here"}
-                  </p>
+                   <p className="text-sm text-muted-foreground">
+                     {pair ? "Your shared photos and videos" : "Your shared memories will appear here"}
+                   </p>
                 </div>
                  <Button size="sm" variant="outline" disabled={!pair} onClick={() => navigate('/memory-vault')}>
                    {pair ? "View" : "Preview"}

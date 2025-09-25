@@ -95,11 +95,17 @@ const MemoryVault = () => {
   }
 
   const handleFileUpload = async (files: FileList) => {
-    if (!files.length || !pair) return;
+    if (!files.length || !pair) {
+      console.log('No files or no pair:', { filesLength: files.length, pair });
+      return;
+    }
 
+    console.log('Starting upload for', files.length, 'files');
     setUploading(true);
     try {
       for (const file of Array.from(files)) {
+        console.log('Processing file:', file.name, 'Size:', file.size);
+        
         // File size limit: 20MB
         if (file.size > 20 * 1024 * 1024) {
           toast.error(`File ${file.name} is too large. Maximum size is 20MB.`);
@@ -111,18 +117,25 @@ const MemoryVault = () => {
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `${user.id}/${fileName}`;
 
+        console.log('Uploading to path:', filePath);
+
         const { error: uploadError } = await supabase.storage
           .from('media')
           .upload(filePath, file);
 
         if (uploadError) {
-          toast.error(`Failed to upload ${file.name}`);
+          console.error('Storage upload error:', uploadError);
+          toast.error(`Failed to upload ${file.name}: ${uploadError.message}`);
           continue;
         }
+
+        console.log('File uploaded successfully, getting public URL...');
 
         const { data } = supabase.storage
           .from('media')
           .getPublicUrl(filePath);
+
+        console.log('Public URL obtained:', data.publicUrl);
 
         // Save as message
         const { error: messageError } = await supabase
@@ -141,14 +154,17 @@ const MemoryVault = () => {
           });
 
         if (messageError) {
-          toast.error(`Failed to save ${file.name}`);
+          console.error('Message insert error:', messageError);
+          toast.error(`Failed to save ${file.name}: ${messageError.message}`);
         } else {
+          console.log('Message saved successfully');
           toast.success(`${file.name} uploaded successfully!`);
         }
       }
 
       // Refresh memories
-      const { data: messagesData } = await supabase
+      console.log('Refreshing memories list...');
+      const { data: messagesData, error: fetchError } = await supabase
         .from('messages')
         .select('*')
         .eq('pair_id', pair.id)
@@ -156,11 +172,16 @@ const MemoryVault = () => {
         .not('media_url', 'is', null)
         .order('created_at', { ascending: false });
 
-      setMemories(messagesData || []);
+      if (fetchError) {
+        console.error('Error fetching updated memories:', fetchError);
+      } else {
+        setMemories(messagesData || []);
+        console.log('Memories updated, count:', messagesData?.length || 0);
+      }
 
     } catch (error) {
-      console.error('Error uploading files:', error);
-      toast.error('Failed to upload files');
+      console.error('Unexpected error during upload:', error);
+      toast.error('An unexpected error occurred during upload');
     } finally {
       setUploading(false);
     }
