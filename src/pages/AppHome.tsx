@@ -107,7 +107,7 @@ const AppHome = () => {
         .insert({
           pair_id: pair.id,
           sender_id: user.id,
-          type: 'love_tap',
+          type: 'text',
           body: { message: '💖 Sent you some love!', type: 'love_tap' }
         });
 
@@ -129,7 +129,7 @@ const AppHome = () => {
         .insert({
           pair_id: pair.id,
           sender_id: user.id,
-          type: 'ping',
+          type: 'text',
           body: { message: '👋 Thinking of you!', type: 'ping' }
         });
 
