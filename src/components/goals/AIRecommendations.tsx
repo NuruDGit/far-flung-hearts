@@ -26,9 +26,10 @@ interface AIRecommendationsProps {
   onTaskCreated: () => void;
   existingGoals: any[];
   existingTasks: any[];
+  defaultTab?: string;
 }
 
-export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals, existingTasks }: AIRecommendationsProps) {
+export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals, existingTasks, defaultTab = "goals" }: AIRecommendationsProps) {
   const [loading, setLoading] = useState(false);
   const [goalSuggestions, setGoalSuggestions] = useState<GoalSuggestion[]>([]);
   const [taskSuggestions, setTaskSuggestions] = useState<TaskSuggestion[]>([]);
@@ -196,7 +197,7 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="goals" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="goals" data-tabs-trigger="goals">Goal Ideas</TabsTrigger>
             <TabsTrigger value="tasks" data-tabs-trigger="tasks">Task Ideas</TabsTrigger>

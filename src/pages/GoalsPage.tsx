@@ -40,6 +40,7 @@ export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
+  const [aiRecommendationsTab, setAiRecommendationsTab] = useState("goals");
   const { toast } = useToast();
 
   const columns = {
@@ -146,15 +147,16 @@ export default function GoalsPage() {
   };
 
   const scrollToAIRecommendations = () => {
-    const element = document.getElementById('ai-recommendations');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      // Switch to tasks tab
-      const taskTab = element.querySelector('[data-tabs-trigger="tasks"]') as HTMLButtonElement;
-      if (taskTab) {
-        taskTab.click();
+    // Set the tab to tasks first
+    setAiRecommendationsTab("tasks");
+    
+    // Then scroll to the element
+    setTimeout(() => {
+      const element = document.getElementById('ai-recommendations');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
-    }
+    }, 100); // Small delay to ensure tab state is updated
   };
 
   const getGoalStatus = (goal: Goal) => {
@@ -373,6 +375,7 @@ export default function GoalsPage() {
             onTaskCreated={fetchData}
             existingGoals={goals}
             existingTasks={tasks}
+            defaultTab={aiRecommendationsTab}
           />
         </div>
 
