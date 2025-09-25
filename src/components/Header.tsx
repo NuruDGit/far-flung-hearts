@@ -11,19 +11,12 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="love-gradient rounded-full p-2 relative">
-              {/* Custom logo: Two hearts connected by a bridge/line */}
-              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                {/* Left heart */}
-                <path d="M4.5 12c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5c0 2.5-4.5 7.5-4.5 7.5S4.5 14.5 4.5 12z" opacity="0.9"/>
-                {/* Right heart */}
-                <path d="M15 12c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5c0 2.5-4.5 7.5-4.5 7.5S15 14.5 15 12z" opacity="0.9"/>
-                {/* Connecting bridge */}
-                <line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" strokeWidth="2" strokeDasharray="2,1" opacity="0.8"/>
-                {/* Small dots representing distance */}
-                <circle cx="11" cy="10" r="0.5" fill="currentColor" opacity="0.6"/>
-                <circle cx="13" cy="14" r="0.5" fill="currentColor" opacity="0.6"/>
-              </svg>
+            <div className="rounded-full p-1">
+              <img 
+                src="/src/assets/logo.png" 
+                alt="Love Beyond Borders Logo" 
+                className="w-8 h-8 object-contain"
+              />
             </div>
             <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
               Love Beyond Borders

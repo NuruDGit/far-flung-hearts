@@ -9,8 +9,12 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-white/20 rounded-full p-2">
-                <Heart className="text-white" size={24} />
+              <div className="rounded-full p-1">
+                <img 
+                  src="/src/assets/logo.png" 
+                  alt="Love Beyond Borders Logo" 
+                  className="w-10 h-10 object-contain"
+                />
               </div>
               <span className="text-xl font-bold">Love Beyond Borders</span>
             </div>

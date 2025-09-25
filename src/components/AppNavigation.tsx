@@ -24,8 +24,12 @@ const AppNavigation = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <div className="love-gradient rounded-full p-2">
-                <Heart className="text-white" size={20} />
+              <div className="rounded-full p-1">
+                <img 
+                  src="/src/assets/logo.png" 
+                  alt="Love Beyond Borders Logo" 
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <span className="font-bold text-love-deep">Love Beyond Borders</span>
             </div>
