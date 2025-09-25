@@ -17,9 +17,7 @@ const Footer = () => {
                 />
               </div>
               <div className="text-center lg:text-left">
-                <div className="text-2xl font-bold leading-tight">Love</div>
-                <div className="text-2xl font-bold leading-tight">Beyond</div>
-                <div className="text-2xl font-bold leading-tight">Borders</div>
+                <span className="text-2xl font-bold">Love Beyond Borders</span>
               </div>
             </div>
             <p className="text-white/80 mb-6 leading-relaxed">
