@@ -312,8 +312,18 @@ const MessagesPage = () => {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={startVoiceCall}
+                className="p-2"
+                title="Start voice call"
+              >
+                <Phone size={16} />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={startVideoCall}
                 className="p-2"
+                title="Start video call"
               >
                 <Video size={16} />
               </Button>
@@ -335,8 +345,6 @@ const MessagesPage = () => {
         {/* Message Input */}
         <MessageInput
           onSendMessage={sendMessage}
-          onStartVoiceCall={startVoiceCall}
-          onStartVideoCall={startVideoCall}
           disabled={sending}
           placeholder={`Message ${partner?.display_name || 'your partner'}...`}
         />

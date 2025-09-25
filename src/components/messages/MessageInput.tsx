@@ -1,13 +1,11 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Send, Smile, Paperclip, Phone, Video } from 'lucide-react';
+import { Send, Smile, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
-  onStartVoiceCall?: () => void;
-  onStartVideoCall?: () => void;
   disabled?: boolean;
   placeholder?: string;
 }
@@ -16,8 +14,6 @@ const EMOJIS = ['❤️', '😍', '🥰', '😘', '💕', '💖', '💗', '💓'
 
 export const MessageInput = ({
   onSendMessage,
-  onStartVoiceCall,
-  onStartVideoCall,
   disabled = false,
   placeholder = "Type your message..."
 }: MessageInputProps) => {
@@ -61,32 +57,6 @@ export const MessageInput = ({
   return (
     <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4">
       <div className="flex items-end gap-2 max-w-4xl mx-auto">
-        {/* Call buttons */}
-        <div className="flex gap-1 mb-2">
-          {onStartVoiceCall && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onStartVoiceCall}
-              className="p-2 h-8 w-8"
-              title="Start voice call"
-            >
-              <Phone size={14} />
-            </Button>
-          )}
-          {onStartVideoCall && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onStartVideoCall}
-              className="p-2 h-8 w-8"
-              title="Start video call"
-            >
-              <Video size={14} />
-            </Button>
-          )}
-        </div>
-
         <div className="flex-1 relative">
           <Textarea
             ref={textareaRef}
