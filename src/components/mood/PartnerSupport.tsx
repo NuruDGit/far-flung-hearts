@@ -69,7 +69,12 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
   };
 
   const sendSupportMessage = async (message: string, actionType: string) => {
-    if (!user || sending) return;
+    if (!user || sending) {
+      console.log('Cannot send support message:', { user: !!user, sending });
+      return;
+    }
+
+    console.log('Sending support message:', { message, actionType, pairId, partnerId });
 
     setSending(true);
     try {
@@ -80,7 +85,7 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
           pair_id: pairId,
           sender_id: user.id,
           body: { text: message, type: 'support' },
-          type: 'support'
+          type: 'text'
         });
 
       // Create notification
@@ -90,15 +95,19 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
           pair_id: pairId,
           sender_id: user.id,
           receiver_id: partnerId,
-          mood_log_id: partnerMood?.user_id,
+          mood_log_id: null, // We don't have the actual mood log ID
           notification_type: 'cheer_up',
           message: message,
           action_type: actionType
         });
 
-      if (messageError || notificationError) {
-        console.error('Error sending support:', messageError || notificationError);
-        toast.error('Failed to send support message');
+      if (messageError) {
+        console.error('Error sending support message:', messageError);
+        toast.error(`Failed to send support message: ${messageError.message}`);
+      } else if (notificationError) {
+        console.error('Error creating notification:', notificationError);
+        // Don't show error for notification - message was still sent
+        toast.success('Support message sent! 💕');
       } else {
         toast.success('Support message sent! 💕');
       }
@@ -166,22 +175,28 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
             Show you care
           </h4>
           <div className="grid gap-2">
-            {actions.map((action, index) => (
-              <Button
-                key={index}
-                variant={action.color as any}
-                className="justify-start text-left h-auto p-3"
-                onClick={() => sendSupportMessage(action.message, action.label.toLowerCase())}
-                disabled={sending}
-              >
+            {actions.map((action, index) => {
+              // Ensure valid button variant
+              const variant = action.color === 'love' ? 'default' : 
+                            action.color === 'secondary' ? 'secondary' : 'outline';
+              
+              return (
+                <Button
+                  key={index}
+                  variant={variant}
+                  className="justify-start text-left h-auto p-3"
+                  onClick={() => sendSupportMessage(action.message, action.label.toLowerCase())}
+                  disabled={sending}
+                >
                 <action.icon size={16} className="mr-2 flex-shrink-0" />
                 <div className="flex-1">
                   <div className="font-medium">{action.label}</div>
                   <div className="text-xs opacity-80 mt-1">{action.message}</div>
                 </div>
                 <Send size={14} className="ml-2 opacity-60" />
-              </Button>
-            ))}
+                </Button>
+              );
+            })}
           </div>
         </div>
 
