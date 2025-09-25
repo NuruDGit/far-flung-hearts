@@ -6,7 +6,7 @@ import { ProfileSetup } from '@/components/profile/ProfileSetup';
 import { DisconnectPairDialog } from '@/components/DisconnectPairDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Users, Heart } from 'lucide-react';
+import { ArrowLeft, Users, Heart, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -161,7 +161,7 @@ export const ProfilePage = () => {
           <Card className="bg-white/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5 text-love-heart" />
+                <User className="h-5 w-5 text-love-heart" />
                 Relationship Status
               </CardTitle>
             </CardHeader>

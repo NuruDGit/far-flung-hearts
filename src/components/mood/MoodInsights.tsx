@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Heart, Calendar, Star, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, Heart, Calendar, Star, Target, Crown, Users2 } from 'lucide-react';
 
 interface MoodData {
   emoji: string;
@@ -114,7 +114,7 @@ const MoodInsights: React.FC<MoodInsightsProps> = ({ data, partnerData, period }
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Heart className="text-love-coral" size={16} />
+            <Crown className="text-love-coral" size={16} />
             Most Common
           </CardTitle>
         </CardHeader>
@@ -177,7 +177,7 @@ const MoodInsights: React.FC<MoodInsightsProps> = ({ data, partnerData, period }
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Heart className="text-love-coral" size={16} />
+              <Users2 className="text-love-coral" size={16} />
               Partner Sync
             </CardTitle>
           </CardHeader>

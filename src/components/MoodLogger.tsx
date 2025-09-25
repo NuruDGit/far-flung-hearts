@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Heart, Calendar, BarChart3 } from 'lucide-react';
+import { Heart, Calendar, BarChart3, Smile, Users2 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -151,7 +151,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-love-heart/20 flex items-center justify-center">
-              <Heart className="text-love-heart" size={16} />
+              <Smile className="text-love-heart" size={16} />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold">Today's Mood</h3>
@@ -186,7 +186,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Heart className="text-love-heart" size={20} />
+            <Smile className="text-love-heart" size={20} />
             How are you feeling today?
           </CardTitle>
         </CardHeader>
@@ -260,7 +260,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="text-love-coral" size={20} />
+              <Users2 className="text-love-coral" size={20} />
               Your Partner's Mood
             </CardTitle>
           </CardHeader>

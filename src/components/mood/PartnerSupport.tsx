@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Smile, Zap, Coffee, Star, Send } from 'lucide-react';
+import { Heart, Smile, Zap, Coffee, Star, Send, Users, HandHeart } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -115,7 +115,7 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Heart className="text-love-coral" size={20} />
+            <Users className="text-love-coral" size={20} />
             Partner Support
           </CardTitle>
         </CardHeader>
@@ -136,7 +136,7 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Heart className="text-love-coral" size={20} />
+          <HandHeart className="text-love-coral" size={20} />
           Support {partnerName}
         </CardTitle>
       </CardHeader>

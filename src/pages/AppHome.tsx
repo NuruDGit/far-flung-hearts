@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, Activity, Users2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -266,7 +266,7 @@ const AppHome = () => {
                   <p className="font-semibold">--:--</p>
                 </div>
                 <div>
-                  <Heart className="h-5 w-5 mx-auto mb-1 text-love-heart" />
+                  <Flame className="h-5 w-5 mx-auto mb-1 text-love-heart" />
                   <p className="text-sm text-muted-foreground">Streak</p>
                   <p className="font-semibold">-- days</p>
                 </div>
@@ -307,7 +307,7 @@ const AppHome = () => {
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-love-coral/20 flex items-center justify-center">
-                  <Heart className="text-love-coral" size={16} />
+                  <Activity className="text-love-coral" size={16} />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold">Today's Question</h3>

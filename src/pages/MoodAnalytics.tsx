@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, TrendingUp, Heart, BarChart3, PieChart, Activity } from 'lucide-react';
+import { Calendar, TrendingUp, Heart, BarChart3, PieChart, Activity, Users2 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { subDays, subWeeks, subMonths, format } from 'date-fns';
@@ -252,7 +252,7 @@ const MoodAnalytics = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Heart className="text-love-coral" size={20} />
+                      <Users2 className="text-love-coral" size={20} />
                       Partner's Recent Moods
                     </CardTitle>
                   </CardHeader>
@@ -360,7 +360,7 @@ const MoodAnalytics = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Heart className="text-love-coral" size={20} />
+                    <Users2 className="text-love-coral" size={20} />
                     Partner Support
                   </CardTitle>
                 </CardHeader>
