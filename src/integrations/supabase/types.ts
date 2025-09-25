@@ -85,6 +85,36 @@ export type Database = {
           },
         ]
       }
+      daily_questions: {
+        Row: {
+          answered_at: string | null
+          answered_by: string | null
+          created_at: string
+          id: string
+          pair_id: string
+          question_date: string
+          question_text: string
+        }
+        Insert: {
+          answered_at?: string | null
+          answered_by?: string | null
+          created_at?: string
+          id?: string
+          pair_id: string
+          question_date?: string
+          question_text: string
+        }
+        Update: {
+          answered_at?: string | null
+          answered_by?: string | null
+          created_at?: string
+          id?: string
+          pair_id?: string
+          question_date?: string
+          question_text?: string
+        }
+        Relationships: []
+      }
       embeddings: {
         Row: {
           content: string
@@ -753,6 +783,16 @@ export type Database = {
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
+      }
+      get_or_create_daily_question: {
+        Args: { target_pair_id: string }
+        Returns: {
+          answered_at: string
+          answered_by: string
+          id: string
+          question_date: string
+          question_text: string
+        }[]
       }
       halfvec_avg: {
         Args: { "": number[] }
