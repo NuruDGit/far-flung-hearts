@@ -349,6 +349,54 @@ export type Database = {
           },
         ]
       }
+      mood_analytics: {
+        Row: {
+          created_at: string | null
+          dominant_mood: string | null
+          id: string
+          insights: Json | null
+          mood_counts: Json
+          mood_score: number | null
+          pair_id: string | null
+          period_end: string
+          period_start: string
+          period_type: string
+          streak_days: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dominant_mood?: string | null
+          id?: string
+          insights?: Json | null
+          mood_counts: Json
+          mood_score?: number | null
+          pair_id?: string | null
+          period_end: string
+          period_start: string
+          period_type: string
+          streak_days?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dominant_mood?: string | null
+          id?: string
+          insights?: Json | null
+          mood_counts?: Json
+          mood_score?: number | null
+          pair_id?: string | null
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          streak_days?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       mood_logs: {
         Row: {
           created_at: string
@@ -376,6 +424,45 @@ export type Database = {
           notes?: string | null
           pair_id?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      mood_notifications: {
+        Row: {
+          action_type: string | null
+          created_at: string | null
+          id: string
+          message: string | null
+          mood_log_id: string | null
+          notification_type: string
+          pair_id: string
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          action_type?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          mood_log_id?: string | null
+          notification_type: string
+          pair_id: string
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          action_type?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          mood_log_id?: string | null
+          notification_type?: string
+          pair_id?: string
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
         }
         Relationships: []
       }

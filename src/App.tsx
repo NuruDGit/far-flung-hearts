@@ -13,6 +13,7 @@ import MoodPage from "./pages/MoodPage";
 import AdvisorPage from "./pages/AdvisorPage";
 import GoalsPage from "./pages/GoalsPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import MoodAnalytics from "./pages/MoodAnalytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/app" element={<AppHome />} />
             <Route path="/app/messages" element={<MessagesPage />} />
             <Route path="/app/mood" element={<MoodPage />} />
+            <Route path="/app/mood/analytics" element={<MoodAnalytics />} />
             <Route path="/app/goals" element={<GoalsPage />} />
             <Route path="/app/profile" element={<ProfilePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

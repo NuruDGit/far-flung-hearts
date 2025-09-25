@@ -134,7 +134,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in goal-recommendations function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       success: false 
     }), {
       status: 500,

@@ -97,7 +97,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in motivational-quote function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       quote: 'Every moment is a fresh beginning.' // Fallback quote
     }), {
       status: 500,

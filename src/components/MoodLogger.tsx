@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Heart, Calendar } from 'lucide-react';
+import { Heart, Calendar, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -169,6 +169,9 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
             </div>
             <Button size="sm" variant="love" onClick={() => navigate('/app/mood')}>
               {todaysMood ? 'Edit' : 'Log'}
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => navigate('/app/mood/analytics')}>
+              <BarChart3 size={14} />
             </Button>
           </div>
         </CardContent>

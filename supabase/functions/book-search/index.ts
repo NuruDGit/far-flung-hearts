@@ -39,8 +39,8 @@ serve(async (req) => {
       authors: volumeInfo.authors || ['Unknown Author'],
       description: volumeInfo.description || 'No description available',
       image: volumeInfo.imageLinks?.thumbnail || volumeInfo.imageLinks?.smallThumbnail || '',
-      isbn: volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13')?.identifier || 
-            volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_10')?.identifier || '',
+      isbn: volumeInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_13')?.identifier ||
+            volumeInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_10')?.identifier || '',
       publishedDate: volumeInfo.publishedDate || '',
       pageCount: volumeInfo.pageCount || 0,
       categories: volumeInfo.categories || [],
@@ -64,7 +64,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error in book-search function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

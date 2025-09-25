@@ -119,7 +119,7 @@ Relationship Duration: Since ${new Date(pair.created_at).toLocaleDateString()}
               .order('created_at', { ascending: false })
               .limit(10);
 
-            if (moodLogs?.length > 0) {
+            if (moodLogs && moodLogs.length > 0) {
               partnerData += `
 Recent Mood Patterns:
 ${moodLogs.map(m => `${m.emoji} on ${new Date(m.date).toLocaleDateString()}${m.notes ? ` (${m.notes})` : ''}`).join('\n')}
@@ -136,7 +136,7 @@ ${moodLogs.map(m => `${m.emoji} on ${new Date(m.date).toLocaleDateString()}${m.n
               .order('starts_at', { ascending: true })
               .limit(5);
 
-            if (events?.length > 0) {
+            if (events && events.length > 0) {
               partnerData += `
 Upcoming Events:
 ${events.map(e => `${e.title} on ${new Date(e.starts_at).toLocaleDateString()}`).join('\n')}
@@ -218,7 +218,7 @@ Remember: You have access to all this personal information to help provide the m
     });
   } catch (error) {
     console.error('Error in love-advisor function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
