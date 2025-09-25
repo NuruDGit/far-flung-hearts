@@ -418,6 +418,8 @@ export type Database = {
       pairs: {
         Row: {
           created_at: string | null
+          disconnected_at: string | null
+          disconnected_by: string | null
           id: string
           status: string | null
           user_a: string
@@ -425,6 +427,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          disconnected_at?: string | null
+          disconnected_by?: string | null
           id?: string
           status?: string | null
           user_a: string
@@ -432,6 +436,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          disconnected_at?: string | null
+          disconnected_by?: string | null
           id?: string
           status?: string | null
           user_a?: string
