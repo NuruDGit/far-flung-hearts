@@ -194,12 +194,14 @@ export default function GoalsPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
-                        {goal.target_date && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                            <Calendar className="h-4 w-4" />
-                            Target: {new Date(goal.target_date).toLocaleDateString()}
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                          <Calendar className="h-4 w-4" />
+                          {goal.target_date ? (
+                            <>Target: {new Date(goal.target_date).toLocaleDateString()}</>
+                          ) : (
+                            <>No target date set</>
+                          )}
+                        </div>
                         <div className="flex gap-2">
                           <Badge variant="secondary">Active Goal</Badge>
                           {goal.target_date && (
