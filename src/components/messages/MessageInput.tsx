@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface MessageInputProps {
-  onSendMessage: (content: string) => void;
+  onSendMessage: (content: string, attachments?: File[]) => void;
   disabled?: boolean;
   placeholder?: string;
 }
@@ -19,13 +19,16 @@ export const MessageInput = ({
 }: MessageInputProps) => {
   const [message, setMessage] = useState('');
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
+  const [attachments, setAttachments] = useState<File[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     const trimmedMessage = message.trim();
-    if (trimmedMessage && !disabled) {
-      onSendMessage(trimmedMessage);
+    if ((trimmedMessage || attachments.length > 0) && !disabled) {
+      onSendMessage(trimmedMessage, attachments);
       setMessage('');
+      setAttachments([]);
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
@@ -54,9 +57,53 @@ export const MessageInput = ({
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
   };
 
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setAttachments(prev => [...prev, ...files]);
+    // Reset the input so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAttachClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4">
+      {/* Attachments Preview */}
+      {attachments.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {attachments.map((file, index) => (
+            <div key={`${file.name}-${index}`} className="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">
+              <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+              <button
+                onClick={() => removeAttachment(index)}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      
       <div className="flex items-end gap-2 max-w-4xl mx-auto">
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip,.rar"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        
         <div className="flex-1 relative">
           <Textarea
             ref={textareaRef}
@@ -101,8 +148,9 @@ export const MessageInput = ({
             <Button
               variant="ghost"
               size="sm"
+              onClick={handleAttachClick}
               className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
-              title="Attach file (coming soon)"
+              title="Attach files"
             >
               <Paperclip size={14} />
             </Button>
@@ -111,7 +159,7 @@ export const MessageInput = ({
 
         <Button
           onClick={handleSend}
-          disabled={!message.trim() || disabled}
+          disabled={!message.trim() && attachments.length === 0 || disabled}
           size="sm"
           className="mb-2 rounded-full h-10 w-10 p-0 love-gradient"
         >

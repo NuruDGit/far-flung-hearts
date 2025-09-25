@@ -168,18 +168,62 @@ const MessagesPage = () => {
     }
   };
 
-  const sendMessage = async (content: string) => {
-    if (!user || !pair || !content.trim()) return;
+  const uploadFile = async (file: File): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${user?.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('media')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Error uploading file:', uploadError);
+        return null;
+      }
+
+      const { data } = supabase.storage
+        .from('media')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error in uploadFile:', error);
+      return null;
+    }
+  };
+
+  const sendMessage = async (content: string, attachments?: File[]) => {
+    if (!user || !pair || (!content.trim() && !attachments?.length)) return;
 
     setSending(true);
     try {
+      let mediaUrls: string[] = [];
+
+      // Upload attachments if any
+      if (attachments && attachments.length > 0) {
+        const uploadPromises = attachments.map(file => uploadFile(file));
+        const uploadResults = await Promise.all(uploadPromises);
+        mediaUrls = uploadResults.filter(url => url !== null) as string[];
+      }
+
+      const messageBody: any = {};
+      if (content.trim()) {
+        messageBody.text = content;
+      }
+      if (mediaUrls.length > 0) {
+        messageBody.attachments = mediaUrls;
+      }
+
       const { error } = await supabase
         .from('messages')
         .insert({
           pair_id: pair.id,
           sender_id: user.id,
-          body: { text: content },
-          type: 'text'
+          body: messageBody,
+          type: attachments?.length ? 'media' : 'text',
+          media_url: mediaUrls.length > 0 ? mediaUrls[0] : null
         });
 
       if (error) {
