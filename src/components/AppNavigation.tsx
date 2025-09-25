@@ -41,7 +41,7 @@ const AppNavigation = () => {
                   <Button
                     variant={isActive(item.path) ? "default" : "ghost"}
                     size="sm"
-                    className={`gap-2 ${isActive(item.path) ? 'bg-love-heart text-white' : 'text-love-deep hover:bg-love-coral/20'}`}
+                    className={`gap-2 ${isActive(item.path) ? 'bg-love-heart text-white' : 'text-love-deep hover:bg-love-coral/20 hover:text-love-deep'}`}
                   >
                     <item.icon size={16} />
                     {item.label}
