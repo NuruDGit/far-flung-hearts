@@ -114,7 +114,7 @@ const AppHome = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
       <AppNavigation />
-      <div className="container mx-auto p-4 max-w-md pt-6 pb-24">
+      <div className="container mx-auto p-4 max-w-md lg:max-w-4xl pt-6 pb-24">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -222,7 +222,7 @@ const AppHome = () => {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {quickActions.map((action, index) => (
             <Card 
               key={index} 
@@ -243,9 +243,11 @@ const AppHome = () => {
         </div>
 
         {/* Today's Features */}
-        <div className="space-y-3">
-          {/* Mood Logger */}
-          <MoodLogger compact={true} pairId={pair?.id} />
+        <div className="grid lg:grid-cols-2 gap-3 space-y-3 lg:space-y-0">
+          <div className="lg:col-span-2">
+            {/* Mood Logger */}
+            <MoodLogger compact={true} pairId={pair?.id} />
+          </div>
 
           <Card className="bg-white/80 backdrop-blur-sm">
             <CardContent className="p-4">
@@ -287,7 +289,7 @@ const AppHome = () => {
 
           {/* Solo Mode - Personal Profile Setup */}
           {!pair && (
-            <Card className="bg-white/80 backdrop-blur-sm border-love-heart/20">
+            <Card className="bg-white/80 backdrop-blur-sm border-love-heart/20 lg:col-span-2">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-love-heart/20 flex items-center justify-center">
