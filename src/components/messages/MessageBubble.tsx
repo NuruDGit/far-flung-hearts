@@ -59,9 +59,28 @@ export const MessageBubble = ({
             }`}
           >
             {type === 'text' && (
-              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                {content}
-              </p>
+              <>
+                {/* Special rendering for love messages */}
+                {content.includes('💖 Sent you some love!') ? (
+                  <div className="flex items-center gap-2 text-center animate-scale-in">
+                    <div className="text-2xl animate-pulse">💖</div>
+                    <span className="text-sm font-medium bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
+                      Sent you some love!
+                    </span>
+                  </div>
+                ) : content.includes('👋 Thinking of you!') ? (
+                  <div className="flex items-center gap-2 text-center animate-scale-in">
+                    <div className="text-xl animate-bounce">👋</div>
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      Thinking of you!
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                    {content}
+                  </p>
+                )}
+              </>
             )}
             
             {type === 'system' && (
