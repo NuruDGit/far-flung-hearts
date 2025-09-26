@@ -49,7 +49,32 @@ export const MessageBubble = ({
   onRemoveReaction
 }: MessageBubbleProps) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Long press detection for mobile
+  const handleTouchStart = () => {
+    if (isMobile) {
+      const timer = setTimeout(() => {
+        setIsSelected(true);
+      }, 500); // 500ms for long press
+      
+      const handleTouchEnd = () => {
+        clearTimeout(timer);
+      };
+      
+      const handleTouchMove = () => {
+        clearTimeout(timer);
+      };
+      
+      document.addEventListener('touchend', handleTouchEnd, { once: true });
+      document.addEventListener('touchmove', handleTouchMove, { once: true });
+    }
+  };
+  
+  const handleClickOutside = () => {
+    setIsSelected(false);
+  };
   
   const timestamp = new Date(createdAt);
   const timeAgo = formatDistanceToNow(timestamp, { addSuffix: true });
@@ -62,7 +87,12 @@ export const MessageBubble = ({
   };
 
   return (
-    <div className={`flex items-start gap-3 mb-4 group ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div 
+      className={`flex items-start gap-3 mb-4 group ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
+      onTouchStart={handleTouchStart}
+      onClick={isMobile ? handleClickOutside : undefined}
+      data-lov-selected={isSelected}
+    >
       {!isOwn && (
         <Avatar className="w-8 h-8 flex-shrink-0">
           <AvatarImage src={senderAvatar} alt={senderName} />
@@ -212,6 +242,7 @@ export const MessageBubble = ({
             reactions={reactions}
             onAddReaction={onAddReaction || (() => {})}
             onRemoveReaction={onRemoveReaction || (() => {})}
+            isSelected={isSelected}
           />
         )}
       </div>

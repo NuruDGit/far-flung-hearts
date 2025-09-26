@@ -15,6 +15,7 @@ interface MessageReactionsProps {
   reactions: Reaction[];
   onAddReaction: (messageId: string, emoji: string) => void;
   onRemoveReaction: (messageId: string, emoji: string) => void;
+  isSelected?: boolean;
 }
 
 const REACTION_EMOJIS = ['❤️', '😍', '😂', '😮', '😢', '😡', '👍', '👎', '🔥', '🎉'];
@@ -23,7 +24,8 @@ export const MessageReactions = ({
   messageId,
   reactions,
   onAddReaction,
-  onRemoveReaction
+  onRemoveReaction,
+  isSelected = false
 }: MessageReactionsProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -63,7 +65,7 @@ export const MessageReactions = ({
             size="sm"
             className={`rounded-full transition-all active:scale-95 ${
               isMobile 
-                ? 'h-8 w-8 p-0 opacity-60 min-w-[44px]' 
+                ? `h-8 w-8 p-0 min-w-[44px] ${isSelected ? 'opacity-100' : 'opacity-0'}` 
                 : 'h-6 w-6 p-0 opacity-0 group-hover:opacity-100'
             } hover:opacity-100`}
           >
