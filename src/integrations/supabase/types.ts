@@ -193,27 +193,36 @@ export type Database = {
       }
       goal_tasks: {
         Row: {
+          archived_at: string | null
+          completed_at: string | null
           due_at: string | null
           goal_id: string | null
           id: string
+          is_archived: boolean | null
           notes: string | null
           pair_id: string
           status_column: string
           title: string
         }
         Insert: {
+          archived_at?: string | null
+          completed_at?: string | null
           due_at?: string | null
           goal_id?: string | null
           id?: string
+          is_archived?: boolean | null
           notes?: string | null
           pair_id: string
           status_column?: string
           title: string
         }
         Update: {
+          archived_at?: string | null
+          completed_at?: string | null
           due_at?: string | null
           goal_id?: string | null
           id?: string
+          is_archived?: boolean | null
           notes?: string | null
           pair_id?: string
           status_column?: string
@@ -796,6 +805,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      archive_old_completed_tasks: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown

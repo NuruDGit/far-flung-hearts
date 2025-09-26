@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap } from 'lucide-react';
+import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap, Archive, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +22,9 @@ interface Task {
   status_column: 'todo' | 'doing' | 'done';
   pair_id: string;
   goal_id?: string;
+  completed_at?: string;
+  archived_at?: string;
+  is_archived?: boolean;
 }
 
 interface Goal {
@@ -44,12 +47,18 @@ export default function GoalsPage() {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
   const [aiRecommendationsTab, setAiRecommendationsTab] = useState("goals");
+  const [showArchivedTasks, setShowArchivedTasks] = useState(false);
   const { toast } = useToast();
 
+  // Filter tasks based on archive status
+  const activeTasks = tasks.filter(t => !t.is_archived);
+  const archivedTasks = tasks.filter(t => t.is_archived);
+  const displayTasks = showArchivedTasks ? tasks : activeTasks;
+
   const columns = {
-    todo: { title: 'To Do', tasks: tasks.filter(t => t.status_column === 'todo') },
-    doing: { title: 'In Progress', tasks: tasks.filter(t => t.status_column === 'doing') },
-    done: { title: 'Complete', tasks: tasks.filter(t => t.status_column === 'done') }
+    todo: { title: 'To Do', tasks: displayTasks.filter(t => t.status_column === 'todo') },
+    doing: { title: 'In Progress', tasks: displayTasks.filter(t => t.status_column === 'doing') },
+    done: { title: 'Complete', tasks: displayTasks.filter(t => t.status_column === 'done') }
   };
 
   useEffect(() => {
@@ -292,7 +301,30 @@ export default function GoalsPage() {
       secondary: 'border-secondary',
       muted: 'border-muted',
       destructive: 'border-destructive',
-    };
+  };
+
+  const manualArchiveCompletedTasks = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('archive-completed-tasks');
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Tasks Archived",
+        description: `${data.archivedCount} completed tasks have been archived.`
+      });
+      
+      // Refresh data to show updated task list
+      fetchData();
+    } catch (error) {
+      console.error('Error archiving tasks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to archive completed tasks. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
     return borderColorMap[colorName || 'heart'] || 'border-love-heart';
   };
 
@@ -457,7 +489,32 @@ export default function GoalsPage() {
 
         {/* Tasks Kanban Board Section */}
         <div>
-          <h2 className="text-xl font-semibold mb-4 text-foreground">Task Board</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-foreground">Task Board</h2>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowArchivedTasks(!showArchivedTasks)}
+                  className="flex items-center gap-2"
+                >
+                  {showArchivedTasks ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showArchivedTasks ? 'Hide Archived' : `Show Archived (${archivedTasks.length})`}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={manualArchiveCompletedTasks}
+                  className="flex items-center gap-2"
+                  title="Archive tasks completed more than 7 days ago"
+                >
+                  <Archive className="h-4 w-4" />
+                  Archive Old
+                </Button>
+              </div>
+            </div>
+          </div>
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {Object.entries(columns).map(([columnId, column]) => (
@@ -488,7 +545,15 @@ export default function GoalsPage() {
                                 }`}
                               >
                                 <CardContent className="p-4">
-                                  <h4 className="font-medium text-foreground mb-2">{task.title}</h4>
+                                  <div className="flex items-start justify-between mb-2">
+                                    <h4 className="font-medium text-foreground flex-1">{task.title}</h4>
+                                    {task.is_archived && (
+                                      <Badge variant="secondary" className="text-xs ml-2">
+                                        <Archive className="h-3 w-3 mr-1" />
+                                        Archived
+                                      </Badge>
+                                    )}
+                                  </div>
                                   {task.notes && (
                                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{task.notes}</p>
                                   )}
