@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageReactions } from './MessageReactions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Reaction {
   emoji: string;
@@ -48,6 +49,7 @@ export const MessageBubble = ({
   onRemoveReaction
 }: MessageBubbleProps) => {
   const [showMenu, setShowMenu] = useState(false);
+  const isMobile = useIsMobile();
   
   const timestamp = new Date(createdAt);
   const timeAgo = formatDistanceToNow(timestamp, { addSuffix: true });
@@ -74,7 +76,7 @@ export const MessageBubble = ({
         <div className="group relative">
           {/* Emoji-only messages - no bubble */}
           {type === 'text' && isEmojiOnly(content) ? (
-            <div className="text-4xl py-1 hover:scale-110 transition-transform duration-200">
+            <div className="text-4xl py-1 hover:scale-110 active:scale-105 transition-transform duration-200">
               {content}
             </div>
           ) : (
@@ -116,7 +118,7 @@ export const MessageBubble = ({
                   <img 
                     src={mediaUrl} 
                     alt="Shared image"
-                    className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                    className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity"
                     style={{ maxHeight: '300px' }}
                     onClick={() => window.open(mediaUrl, '_blank')}
                   />
@@ -160,9 +162,13 @@ export const MessageBubble = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute -top-2 -left-8 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                  className={`absolute -top-2 -left-8 transition-opacity ${
+                    isMobile 
+                      ? 'opacity-60 h-8 w-8 p-0' 
+                      : 'opacity-0 group-hover:opacity-100 h-6 w-6 p-0'
+                  } active:opacity-100 hover:opacity-100`}
                 >
-                  <MoreVertical size={12} />
+                  <MoreVertical size={isMobile ? 16 : 12} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-32">

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CameraCapture } from './CameraCapture';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MessageInputProps {
   onSendMessage: (content: string, attachments?: File[]) => void;
@@ -24,6 +25,7 @@ export const MessageInput = ({
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
 
   const handleSend = () => {
     const trimmedMessage = message.trim();
@@ -129,19 +131,23 @@ export const MessageInput = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
+                  className={`text-muted-foreground hover:text-white active:text-white active:scale-95 transition-all ${
+                    isMobile ? 'p-2 h-8 w-8 min-w-[44px]' : 'p-1 h-6 w-6'
+                  }`}
                 >
-                  <Smile size={14} />
+                  <Smile size={isMobile ? 18 : 14} />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-64 p-2" align="end" side="top">
-                <div className="grid grid-cols-8 gap-1">
+                <div className={`grid gap-1 ${isMobile ? 'grid-cols-6' : 'grid-cols-8'}`}>
                   {EMOJIS.map((emoji) => (
                     <Button
                       key={emoji}
                       variant="ghost"
                       size="sm"
-                      className="p-1 h-8 w-8 text-lg hover:bg-secondary"
+                      className={`text-lg hover:bg-secondary active:bg-secondary active:scale-95 transition-all ${
+                        isMobile ? 'p-2 h-10 w-10 min-w-[44px]' : 'p-1 h-8 w-8'
+                      }`}
                       onClick={() => handleEmojiSelect(emoji)}
                     >
                       {emoji}
@@ -155,20 +161,24 @@ export const MessageInput = ({
               variant="ghost"
               size="sm"
               onClick={handleAttachClick}
-              className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
+              className={`text-muted-foreground hover:text-white active:text-white active:scale-95 transition-all ${
+                isMobile ? 'p-2 h-8 w-8 min-w-[44px]' : 'p-1 h-6 w-6'
+              }`}
               title="Attach files"
             >
-              <Paperclip size={14} />
+              <Paperclip size={isMobile ? 18 : 14} />
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsCameraOpen(true)}
-              className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
+              className={`text-muted-foreground hover:text-white active:text-white active:scale-95 transition-all ${
+                isMobile ? 'p-2 h-8 w-8 min-w-[44px]' : 'p-1 h-6 w-6'
+              }`}
               title="Take photo"
             >
-              <Camera size={14} />
+              <Camera size={isMobile ? 18 : 14} />
             </Button>
           </div>
         </div>
@@ -177,9 +187,11 @@ export const MessageInput = ({
           onClick={handleSend}
           disabled={!message.trim() && attachments.length === 0 || disabled}
           size="sm"
-          className="mb-2 rounded-full h-10 w-10 p-0 love-gradient"
+          className={`mb-2 rounded-full p-0 love-gradient active:scale-95 transition-transform ${
+            isMobile ? 'h-12 w-12 min-w-[48px]' : 'h-10 w-10'
+          }`}
         >
-          <Send size={16} />
+          <Send size={isMobile ? 20 : 16} />
         </Button>
       </div>
 
