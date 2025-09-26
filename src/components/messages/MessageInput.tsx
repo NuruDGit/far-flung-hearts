@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Send, Smile, Paperclip, Camera } from 'lucide-react';
+import { Send, Smile, Paperclip, Camera, FileText, Mic, MapPin, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -21,10 +21,13 @@ export const MessageInput = ({
 }: MessageInputProps) => {
   const [message, setMessage] = useState('');
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
+  const [isAttachOpen, setIsAttachOpen] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
+  const documentInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
   const handleSend = () => {
@@ -76,6 +79,49 @@ export const MessageInput = ({
 
   const handleAttachClick = () => {
     fileInputRef.current?.click();
+    setIsAttachOpen(false);
+  };
+
+  const handleDocumentClick = () => {
+    documentInputRef.current?.click();
+    setIsAttachOpen(false);
+  };
+
+  const handleAudioClick = () => {
+    audioInputRef.current?.click();
+    setIsAttachOpen(false);
+  };
+
+  const handleLocationShare = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const locationText = `📍 My location: https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+          setMessage(prev => prev + locationText);
+          setIsAttachOpen(false);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          // Fallback - just add location emoji
+          setMessage(prev => prev + '📍 ');
+          setIsAttachOpen(false);
+        }
+      );
+    } else {
+      setMessage(prev => prev + '📍 ');
+      setIsAttachOpen(false);
+    }
+  };
+
+  const handleContactShare = () => {
+    setMessage(prev => prev + '👤 Contact: ');
+    setIsAttachOpen(false);
+  };
+
+  const handleMemoryVaultAccess = () => {
+    // Navigate to memory vault or open in modal
+    window.open('/app/memory-vault', '_blank');
+    setIsAttachOpen(false);
   };
 
   const handleCameraCapture = (file: File) => {
@@ -102,12 +148,28 @@ export const MessageInput = ({
       )}
       
       <div className="flex items-end gap-2 max-w-4xl mx-auto">
-        {/* Hidden file input */}
+        {/* Hidden file inputs */}
         <input
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip,.rar"
+          accept="image/*,video/*"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        <input
+          ref={documentInputRef}
+          type="file"
+          multiple
+          accept=".pdf,.doc,.docx,.txt,.zip,.rar,.xls,.xlsx,.ppt,.pptx"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        <input
+          ref={audioInputRef}
+          type="file"
+          multiple
+          accept="audio/*"
           onChange={handleFileSelect}
           className="hidden"
         />
@@ -157,17 +219,87 @@ export const MessageInput = ({
               </PopoverContent>
             </Popover>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleAttachClick}
-              className={`text-muted-foreground hover:text-white active:text-white active:scale-95 transition-all ${
-                isMobile ? 'p-2 h-8 w-8 min-w-[44px]' : 'p-1 h-6 w-6'
-              }`}
-              title="Attach files"
-            >
-              <Paperclip size={isMobile ? 18 : 14} />
-            </Button>
+            <Popover open={isAttachOpen} onOpenChange={setIsAttachOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-muted-foreground hover:text-white active:text-white active:scale-95 transition-all ${
+                    isMobile ? 'p-2 h-8 w-8 min-w-[44px]' : 'p-1 h-6 w-6'
+                  }`}
+                  title="Share content"
+                >
+                  <Paperclip size={isMobile ? 18 : 14} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-2" align="end" side="top">
+                <div className="grid grid-cols-1 gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsCameraOpen(true)}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <Camera size={16} className="text-blue-500" />
+                    Take Photo
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAttachClick}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <FileText size={16} className="text-green-500" />
+                    Photos & Videos
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleDocumentClick}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <FileText size={16} className="text-orange-500" />
+                    Documents
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAudioClick}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <Mic size={16} className="text-purple-500" />
+                    Audio
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLocationShare}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <MapPin size={16} className="text-red-500" />
+                    Location
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleContactShare}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <User size={16} className="text-blue-600" />
+                    Contact
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleMemoryVaultAccess}
+                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                  >
+                    <Heart size={16} className="text-pink-500" />
+                    Memory Vault
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
             
             <Button
               variant="ghost"
