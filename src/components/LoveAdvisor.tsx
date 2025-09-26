@@ -117,80 +117,169 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Messages Area */}
-      <div 
-        className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 max-h-[400px] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-        style={{ scrollBehavior: 'smooth' }}
-      >
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
-          >
-            {!message.isUser && (
-              <Avatar className="w-8 h-8 flex-shrink-0">
+    <div className="h-full flex flex-col bg-gradient-to-b from-love-light/30 to-white">
+      {/* Welcome Message for First Time Users */}
+      {messages.length === 1 && (
+        <div className="p-6 bg-white/80 backdrop-blur-sm border-b border-love-coral/10">
+          <div className="flex items-start gap-4 animate-fade-in">
+            <div className="relative">
+              <Avatar className="w-12 h-12 ring-2 ring-love-coral/20 ring-offset-2">
                 <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
                 <AvatarFallback className="bg-love-coral/10 text-love-coral">
-                  <Bot className="h-4 w-4" />
+                  <Bot className="h-6 w-6" />
                 </AvatarFallback>
               </Avatar>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-love-deep mb-1">Welcome to Proxima! 💕</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                I have access to your relationship data and can provide personalized advice about:
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="flex items-center gap-1 text-love-coral">
+                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
+                  Communication tips
+                </div>
+                <div className="flex items-center gap-1 text-love-coral">
+                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
+                  Date ideas
+                </div>
+                <div className="flex items-center gap-1 text-love-coral">
+                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
+                  Relationship goals
+                </div>
+                <div className="flex items-center gap-1 text-love-coral">
+                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
+                  Long-distance support
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Suggestions for First Time Users */}
+      {messages.length === 1 && (
+        <div className="p-4 bg-white/60 border-b border-love-coral/10">
+          <p className="text-xs font-medium text-love-deep mb-3">💡 Try asking me about:</p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              "How can we improve our communication?",
+              "Suggest a creative date idea",
+              "How do we handle different time zones?",
+              "What are some relationship goals for us?"
+            ].map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => setInputMessage(suggestion)}
+                className="text-xs px-3 py-2 bg-white border border-love-coral/20 rounded-full hover:bg-love-light/30 hover:border-love-coral/40 transition-all duration-200 text-love-deep hover-scale"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Messages Area */}
+      <div 
+        className="flex-1 overflow-y-auto p-4 space-y-6 min-h-0"
+        style={{ scrollBehavior: 'smooth' }}
+      >
+        {messages.map((message, index) => (
+          <div
+            key={message.id}
+            className={`flex gap-3 animate-fade-in ${message.isUser ? 'justify-end' : 'justify-start'}`}
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            {!message.isUser && (
+              <div className="relative">
+                <Avatar className="w-10 h-10 ring-2 ring-love-coral/20 ring-offset-2 hover-scale">
+                  <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+                  <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                    <Bot className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
             )}
             
             <div
-              className={`max-w-[80%] p-3 rounded-lg ${
+              className={`max-w-[75%] relative group ${
                 message.isUser
-                  ? 'bg-love-heart text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'order-1'
+                  : 'order-2'
               }`}
             >
-              <div 
-                className="text-sm leading-relaxed whitespace-pre-line break-words"
-                dangerouslySetInnerHTML={{
-                  __html: message.text
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/\n/g, '<br>')
-                }}
-              />
+              <div
+                className={`p-4 rounded-2xl shadow-sm border backdrop-blur-sm transition-all duration-200 hover:shadow-md ${
+                  message.isUser
+                    ? 'bg-gradient-to-br from-love-heart to-love-coral text-white border-love-heart/20'
+                    : 'bg-white/90 text-gray-900 border-gray-200/50'
+                }`}
+              >
+                <div 
+                  className="text-sm leading-relaxed whitespace-pre-line break-words"
+                  dangerouslySetInnerHTML={{
+                    __html: message.text
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                      .replace(/\n/g, '<br>')
+                  }}
+                />
+                
+                {/* Render book recommendations if present */}
+                {message.text.includes('📚 BOOK_RECOMMENDATION:') && (
+                  <div className="mt-3 pt-3 border-t border-white/20">
+                    <BookRecommendations messageText={message.text} />
+                  </div>
+                )}
+              </div>
               
-              {/* Render book recommendations if present */}
-              {message.text.includes('📚 BOOK_RECOMMENDATION:') && (
-                <BookRecommendations messageText={message.text} />
-              )}
-              <span className={`text-xs mt-1 block opacity-70`}>
+              {/* Timestamp - Shows on hover */}
+              <div className={`text-xs mt-1 opacity-0 group-hover:opacity-70 transition-opacity duration-200 ${
+                message.isUser ? 'text-right text-gray-500' : 'text-gray-500'
+              }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
+              </div>
             </div>
             
             {message.isUser && (
-              <Avatar className="w-8 h-8 flex-shrink-0">
+              <Avatar className="w-10 h-10 ring-2 ring-love-heart/20 ring-offset-2 hover-scale">
                 <AvatarImage 
                   src={userProfile?.avatar_url} 
                   alt={userProfile?.display_name || userProfile?.first_name || "User"} 
                   className="object-cover" 
                 />
                 <AvatarFallback className="bg-love-heart/10 text-love-heart">
-                  {userProfile?.display_name?.[0] || userProfile?.first_name?.[0] || <User className="h-4 w-4" />}
+                  {userProfile?.display_name?.[0] || userProfile?.first_name?.[0] || <User className="h-5 w-5" />}
                 </AvatarFallback>
               </Avatar>
             )}
           </div>
         ))}
         
+        {/* Enhanced Loading Animation */}
         {isLoading && (
-          <div className="flex gap-3 justify-start">
-            <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-              <AvatarFallback className="bg-love-coral/10 text-love-coral">
-                <Bot className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="bg-gray-100 p-3 rounded-lg">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          <div className="flex gap-3 justify-start animate-fade-in">
+            <div className="relative">
+              <Avatar className="w-10 h-10 ring-2 ring-love-coral/20 ring-offset-2">
+                <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+                <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                  <Bot className="h-5 w-5" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-gray-200/50 max-w-[75%]">
+              <div className="flex items-center gap-2">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <span className="text-xs text-gray-500">Proxima is thinking...</span>
               </div>
             </div>
           </div>
@@ -198,26 +287,33 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Input Area - Fixed at bottom */}
-      <div className="border-t pt-4 bg-white sticky bottom-0">
-        <div className="flex gap-2">
+      {/* Enhanced Input Area */}
+      <div className="border-t border-love-coral/10 bg-white/80 backdrop-blur-sm p-4">
+        <div className="relative">
           <Textarea
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask Proxima anything about relationships, communication, date ideas..."
-            className="flex-1 min-h-[40px] max-h-[120px] resize-none"
+            placeholder="💭 Ask Proxima anything about love, relationships, or date ideas..."
+            className="pr-14 min-h-[52px] max-h-[120px] resize-none border-love-coral/20 focus:border-love-coral/40 focus:ring-love-coral/20 rounded-xl text-sm"
             disabled={isLoading}
           />
           <Button
             onClick={sendMessage}
             disabled={!inputMessage.trim() || isLoading}
             size="sm"
-            className="self-end bg-love-heart hover:bg-love-heart/90"
+            className="absolute right-2 bottom-2 w-10 h-10 rounded-full bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart shadow-lg hover:shadow-xl transition-all duration-200 border-2 border-white/20 hover-scale"
           >
             <Send className="h-4 w-4" />
           </Button>
         </div>
+        
+        {/* Character counter for longer messages */}
+        {inputMessage.length > 100 && (
+          <div className="text-xs text-gray-500 mt-1 text-right">
+            {inputMessage.length}/500
+          </div>
+        )}
       </div>
     </div>
   );
