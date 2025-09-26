@@ -27,7 +27,7 @@ export function ExpandableTaskDescription({
           variant="ghost"
           size="sm"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+          className="h-auto p-0 text-xs text-muted-foreground hover:text-white"
         >
           {isExpanded ? (
             <>
