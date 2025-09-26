@@ -300,7 +300,7 @@ export default function GoalsPage() {
               <Calendar className="h-5 w-5 text-primary" />
               Current Goals
             </h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2">
               {goals.map(goal => {
                 const status = getGoalStatus(goal);
                 const colors = getGoalStatusColors(status);
