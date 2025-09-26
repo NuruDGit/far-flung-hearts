@@ -46,7 +46,7 @@ const ProximaFloatingChat = () => {
         <DialogTrigger asChild>
           <Button
             size="lg"
-            className="fixed bottom-24 md:bottom-8 right-6 pointer-events-auto rounded-full h-16 w-16 shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-gray-50 border-2 border-love-heart p-0 hover:scale-110"
+            className="fixed bottom-20 md:bottom-8 right-4 md:right-6 pointer-events-auto rounded-full h-16 w-16 shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-gray-50 border-2 border-love-heart p-0 hover:scale-110 z-40"
           >
             <div className="relative">
               <Avatar className="h-14 w-14">
