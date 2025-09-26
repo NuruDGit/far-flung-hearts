@@ -445,8 +445,8 @@ const AppHome = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       {pair && (
-                        <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                        <div className="flex items-center gap-1 text-xs text-love-heart bg-love-light px-2 py-1 rounded-full">
+                          <div className="w-1.5 h-1.5 bg-love-coral rounded-full"></div>
                           Active vault
                         </div>
                       )}
