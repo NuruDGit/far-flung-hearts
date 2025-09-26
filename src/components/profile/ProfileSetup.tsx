@@ -352,7 +352,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-love-heart" />
+                  <div className="w-2 h-2 bg-love-heart rounded-full"></div>
                   When did your relationship begin?
                 </h3>
                 <p className="text-sm text-muted-foreground">
