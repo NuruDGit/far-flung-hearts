@@ -220,22 +220,24 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
           </TabsList>
 
           <TabsContent value="goals" className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-end">
+                <Button 
+                  onClick={generateGoalSuggestions} 
+                  disabled={loading}
+                  size="sm"
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Lightbulb className="h-4 w-4 mr-2" />
+                  )}
+                  Generate Ideas
+                </Button>
+              </div>
               <p className="text-sm text-muted-foreground">
                 Get AI-powered goal suggestions tailored to your relationship
               </p>
-              <Button 
-                onClick={generateGoalSuggestions} 
-                disabled={loading}
-                size="sm"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
-                  <Lightbulb className="h-4 w-4 mr-2" />
-                )}
-                Generate Ideas
-              </Button>
             </div>
 
             {goalSuggestions.length > 0 && (
