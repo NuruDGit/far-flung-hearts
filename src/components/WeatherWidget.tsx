@@ -57,7 +57,7 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
       if (data?.error) {
         console.warn('Weather function response error:', data.error, data.message);
         setWeather(null);
-        setError(data.error === 'missing_api_key' ? 'setup_missing_api_key' : 'not_available');
+        setError(data.error === 'city_not_supported' ? 'city_not_supported' : 'not_available');
         return;
       }
 
@@ -114,8 +114,8 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="w-4 h-4" />
-            {error === 'setup_missing_api_key' ? (
-              <span className="text-sm">Weather setup needed. Add your OpenWeather API key in Supabase Function Secrets.</span>
+            {error === 'city_not_supported' ? (
+              <span className="text-sm">Weather not available for {partnerCity}. Supported cities: Dubai, London, New York, Paris, Tokyo, and more.</span>
             ) : (
               <span className="text-sm">Weather unavailable for {partnerCity}</span>
             )}
