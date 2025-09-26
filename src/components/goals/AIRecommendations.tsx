@@ -208,7 +208,10 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
     <Card className="mb-6">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-foreground">
-          <Brain className="h-5 w-5 text-primary" />
+          <div className="relative">
+            <Brain className="h-5 w-5 text-primary animate-pulse" />
+            <div className="absolute inset-0 h-5 w-5 rounded-full bg-primary/20 animate-ping"></div>
+          </div>
           AI Recommendations
         </CardTitle>
       </CardHeader>
