@@ -265,7 +265,7 @@ const CalendarPage = () => {
             {dayEvents.map((event) => (
               <div 
                 key={event.id} 
-                className="flex items-start gap-3 p-3 rounded-lg bg-card border border-border/20 hover:bg-secondary/30 cursor-pointer transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg bg-love-light/10 border border-border/20 cursor-pointer transition-colors"
                 onClick={() => {
                   setSelectedEvent(event);
                   setShowDetailsDialog(true);
