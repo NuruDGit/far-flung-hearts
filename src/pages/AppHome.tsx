@@ -274,7 +274,7 @@ const AppHome = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-4 text-center mb-4">
+              <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <Clock className="h-5 w-5 mx-auto mb-1 text-love-coral" />
                   <p className="text-sm text-muted-foreground">Their time</p>
@@ -290,27 +290,6 @@ const AppHome = () => {
                   <p className="text-sm text-muted-foreground">Messages</p>
                   <p className="font-semibold">42</p>
                 </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="flex-1 hover:bg-love-heart hover:text-white transition-colors"
-                  onClick={() => window.location.href = '/app/messages'}
-                >
-                  <MessageSquareQuote className="w-4 h-4 mr-1" />
-                  Message
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="flex-1 hover:bg-love-coral hover:text-white transition-colors"
-                  onClick={sendLoveMessage}
-                >
-                  <Heart className="w-4 h-4 mr-1" />
-                  Send Love
-                </Button>
               </div>
             </CardContent>
           </Card>
