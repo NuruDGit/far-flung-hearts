@@ -481,7 +481,7 @@ export default function GoalsPage() {
                               <Badge variant="secondary" className="text-xs px-3 py-1 flex-1 text-center">
                                 Active Goal
                               </Badge>
-                              <Badge variant={colors.badge as any} className="text-xs px-3 py-1 flex-1 text-center">
+                              <Badge variant={colors.badge as any} className="text-xs px-3 py-1 text-center">
                                 {getStatusLabel(status)}
                               </Badge>
                             </div>
