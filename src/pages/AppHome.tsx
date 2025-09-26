@@ -236,32 +236,39 @@ const AppHome = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-sm border border-love-coral/20">
               <DropdownMenuItem 
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate('/app/profile')}
                 className="cursor-pointer hover:bg-love-light/20"
               >
                 <User className="mr-2 h-4 w-4" />
                 Profile Settings
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => navigate('/mood')}
+                onClick={() => navigate('/app/mood')}
                 className="cursor-pointer hover:bg-love-light/20"
               >
                 <Smile className="mr-2 h-4 w-4" />
                 Mood Tracker
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => navigate('/mood-analytics')}
+                onClick={() => navigate('/app/mood/analytics')}
                 className="cursor-pointer hover:bg-love-light/20"
               >
                 <Zap className="mr-2 h-4 w-4" />
                 Mood Analytics
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => navigate('/goals')}
+                onClick={() => navigate('/app/goals')}
                 className="cursor-pointer hover:bg-love-light/20"
               >
                 <Heart className="mr-2 h-4 w-4" />
                 Relationship Goals
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => navigate('/app/messages')}
+                className="cursor-pointer hover:bg-love-light/20"
+              >
+                <MessageSquareQuote className="mr-2 h-4 w-4" />
+                Messages
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-love-coral/20" />
               <DropdownMenuItem 
