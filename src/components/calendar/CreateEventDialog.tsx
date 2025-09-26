@@ -354,7 +354,11 @@ export const CreateEventDialog = ({ open, onOpenChange, pairId, selectedDate, on
                         <FormLabel>Start Time</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type="time" {...field} />
+                            <Input 
+                              type="time" 
+                              {...field} 
+                              className="pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:w-4 [&::-webkit-calendar-picker-indicator]:h-4 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                            />
                             <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                           </div>
                         </FormControl>
@@ -371,7 +375,11 @@ export const CreateEventDialog = ({ open, onOpenChange, pairId, selectedDate, on
                         <FormLabel>End Time</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type="time" {...field} />
+                            <Input 
+                              type="time" 
+                              {...field} 
+                              className="pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:w-4 [&::-webkit-calendar-picker-indicator]:h-4 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                            />
                             <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                           </div>
                         </FormControl>
