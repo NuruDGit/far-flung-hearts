@@ -27,7 +27,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hi! I'm Proxima, your personal love assistant. 💕 I'm here to help with communication, date ideas, relationship goals, and any love-related questions you might have. What would you like to talk about today?",
+      text: "Hi! I'm Proxima 💕 Ready to help with your relationship questions!",
       isUser: false,
       timestamp: new Date(),
     }
@@ -120,41 +120,11 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
     <div className="h-full flex flex-col bg-gradient-to-b from-love-light/30 to-white">
       {/* Welcome Message for First Time Users */}
       {messages.length === 1 && (
-        <div className="p-6 bg-white/80 backdrop-blur-sm border-b border-love-coral/10">
-          <div className="flex items-start gap-4 animate-fade-in">
-            <div className="relative">
-              <Avatar className="w-12 h-12 ring-2 ring-love-coral/20 ring-offset-2">
-                <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-                <AvatarFallback className="bg-love-coral/10 text-love-coral">
-                  <Bot className="h-6 w-6" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-love-deep mb-1">Welcome to Proxima! 💕</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                I have access to your relationship data and can provide personalized advice about:
-              </p>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1 text-love-coral">
-                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
-                  Communication tips
-                </div>
-                <div className="flex items-center gap-1 text-love-coral">
-                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
-                  Date ideas
-                </div>
-                <div className="flex items-center gap-1 text-love-coral">
-                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
-                  Relationship goals
-                </div>
-                <div className="flex items-center gap-1 text-love-coral">
-                  <div className="w-1 h-1 rounded-full bg-love-coral"></div>
-                  Long-distance support
-                </div>
-              </div>
-            </div>
+        <div className="p-4 bg-white/60 border-b border-love-coral/10">
+          <div className="text-center animate-fade-in">
+            <p className="text-sm text-muted-foreground">
+              Your personal love assistant with access to your relationship data
+            </p>
           </div>
         </div>
       )}
@@ -162,17 +132,15 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
       {/* Quick Suggestions for First Time Users */}
       {messages.length === 1 && (
         <div className="p-4 bg-white/60 border-b border-love-coral/10">
-          <p className="text-xs font-medium text-love-deep mb-3">💡 Try asking me about:</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             {[
-              "How can we improve our communication?",
-              "Suggest a creative date idea",
-              "How do we handle different time zones?",
-              "What are some relationship goals for us?"
+              "Creative date ideas",
+              "Communication tips",
+              "Relationship goals"
             ].map((suggestion, index) => (
               <button
                 key={index}
-                onClick={() => setInputMessage(suggestion)}
+                onClick={() => setInputMessage(`Give me ${suggestion.toLowerCase()}`)}
                 className="text-xs px-3 py-2 bg-white border border-love-coral/20 rounded-full hover:bg-love-light/30 hover:border-love-coral/40 transition-all duration-200 text-love-deep hover-scale"
               >
                 {suggestion}
@@ -194,14 +162,8 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             {!message.isUser && (
-              <div className="relative">
-                <Avatar className="w-10 h-10 ring-2 ring-love-coral/20 ring-offset-2 hover-scale">
-                  <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-                  <AvatarFallback className="bg-love-coral/10 text-love-coral">
-                    <Bot className="h-5 w-5" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-love-coral/10 flex items-center justify-center">
+                <Bot className="h-4 w-4 text-love-coral" />
               </div>
             )}
             
@@ -263,14 +225,8 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         {/* Enhanced Loading Animation */}
         {isLoading && (
           <div className="flex gap-3 justify-start animate-fade-in">
-            <div className="relative">
-              <Avatar className="w-10 h-10 ring-2 ring-love-coral/20 ring-offset-2">
-                <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-                <AvatarFallback className="bg-love-coral/10 text-love-coral">
-                  <Bot className="h-5 w-5" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-love-coral/10 flex items-center justify-center">
+              <Bot className="h-4 w-4 text-love-coral" />
             </div>
             <div className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-gray-200/50 max-w-[75%]">
               <div className="flex items-center gap-2">
@@ -279,7 +235,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                   <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                   <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
-                <span className="text-xs text-gray-500">Proxima is thinking...</span>
+                <span className="text-xs text-gray-500">Thinking...</span>
               </div>
             </div>
           </div>
