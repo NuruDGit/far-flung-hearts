@@ -468,14 +468,6 @@ export default function GoalsPage() {
                     <CardHeader className="p-4 pl-6 pb-2">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3 flex-1">
-                          <div 
-                            className={`p-2 rounded-lg flex-shrink-0 ${getBgColorClass(goal.color)}`}
-                          >
-                            {React.createElement(getIconComponent(goal.icon), { 
-                              size: 20, 
-                              className: getColorClass(goal.color)
-                            })}
-                          </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                               <Calendar className="h-4 w-4" />
