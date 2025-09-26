@@ -24,9 +24,13 @@ interface MessagesListProps {
   profiles: Record<string, Profile>;
   loading?: boolean;
   filteredMessages?: Message[];
+  favorites?: Set<string>;
   onEditMessage?: (id: string) => void;
   onDeleteMessage?: (id: string) => void;
   onReplyToMessage?: (id: string) => void;
+  onFavorite?: (id: string) => void;
+  onReply?: (id: string) => void;
+  onDelete?: (id: string) => void;
   onAddReaction?: (messageId: string, emoji: string) => void;
   onRemoveReaction?: (messageId: string, emoji: string) => void;
 }
@@ -37,9 +41,13 @@ export const MessagesList = ({
   profiles,
   loading = false,
   filteredMessages,
+  favorites = new Set(),
   onEditMessage,
   onDeleteMessage,
   onReplyToMessage,
+  onFavorite,
+  onReply,
+  onDelete,
   onAddReaction,
   onRemoveReaction
 }: MessagesListProps) => {
@@ -130,9 +138,11 @@ export const MessagesList = ({
             senderName={sender?.display_name || 'Partner'}
             senderAvatar={sender?.avatar_url}
             reactions={[]} // TODO: Add reactions from database
+            isFavorited={favorites.has(message.id)}
             onEdit={onEditMessage}
-            onDelete={onDeleteMessage}
-            onReply={onReplyToMessage}
+            onDelete={onDelete}
+            onReply={onReply}
+            onFavorite={onFavorite}
             onAddReaction={onAddReaction}
             onRemoveReaction={onRemoveReaction}
           />

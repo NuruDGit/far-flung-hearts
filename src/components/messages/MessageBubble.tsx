@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { MoreVertical, Edit3, Trash2, Reply } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageReactions } from './MessageReactions';
+import { MessageActionBar } from './MessageActionBar';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Reaction {
@@ -24,9 +25,16 @@ interface MessageBubbleProps {
   type?: string;
   mediaUrl?: string;
   reactions?: Reaction[];
+  isFavorited?: boolean;
+  replyToMessage?: {
+    id: string;
+    content: string;
+    senderName: string;
+  };
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onReply?: (id: string) => void;
+  onFavorite?: (id: string) => void;
   onAddReaction?: (messageId: string, emoji: string) => void;
   onRemoveReaction?: (messageId: string, emoji: string) => void;
 }
@@ -42,29 +50,55 @@ export const MessageBubble = ({
   type = 'text',
   mediaUrl,
   reactions = [],
+  isFavorited = false,
+  replyToMessage,
   onEdit,
   onDelete,
   onReply,
+  onFavorite,
   onAddReaction,
   onRemoveReaction
 }: MessageBubbleProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
+  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
   
+  // Auto-deselect after 10 seconds
+  useEffect(() => {
+    if (isSelected) {
+      const timer = setTimeout(() => {
+        setIsSelected(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSelected]);
+
   // Long press detection for mobile
   const handleTouchStart = () => {
     if (isMobile) {
       const timer = setTimeout(() => {
         setIsSelected(true);
+        // Add haptic feedback if available
+        if ('vibrate' in navigator) {
+          navigator.vibrate(50);
+        }
       }, 500); // 500ms for long press
       
+      setLongPressTimer(timer);
+      
       const handleTouchEnd = () => {
-        clearTimeout(timer);
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          setLongPressTimer(null);
+        }
       };
       
       const handleTouchMove = () => {
-        clearTimeout(timer);
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          setLongPressTimer(null);
+        }
       };
       
       document.addEventListener('touchend', handleTouchEnd, { once: true });
@@ -72,7 +106,7 @@ export const MessageBubble = ({
     }
   };
   
-  const handleClickOutside = () => {
+  const handleActionBarClose = () => {
     setIsSelected(false);
   };
   
@@ -87,12 +121,25 @@ export const MessageBubble = ({
   };
 
   return (
-    <div 
-      className={`flex items-start gap-3 mb-4 group ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
-      onTouchStart={handleTouchStart}
-      onClick={isMobile ? handleClickOutside : undefined}
-      data-lov-selected={isSelected}
-    >
+    <>
+      {isSelected && (
+        <MessageActionBar
+          messageId={id}
+          isOwn={isOwn}
+          isFavorited={isFavorited}
+          onFavorite={onFavorite || (() => {})}
+          onReply={onReply || (() => {})}
+          onDelete={onDelete || (() => {})}
+          onClose={handleActionBarClose}
+        />
+      )}
+      
+      <div 
+        className={`flex items-start gap-3 mb-4 group ${isOwn ? 'flex-row-reverse' : 'flex-row'} ${
+          isSelected ? 'bg-primary/5 rounded-lg p-2 -m-2 border border-primary/20' : ''
+        } transition-all duration-200`}
+        onTouchStart={handleTouchStart}
+      >
       {!isOwn && (
         <Avatar className="w-8 h-8 flex-shrink-0">
           <AvatarImage src={senderAvatar} alt={senderName} />
@@ -103,6 +150,22 @@ export const MessageBubble = ({
       )}
       
       <div className={`flex flex-col max-w-[85%] sm:max-w-[70%] md:max-w-[60%] ${isOwn ? 'items-end' : 'items-start'}`}>
+        {/* Reply context */}
+        {replyToMessage && (
+          <div className={`mb-2 text-xs p-2 rounded-lg bg-secondary/50 border-l-4 border-primary max-w-full ${
+            isOwn ? 'ml-8' : 'mr-8'
+          }`}>
+            <p className="text-muted-foreground font-medium">
+              Replying to {replyToMessage.senderName}
+            </p>
+            <p className="text-foreground/80 truncate">
+              {replyToMessage.content.length > 40 
+                ? replyToMessage.content.substring(0, 40) + '...' 
+                : replyToMessage.content}
+            </p>
+          </div>
+        )}
+        
         <div className="group relative">
           {/* Emoji-only messages - no bubble */}
           {type === 'text' && isEmojiOnly(content) ? (
@@ -246,6 +309,7 @@ export const MessageBubble = ({
           />
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 };

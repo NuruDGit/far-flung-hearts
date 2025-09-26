@@ -52,6 +52,13 @@ const MessagesPage = () => {
   const [sending, setSending] = useState(false);
   const [pair, setPair] = useState<Pair | null>(null);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [replyingTo, setReplyingTo] = useState<{
+    id: string;
+    content: string;
+    senderName: string;
+    senderAvatar?: string;
+  } | null>(null);
   const [isOnline, setIsOnline] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -155,6 +162,7 @@ const MessagesPage = () => {
         .from('messages')
         .select('*')
         .eq('pair_id', pairData.id)
+        .is('deleted_at', null)
         .order('created_at', { ascending: true });
 
       if (messagesError) {
@@ -166,6 +174,19 @@ const MessagesPage = () => {
         });
       } else {
         setMessages(messagesData || []);
+      }
+
+      // Fetch user's favorites
+      const { data: favoritesData, error: favoritesError } = await supabase
+        .from('message_favorites')
+        .select('message_id')
+        .eq('user_id', user.id);
+
+      if (favoritesError) {
+        console.error('Error fetching favorites:', favoritesError);
+      } else {
+        const favoriteIds = new Set(favoritesData.map(f => f.message_id));
+        setFavorites(favoriteIds);
       }
     } catch (error) {
       console.error('Error in fetchPairAndMessages:', error);
@@ -200,7 +221,7 @@ const MessagesPage = () => {
     }
   };
 
-  const sendMessage = async (content: string, attachments?: File[]) => {
+  const sendMessage = async (content: string, attachments?: File[], replyToId?: string) => {
     if (!user || !pair || (!content.trim() && !attachments?.length)) return;
 
     setSending(true);
@@ -229,7 +250,8 @@ const MessagesPage = () => {
           sender_id: user.id,
           body: messageBody,
           type: attachments?.length ? 'media' : 'text',
-          media_url: mediaUrls.length > 0 ? mediaUrls[0] : null
+          media_url: mediaUrls.length > 0 ? mediaUrls[0] : null,
+          reply_to: replyToId
         });
 
       if (error) {
@@ -320,6 +342,110 @@ const MessagesPage = () => {
       title: "Feature coming soon", 
       description: "Message reactions will be available soon!"
     });
+  };
+
+  const handleFavorite = async (messageId: string) => {
+    if (!user) return;
+
+    try {
+      const isFavorited = favorites.has(messageId);
+      
+      if (isFavorited) {
+        // Remove from favorites
+        const { error } = await supabase
+          .from('message_favorites')
+          .delete()
+          .eq('message_id', messageId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        
+        setFavorites(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(messageId);
+          return newSet;
+        });
+        
+        toast({
+          title: "Removed from favorites",
+          description: "Message unfavorited successfully"
+        });
+      } else {
+        // Add to favorites
+        const { error } = await supabase
+          .from('message_favorites')
+          .insert({
+            message_id: messageId,
+            user_id: user.id
+          });
+
+        if (error) throw error;
+        
+        setFavorites(prev => new Set([...prev, messageId]));
+        
+        toast({
+          title: "Added to favorites",
+          description: "Message favorited successfully"
+        });
+      }
+    } catch (error) {
+      console.error('Error handling favorite:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update favorite",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleReply = async (messageId: string) => {
+    const message = messages.find(m => m.id === messageId);
+    if (!message) return;
+
+    const sender = profiles[message.sender_id];
+    let content = '';
+    
+    if (typeof message.body === 'string') {
+      content = message.body;
+    } else if (message.body && typeof message.body === 'object') {
+      content = message.body.text || message.body.content || 'Media message';
+    }
+
+    setReplyingTo({
+      id: messageId,
+      content,
+      senderName: sender?.display_name || 'Partner',
+      senderAvatar: sender?.avatar_url
+    });
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', messageId)
+        .eq('sender_id', user.id);
+
+      if (error) throw error;
+
+      // Remove from local state
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+      
+      toast({
+        title: "Message deleted",
+        description: "Message has been deleted successfully"
+      });
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete message",
+        variant: "destructive"
+      });
+    }
   };
 
   if (loading) {
@@ -506,8 +632,12 @@ const MessagesPage = () => {
           currentUserId={user?.id || ''}
           profiles={profiles}
           loading={loading}
+          favorites={favorites}
           onAddReaction={handleAddReaction}
           onRemoveReaction={handleRemoveReaction}
+          onFavorite={handleFavorite}
+          onReply={handleReply}
+          onDelete={handleDeleteMessage}
         />
 
         {/* Message Input */}
@@ -515,6 +645,8 @@ const MessagesPage = () => {
           onSendMessage={sendMessage}
           disabled={sending}
           placeholder={`Message ${partner?.display_name || 'your partner'}...`}
+          replyingTo={replyingTo}
+          onCancelReply={() => setReplyingTo(null)}
         />
       </div>
     </div>

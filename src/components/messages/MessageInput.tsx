@@ -4,13 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CameraCapture } from './CameraCapture';
+import { ReplyContext } from './ReplyContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
 
 interface MessageInputProps {
-  onSendMessage: (content: string, attachments?: File[]) => void;
+  onSendMessage: (content: string, attachments?: File[], replyToId?: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  replyingTo?: {
+    id: string;
+    content: string;
+    senderName: string;
+    senderAvatar?: string;
+  };
+  onCancelReply?: () => void;
 }
 
 const EMOJI_CATEGORIES = [
@@ -43,7 +51,9 @@ const EMOJI_CATEGORIES = [
 export const MessageInput = ({
   onSendMessage,
   disabled = false,
-  placeholder = "Type your message..."
+  placeholder = "Type your message...",
+  replyingTo,
+  onCancelReply
 }: MessageInputProps) => {
   const [message, setMessage] = useState('');
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
@@ -60,9 +70,10 @@ export const MessageInput = ({
   const handleSend = () => {
     const trimmedMessage = message.trim();
     if ((trimmedMessage || attachments.length > 0) && !disabled) {
-      onSendMessage(trimmedMessage, attachments);
+      onSendMessage(trimmedMessage, attachments, replyingTo?.id);
       setMessage('');
       setAttachments([]);
+      onCancelReply?.();
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
@@ -161,7 +172,16 @@ export const MessageInput = ({
   };
 
   return (
-    <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4">
+    <div className="border-t border-border bg-background/95 backdrop-blur-sm">
+      {/* Reply Context */}
+      {replyingTo && (
+        <ReplyContext
+          replyingTo={replyingTo}
+          onCancel={onCancelReply || (() => {})}
+        />
+      )}
+      
+      <div className="p-4">
       {/* Attachments Preview */}
       {attachments.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
@@ -364,6 +384,7 @@ export const MessageInput = ({
         onClose={() => setIsCameraOpen(false)}
         onCapture={handleCameraCapture}
       />
+      </div>
     </div>
   );
 };
