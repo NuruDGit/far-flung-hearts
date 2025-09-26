@@ -302,6 +302,8 @@ export default function GoalsPage() {
       muted: 'border-muted',
       destructive: 'border-destructive',
   };
+    return borderColorMap[colorName || 'heart'] || 'border-love-heart';
+  };
 
   const manualArchiveCompletedTasks = async () => {
     try {
@@ -324,8 +326,6 @@ export default function GoalsPage() {
         variant: "destructive"
       });
     }
-  };
-    return borderColorMap[colorName || 'heart'] || 'border-love-heart';
   };
 
   const confirmDeleteGoal = async () => {
