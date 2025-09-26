@@ -95,15 +95,15 @@ const MemoryVaultBulkActions = ({
           </div>
 
           {selectedItems.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 min-w-0">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleBulkDownload}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 w-full sm:w-auto text-xs sm:text-sm"
               >
                 <Download size={14} />
-                Download ({selectedItems.length})
+                <span className="truncate">Download ({selectedItems.length})</span>
               </Button>
 
               <AlertDialog>
@@ -112,10 +112,10 @@ const MemoryVaultBulkActions = ({
                     variant="destructive"
                     size="sm"
                     disabled={isDeleting}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 w-full sm:w-auto text-xs sm:text-sm"
                   >
                     <Trash2 size={14} />
-                    Delete ({selectedItems.length})
+                    <span className="truncate">Delete ({selectedItems.length})</span>
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -143,7 +143,7 @@ const MemoryVaultBulkActions = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onSelectionChange([])}
-                className="text-xs"
+                className="text-xs w-full sm:w-auto"
               >
                 Clear
               </Button>
