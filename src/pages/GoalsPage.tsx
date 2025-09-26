@@ -478,10 +478,10 @@ export default function GoalsPage() {
                               )}
                             </div>
                             <div className="flex items-center gap-2 w-full">
-                              <Badge variant="secondary" className="text-xs px-3 py-1">
+                              <Badge variant="secondary" className="text-xs px-3 py-1 flex-1 text-center">
                                 Active Goal
                               </Badge>
-                              <Badge variant={colors.badge as any} className="text-xs px-3 py-1">
+                              <Badge variant={colors.badge as any} className="text-xs px-3 py-1 flex-1 text-center">
                                 {getStatusLabel(status)}
                               </Badge>
                             </div>
