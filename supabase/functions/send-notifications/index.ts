@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -72,20 +73,41 @@ const handler = async (req: Request): Promise<Response> => {
         let deliverySuccess = false;
         const deliveryResults = [];
 
+        const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+        
         // Process each delivery method
         for (const method of notification.delivery_method) {
           try {
             if (method === 'email') {
-              // For now, we'll just log email notifications
-              // In a real implementation, you'd integrate with a service like Resend
-              console.log(`📧 Email notification to ${profile.email}:`);
-              console.log(`Subject: ${notification.title}`);
-              console.log(`Message: ${notification.message}`);
+              console.log(`📧 Sending email to ${profile.email}: ${notification.title}`);
+              
+              if (!profile.email) {
+                throw new Error('User email not found');
+              }
+              
+              const emailResponse = await resend.emails.send({
+                from: 'Lovable Calendar <notifications@resend.dev>',
+                to: [profile.email],
+                subject: notification.title,
+                html: `
+                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">${notification.title}</h2>
+                    <p style="color: #666; line-height: 1.6;">${notification.message}</p>
+                    ${notification.data?.event_url ? `<p><a href="${notification.data.event_url}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">View Event</a></p>` : ''}
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                    <p style="color: #999; font-size: 12px;">This is an automated reminder from your Lovable Calendar.</p>
+                  </div>
+                `,
+              });
+              
+              if (emailResponse.error) {
+                throw new Error(`Email sending failed: ${emailResponse.error.message}`);
+              }
+              
+              console.log('Email sent successfully:', emailResponse.data?.id);
               deliveryResults.push({ method: 'email', success: true });
               deliverySuccess = true;
             } else if (method === 'push') {
-              // For now, we'll just log push notifications
-              // In a real implementation, you'd use web push or a service like FCM
               console.log(`📱 Push notification to user ${notification.user_id}:`);
               console.log(`Title: ${notification.title}`);
               console.log(`Message: ${notification.message}`);
