@@ -91,7 +91,7 @@ const AppNavigation = () => {
       </div>
 
       {/* Tablet/Mobile spacing for bottom navigation */}
-      <div className="lg:hidden h-20"></div>
+      <div className="lg:hidden h-16"></div>
     </>
   );
 };
