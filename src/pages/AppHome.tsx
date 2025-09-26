@@ -3,6 +3,7 @@ import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar } from 'lucide-react';
+import { Calendar3D } from '@/components/icons/Calendar3D';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -538,7 +539,7 @@ const AppHome = () => {
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
-                    <Calendar className="text-blue-600 h-6 w-6" />
+                    <Calendar3D className="h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-3">
                     <div>
