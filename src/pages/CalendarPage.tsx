@@ -223,17 +223,17 @@ const CalendarPage = () => {
     const getEventIcon = (kind: string) => {
       switch (kind) {
         case 'date':
-          return <Calendar className="h-5 w-5 text-muted-foreground" />;
+          return <Calendar className="h-6 w-6 text-muted-foreground" />;
         case 'anniversary':
-          return <Heart className="h-5 w-5 text-muted-foreground" />;
+          return <Heart className="h-6 w-6 text-muted-foreground" />;
         case 'travel':
-          return <MapPin className="h-5 w-5 text-muted-foreground" />;
+          return <MapPin className="h-6 w-6 text-muted-foreground" />;
         case 'birthday':
-          return <Calendar className="h-5 w-5 text-muted-foreground" />;
+          return <Calendar className="h-6 w-6 text-muted-foreground" />;
         case 'meeting':
-          return <Clock className="h-5 w-5 text-muted-foreground" />;
+          return <Clock className="h-6 w-6 text-muted-foreground" />;
         default:
-          return <Calendar className="h-5 w-5 text-muted-foreground" />;
+          return <Calendar className="h-6 w-6 text-muted-foreground" />;
       }
     };
 
@@ -264,13 +264,15 @@ const CalendarPage = () => {
             {dayEvents.map((event) => (
               <div 
                 key={event.id} 
-                className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border/20 hover:bg-secondary/30 cursor-pointer transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg bg-card border border-border/20 hover:bg-secondary/30 cursor-pointer transition-colors"
                 onClick={() => {
                   setSelectedEvent(event);
                   setShowDetailsDialog(true);
                 }}
               >
-                {getEventIcon(event.kind)}
+                <div className="flex items-center justify-center w-12 h-16 bg-secondary/30 rounded-lg flex-shrink-0">
+                  {getEventIcon(event.kind)}
+                </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-foreground mb-1">{event.title}</h4>
                   {!event.all_day && (
