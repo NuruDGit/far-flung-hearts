@@ -57,7 +57,7 @@ export const MessageBubble = ({
         </Avatar>
       )}
       
-      <div className={`flex flex-col max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
+      <div className={`flex flex-col max-w-[85%] sm:max-w-[70%] md:max-w-[60%] ${isOwn ? 'items-end' : 'items-start'}`}>
         <div className="group relative">
           {/* Emoji-only messages - no bubble */}
           {type === 'text' && isEmojiOnly(content) ? (
