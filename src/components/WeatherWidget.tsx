@@ -132,9 +132,8 @@ const WeatherWidget = ({ partnerCity, partnerCountry, partnerName }: WeatherWidg
       <CardContent className="p-0">
         {/* Header */}
         <div className="px-4 pt-3 pb-2 bg-gradient-to-r from-love-coral/5 to-love-heart/5">
-          <h3 className="text-sm font-medium text-love-deep flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
-            Weather at {partnerName ? `${partnerName}'s location` : 'your partner\'s location'}
+          <h3 className="text-sm font-medium text-love-deep">
+            Today's weather at {partnerName ? `${partnerName}'s location` : "your partner's location"}
           </h3>
         </div>
         {/* City Image Header */}
