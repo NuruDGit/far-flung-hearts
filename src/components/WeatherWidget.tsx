@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import heroImage from '@/assets/hero-image.jpg';
 
 interface WeatherData {
   temperature: number;
@@ -130,13 +131,13 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
       <CardContent className="p-0">
         {/* City Image Header */}
         <div className="relative h-32 bg-gradient-to-r from-love-coral/30 to-love-heart/30">
-          {cityImage && (
-            <img 
-              src={cityImage} 
-              alt={`${partnerCity} cityscape`}
-              className="w-full h-full object-cover"
-            />
-          )}
+          <img 
+            src={cityImage || heroImage}
+            alt={`${partnerCity} city skyline`}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute bottom-3 left-4 text-white">
             <div className="flex items-center gap-2">
