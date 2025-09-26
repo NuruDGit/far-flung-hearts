@@ -534,13 +534,6 @@ const MemoryVault = () => {
                       className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center cursor-pointer"
                       onClick={() => setLightboxIndex(filteredMemories.findIndex(m => m.id === memory.id))}
                     >
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                        <Button size="sm" variant="secondary" asChild>
-                          <a href={mediaUrl} target="_blank" rel="noopener noreferrer">
-                            <Download size={14} />
-                          </a>
-                        </Button>
-                      </div>
                     </div>
                     <div className="absolute top-2 left-2">
                       <div className="bg-black/50 text-white rounded-full p-1">
