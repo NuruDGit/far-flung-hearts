@@ -8,17 +8,17 @@ import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface GoalSuggestion {
-  title: string;
   description: string;
-  category: string;
-  timeframe: string;
+  target_date: string;
+  color: string;
+  icon: string;
 }
 
 interface TaskSuggestion {
   title: string;
-  description: string;
-  priority: string;
-  estimated_time: string;
+  notes: string;
+  goal_id: string;
+  due_at: string;
 }
 
 interface AIRecommendationsProps {
@@ -51,7 +51,9 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
           context: {
             existingGoalsCount: existingGoals.length,
             existingGoals: existingGoals.map(g => g.description).slice(0, 3),
-            relationshipStage: 'committed' // Could be dynamic based on user profile
+            relationshipStage: 'committed',
+            availableColors: ['heart', 'coral', 'deep', 'primary', 'accent', 'secondary'],
+            availableIcons: ['target', 'heart', 'star', 'trophy', 'flag', 'lightbulb', 'zap']
           }
         }
       });
@@ -82,12 +84,15 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
   const generateTaskSuggestions = async (goalDescription: string) => {
     setLoading(true);
     try {
+      const selectedGoalObj = existingGoals.find(g => g.description === goalDescription);
       const { data, error } = await supabase.functions.invoke('goal-recommendations', {
         body: {
           type: 'task_suggestions',
           context: {
             goalDescription,
-            existingTasksCount: existingTasks.length
+            goalId: selectedGoalObj?.id || null,
+            existingTasksCount: existingTasks.length,
+            existingGoals: existingGoals.map(g => ({id: g.id, description: g.description}))
           }
         }
       });
@@ -130,7 +135,10 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
       const { error } = await supabase
         .from('goalboard')
         .insert({
-          description: `${suggestion.title}: ${suggestion.description}`,
+          description: suggestion.description,
+          target_date: suggestion.target_date,
+          color: suggestion.color,
+          icon: suggestion.icon,
           pair_id: pairData.id
         });
 
@@ -143,7 +151,7 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
 
       onGoalCreated();
       // Remove the suggestion from the list
-      setGoalSuggestions(prev => prev.filter(g => g.title !== suggestion.title));
+      setGoalSuggestions(prev => prev.filter(g => g.description !== suggestion.description));
     } catch (error) {
       console.error('Error creating goal from suggestion:', error);
       toast({
@@ -169,7 +177,9 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
         .from('goal_tasks')
         .insert({
           title: suggestion.title,
-          notes: `${suggestion.description}\n\nEstimated time: ${suggestion.estimated_time}`,
+          notes: suggestion.notes,
+          due_at: suggestion.due_at,
+          goal_id: suggestion.goal_id === 'no-goal' ? null : suggestion.goal_id || null,
           status_column: 'todo',
           pair_id: pairData.id
         });
@@ -235,11 +245,11 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
-                          <h4 className="font-medium text-foreground mb-2">{suggestion.title}</h4>
                           <p className="text-sm text-muted-foreground mb-3">{suggestion.description}</p>
                           <div className="flex gap-2">
-                            <Badge variant="secondary">{suggestion.category}</Badge>
-                            <Badge variant="outline">{suggestion.timeframe}</Badge>
+                            <Badge variant="secondary">{suggestion.color}</Badge>
+                            <Badge variant="outline">{suggestion.icon}</Badge>
+                            {suggestion.target_date && <Badge variant="outline">{suggestion.target_date}</Badge>}
                           </div>
                         </div>
                         <Button 
@@ -300,17 +310,17 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
                   {taskSuggestions.map((suggestion, index) => (
                     <Card key={index} className="border-muted">
                       <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-foreground mb-2">{suggestion.title}</h4>
-                            <p className="text-sm text-muted-foreground mb-3">{suggestion.description}</p>
-                            <div className="flex gap-2">
-                              <Badge variant={suggestion.priority === 'high' ? 'default' : 'secondary'}>
-                                {suggestion.priority} priority
-                              </Badge>
-                              <Badge variant="outline">{suggestion.estimated_time}</Badge>
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-foreground mb-2">{suggestion.title}</h4>
+                              <p className="text-sm text-muted-foreground mb-3">{suggestion.notes}</p>
+                              <div className="flex gap-2">
+                                {suggestion.goal_id && suggestion.goal_id !== 'no-goal' && (
+                                  <Badge variant="secondary">Goal: {existingGoals.find(g => g.id === suggestion.goal_id)?.description?.slice(0, 20) || 'Unknown Goal'}</Badge>
+                                )}
+                                {suggestion.due_at && <Badge variant="outline">Due: {new Date(suggestion.due_at).toLocaleDateString()}</Badge>}
+                              </div>
                             </div>
-                          </div>
                           <Button 
                             onClick={() => createTaskFromSuggestion(suggestion)}
                             size="sm"

@@ -41,22 +41,33 @@ serve(async (req) => {
         systemPrompt = `You are a relationship coach AI specializing in helping couples set meaningful goals together. 
         Provide 3-5 specific, actionable goal suggestions for couples based on their relationship stage and interests.
         Focus on goals that strengthen emotional connection, communication, shared experiences, and personal growth together.
-        Format your response as a JSON array of objects with properties: title, description, category, timeframe.
-        Categories can be: communication, adventure, personal_growth, intimacy, lifestyle, financial, family.
-        Timeframes can be: short_term (1-3 months), medium_term (3-6 months), long_term (6+ months).`;
+        Format your response as a JSON array of objects with properties: description, target_date, color, icon.
+        - description: A detailed description of what the goal involves (1-2 sentences, this is the main goal text)
+        - target_date: A future date in YYYY-MM-DD format (2-8 weeks from now)
+        - color: One of: heart, coral, deep, primary, accent, secondary
+        - icon: One of: target, heart, star, trophy, flag, lightbulb, zap
+        Choose colors and icons that match the goal theme (heart for romance, trophy for achievements, etc).`;
         
-        userPrompt = `Generate relationship goal suggestions for a couple. Context: ${JSON.stringify(context)}`;
+        userPrompt = `Generate relationship goal suggestions for a couple. Context: ${JSON.stringify(context)}
+        Available colors: ${context.availableColors?.join(', ')}
+        Available icons: ${context.availableIcons?.join(', ')}
+        Use diverse colors and icons that match each goal's theme.`;
         break;
 
       case 'task_suggestions':
         systemPrompt = `You are a relationship coach AI helping couples break down their goals into actionable tasks.
         Provide 3-5 specific, practical tasks that help achieve the given goal.
         Focus on tasks that both partners can participate in or support each other with.
-        Format your response as a JSON array of objects with properties: title, description, priority, estimated_time.
-        Priority can be: high, medium, low.
-        Estimated_time should be a human-readable string like "30 minutes", "1 hour", "1 week", etc.`;
+        Format your response as a JSON array of objects with properties: title, notes, goal_id, due_at.
+        - title: A clear, actionable task title (3-8 words)
+        - notes: Detailed description with helpful tips (1-2 sentences)
+        - goal_id: The ID of the goal this task belongs to (provided in context)
+        - due_at: A future datetime in ISO format (1-14 days from now)`;
         
-        userPrompt = `Generate task suggestions for this relationship goal: "${context.goalDescription}". Context: ${JSON.stringify(context)}`;
+        userPrompt = `Generate task suggestions for this relationship goal: "${context.goalDescription}". 
+        Goal ID: ${context.goalId}
+        Context: ${JSON.stringify(context)}
+        Make tasks specific, achievable, and designed for couples to do together.`;
         break;
 
       case 'progress_insights':
