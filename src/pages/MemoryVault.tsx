@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import MemoryVaultFilters, { FilterState } from '@/components/MemoryVaultFilters';
 import MemoryVaultBulkActions from '@/components/MemoryVaultBulkActions';
+import { MemoryLightbox } from '@/components/MemoryLightbox';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -29,6 +30,7 @@ const MemoryVault = () => {
   const [uploading, setUploading] = useState(false);
   const [pair, setPair] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState<number>(-1);
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     mediaType: 'all',
@@ -528,7 +530,10 @@ const MemoryVault = () => {
                         poster="/placeholder.svg"
                       />
                     )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <div 
+                      className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center cursor-pointer"
+                      onClick={() => setLightboxIndex(filteredMemories.findIndex(m => m.id === memory.id))}
+                    >
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
                         <Button size="sm" variant="secondary" asChild>
                           <a href={mediaUrl} target="_blank" rel="noopener noreferrer">
@@ -561,6 +566,15 @@ const MemoryVault = () => {
             })}
           </div>
         )}
+
+        {/* Lightbox */}
+        <MemoryLightbox
+          memories={filteredMemories}
+          currentIndex={lightboxIndex}
+          isOpen={lightboxIndex >= 0}
+          onClose={() => setLightboxIndex(-1)}
+          onNavigate={setLightboxIndex}
+        />
       </div>
     </div>
   );
