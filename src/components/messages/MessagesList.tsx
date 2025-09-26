@@ -103,7 +103,12 @@ export const MessagesList = ({
         if (typeof message.body === 'string') {
           content = message.body;
         } else if (message.body && typeof message.body === 'object') {
-          content = message.body.text || message.body.content || JSON.stringify(message.body);
+          // For media messages, only show text content, not technical metadata
+          if (message.type === 'image' || message.type === 'video' || message.type === 'media') {
+            content = message.body.text || message.body.content || '';
+          } else {
+            content = message.body.text || message.body.content || JSON.stringify(message.body);
+          }
         }
 
         return (
