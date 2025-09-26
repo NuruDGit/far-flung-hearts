@@ -185,8 +185,7 @@ const MoodLogger = ({ compact = false, pairId }: MoodLoggerProps) => {
     <div className="space-y-6 pb-24">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Smile className="text-love-heart" size={20} />
+          <CardTitle>
             How are you feeling today?
           </CardTitle>
         </CardHeader>
