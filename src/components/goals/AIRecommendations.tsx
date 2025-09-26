@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Brain, Lightbulb, Plus, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,13 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
   const [goalSuggestions, setGoalSuggestions] = useState<GoalSuggestion[]>([]);
   const [taskSuggestions, setTaskSuggestions] = useState<TaskSuggestion[]>([]);
   const [selectedGoal, setSelectedGoal] = useState<string>('');
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const { toast } = useToast();
+
+  // Update active tab when defaultTab prop changes
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
 
   const generateGoalSuggestions = async () => {
     setLoading(true);
@@ -197,7 +203,7 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue={defaultTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="goals" data-tabs-trigger="goals">Goal Ideas</TabsTrigger>
             <TabsTrigger value="tasks" data-tabs-trigger="tasks">Task Ideas</TabsTrigger>

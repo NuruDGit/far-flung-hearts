@@ -147,22 +147,14 @@ export default function GoalsPage() {
   };
 
   const scrollToAIRecommendations = () => {
-    console.log('Tasks button clicked - starting scroll to AI recommendations');
-    
     // Set the tab to tasks first
     setAiRecommendationsTab("tasks");
-    console.log('Set AI recommendations tab to tasks');
     
     // Then scroll to the element
     setTimeout(() => {
       const element = document.getElementById('ai-recommendations');
-      console.log('Looking for ai-recommendations element:', element);
-      
       if (element) {
-        console.log('Found element, scrolling into view');
         element.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        console.error('Could not find ai-recommendations element');
       }
     }, 100); // Small delay to ensure tab state is updated
   };
@@ -338,15 +330,10 @@ export default function GoalsPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Button 
-                            onClick={() => {
-                              console.log('Button clicked!');
-                              alert('Tasks button clicked!');
-                              scrollToAIRecommendations();
-                            }}
+                            onClick={scrollToAIRecommendations}
                             size="sm"
                             variant="outline"
-                            className="h-8 px-3 text-xs pointer-events-auto"
-                            type="button"
+                            className="h-8 px-3 text-xs"
                           >
                             <Plus className="h-3 w-3 mr-1" />
                             Tasks
