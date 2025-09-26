@@ -221,11 +221,12 @@ export function AIRecommendations({ onGoalCreated, onTaskCreated, existingGoals,
 
           <TabsContent value="goals" className="space-y-4">
             <div className="flex flex-col gap-3">
-              <div className="flex justify-end">
+              <div className="w-full">
                 <Button 
                   onClick={generateGoalSuggestions} 
                   disabled={loading}
                   size="sm"
+                  className="w-full"
                 >
                   {loading ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
