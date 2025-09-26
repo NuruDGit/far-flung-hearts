@@ -184,7 +184,7 @@ export function EditGoalDialog({ open, onOpenChange, onGoalUpdated, goal }: Edit
                       {iconOptions.find(icon => icon.value === selectedIcon)?.Icon && (
                         React.createElement(iconOptions.find(icon => icon.value === selectedIcon)!.Icon, { 
                           size: 16, 
-                          style: { color: selectedColor } 
+                          className: `${selectedColor === 'heart' ? 'text-love-heart' : selectedColor === 'coral' ? 'text-love-coral' : selectedColor === 'deep' ? 'text-love-deep' : `text-${selectedColor}`}`
                         })
                       )}
                       {iconOptions.find(icon => icon.value === selectedIcon)?.label}
@@ -195,7 +195,7 @@ export function EditGoalDialog({ open, onOpenChange, onGoalUpdated, goal }: Edit
                   {iconOptions.map((icon) => (
                     <SelectItem key={icon.value} value={icon.value}>
                       <div className="flex items-center gap-2">
-                        <icon.Icon size={16} style={{ color: selectedColor }} />
+                        <icon.Icon size={16} className={`${selectedColor === 'heart' ? 'text-love-heart' : selectedColor === 'coral' ? 'text-love-coral' : selectedColor === 'deep' ? 'text-love-deep' : `text-${selectedColor}`}`} />
                         {icon.label}
                       </div>
                     </SelectItem>
