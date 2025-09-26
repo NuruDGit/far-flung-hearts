@@ -856,6 +856,7 @@ export type Database = {
           last_name: string | null
           phone_number: string | null
           pronouns: string | null
+          relationship_start_date: string | null
           relationship_status: string | null
           tz: string | null
         }
@@ -874,6 +875,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           pronouns?: string | null
+          relationship_start_date?: string | null
           relationship_status?: string | null
           tz?: string | null
         }
@@ -892,6 +894,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           pronouns?: string | null
+          relationship_start_date?: string | null
           relationship_status?: string | null
           tz?: string | null
         }
