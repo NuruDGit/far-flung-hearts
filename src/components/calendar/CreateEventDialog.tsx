@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { Calendar, CalendarIcon, Clock, MapPin, Heart, Gift, Plane, Cake, Users, Briefcase } from 'lucide-react';
+import { Calendar, CalendarIcon, Clock, MapPin, Heart, Gift, Plane, Cake, Coffee, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -43,12 +43,12 @@ interface CreateEventDialogProps {
 }
 
 const eventTypes = [
-  { value: 'date', label: 'Date', icon: Heart, color: 'bg-love-heart/10 text-love-heart border-love-heart/20' },
-  { value: 'anniversary', label: 'Anniversary', icon: Heart, color: 'bg-love-deep/10 text-love-deep border-love-deep/20' },
-  { value: 'travel', label: 'Travel', icon: Plane, color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
-  { value: 'birthday', label: 'Birthday', icon: Cake, color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' },
-  { value: 'meeting', label: 'Meeting', icon: Users, color: 'bg-green-500/10 text-green-600 border-green-500/20' },
-  { value: 'other', label: 'Other', icon: Briefcase, color: 'bg-gray-500/10 text-gray-600 border-gray-500/20' },
+  { value: 'date', label: 'Date Night', icon: Heart, color: 'bg-love-heart/10 text-love-heart border-love-heart/20' },
+  { value: 'anniversary', label: 'Anniversary', icon: Gift, color: 'bg-love-deep/10 text-love-deep border-love-deep/20' },
+  { value: 'travel', label: 'Travel', icon: Plane, color: 'bg-primary/10 text-primary border-primary/20' },
+  { value: 'birthday', label: 'Birthday', icon: Cake, color: 'bg-secondary/10 text-secondary-foreground border-secondary/20' },
+  { value: 'home', label: 'Cozy Night In', icon: Home, color: 'bg-muted/10 text-muted-foreground border-muted/20' },
+  { value: 'coffee', label: 'Coffee Date', icon: Coffee, color: 'bg-accent/10 text-accent-foreground border-accent/20' },
 ];
 
 const reminderOptions = [
