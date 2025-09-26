@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -59,6 +59,42 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
     country: '',
     relationship_start_date: undefined
   });
+
+  // Fetch existing profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          setProfile({
+            display_name: data.display_name || '',
+            bio: data.bio || '',
+            interests: data.interests || [],
+            relationship_status: data.relationship_status || '',
+            avatar_url: data.avatar_url || '',
+            birth_date: data.birth_date || '',
+            city: data.city || '',
+            country: data.country || '',
+            relationship_start_date: data.relationship_start_date ? new Date(data.relationship_start_date) : undefined
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load profile data');
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
 
   const handleInterestToggle = (interest: string) => {
     setProfile(prev => ({
