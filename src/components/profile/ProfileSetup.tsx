@@ -8,7 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Camera, X, MapPin, Calendar, ArrowLeft } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Camera, X, MapPin, Calendar as CalendarIcon, ArrowLeft, Heart } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,6 +40,7 @@ interface Profile {
   birth_date?: string;
   city?: string;
   country?: string;
+  relationship_start_date?: Date;
 }
 
 export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
@@ -51,7 +56,8 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
     avatar_url: '',
     birth_date: '',
     city: '',
-    country: ''
+    country: '',
+    relationship_start_date: undefined
   });
 
   const handleInterestToggle = (interest: string) => {
@@ -114,7 +120,8 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
           avatar_url: profile.avatar_url,
           birth_date: profile.birth_date || null,
           city: profile.city || null,
-          country: profile.country || null
+          country: profile.country || null,
+          relationship_start_date: profile.relationship_start_date?.toISOString().split('T')[0] || null
         })
         .eq('id', user.id);
 
@@ -309,6 +316,45 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
                   </Button>
                 ))}
               </div>
+            </div>
+
+            {/* Relationship Start Date */}
+            <div className="space-y-2">
+              <Label className="text-love-deep flex items-center">
+                <Heart className="h-4 w-4 mr-1" />
+                When did your relationship begin?
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                This helps us provide milestone reminders and personalized advice based on your relationship journey.
+              </p>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal focus:border-love-heart focus:ring-love-heart",
+                      !profile.relationship_start_date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {profile.relationship_start_date ? (
+                      format(profile.relationship_start_date, "PPP")
+                    ) : (
+                      <span>Pick your special date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={profile.relationship_start_date}
+                    onSelect={(date) => setProfile(prev => ({ ...prev, relationship_start_date: date }))}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <Button
