@@ -351,8 +351,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             {/* Relationship Start Date */}
             <div className="space-y-4">
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 bg-love-heart rounded-full"></div>
+                <h3 className="text-lg font-semibold text-foreground">
                   When did your relationship begin?
                 </h3>
                 <p className="text-sm text-muted-foreground">
