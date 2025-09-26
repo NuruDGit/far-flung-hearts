@@ -376,7 +376,7 @@ const CalendarPage = () => {
               <ChevronLeft className="h-5 w-5" />
             </Button>
             
-            <h2 className="text-2xl font-bold text-foreground min-w-[180px] text-center">
+            <h2 className="text-xl font-bold text-foreground min-w-[180px] text-center">
               {format(currentDate, 'MMMM yyyy')}
             </h2>
             
