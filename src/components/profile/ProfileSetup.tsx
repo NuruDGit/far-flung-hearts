@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 
 const INTERESTS = [
   'Hiking', 'Reading', 'Cooking', 'Travel', 'Music', 'Art', 'Movies', 'Gaming',
@@ -162,6 +163,33 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
         .eq('id', user.id);
 
       if (error) throw error;
+
+      // Trigger confetti celebration
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ff6b9d', '#ff8a9b', '#ffa8b5', '#c1669b', '#a8527a']
+      });
+
+      // Additional confetti burst
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+      }, 250);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 400);
 
       toast.success('Profile completed successfully!');
       onComplete();
