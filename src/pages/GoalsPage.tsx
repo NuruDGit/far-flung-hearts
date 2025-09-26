@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap, Archive, Eye, EyeOff } from 'lucide-react';
+import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal, MoreVertical, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap, Archive, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -568,7 +568,8 @@ export default function GoalsPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-foreground">Task Board</h2>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
+              {/* Desktop buttons - hidden on mobile */}
+              <div className="hidden sm:flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -588,6 +589,27 @@ export default function GoalsPage() {
                   <Archive className="h-4 w-4" />
                   Archive Old
                 </Button>
+              </div>
+              
+              {/* Mobile dropdown - shown only on mobile */}
+              <div className="sm:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-background border">
+                    <DropdownMenuItem onClick={() => setShowArchivedTasks(!showArchivedTasks)}>
+                      {showArchivedTasks ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
+                      {showArchivedTasks ? 'Hide Archived' : `Show Archived (${archivedTasks.length})`}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={manualArchiveCompletedTasks}>
+                      <Archive className="h-4 w-4 mr-2" />
+                      Archive Old Tasks
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
