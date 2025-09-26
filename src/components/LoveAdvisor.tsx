@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/auth/AuthProvider';
 import proximaAvatar from '@/assets/proxima-avatar.jpg';
+import loveLifestyle from '@/assets/love-lifestyle.jpg';
 import { BookCard } from './BookCard';
 import { BookRecommendations } from './BookRecommendations';
 
@@ -197,8 +198,12 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
       {messages.length === 1 && partnerData && (
         <div className="p-4 bg-gradient-to-r from-love-light/30 to-love-coral/10 border-b border-love-coral/10">
           <div className="text-center animate-fade-in">
-            <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-r from-love-heart/20 to-love-coral/20 flex items-center justify-center">
-              <div className="text-3xl">💕</div>
+            <div className="w-full h-32 mb-3 rounded-lg overflow-hidden">
+              <img 
+                src={loveLifestyle} 
+                alt="Beautiful romantic lifestyle" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex items-center justify-center">
               <div className="h-px bg-gradient-to-r from-transparent via-love-coral/30 to-transparent w-24"></div>
