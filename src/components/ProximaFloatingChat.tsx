@@ -40,27 +40,6 @@ const ProximaFloatingChat = () => {
 
   return (
     <div className="fixed inset-0 z-50 pointer-events-none">
-      {/* Inspiration bubble - only show when chat is closed */}
-      {!isOpen && (
-        <div className="fixed top-20 right-6 pointer-events-auto animate-in fade-in slide-in-from-right-3 duration-500">
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-love-coral/20 p-4 max-w-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-love-heart to-love-coral flex items-center justify-center shadow-lg">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-                  <AvatarFallback className="bg-love-heart text-white text-xs">
-                    <Bot className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-love-deep">Need inspiration?</p>
-                <p className="text-xs text-muted-foreground">Ask Proxima for love advice</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main chat dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
