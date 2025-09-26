@@ -65,6 +65,7 @@ const AppHome = () => {
             .single();
           
           setPartner(partnerData);
+          console.log('Partner data fetched:', partnerData);
 
           // Get daily question for the pair
           const { data: questionData } = await supabase.rpc('get_or_create_daily_question', {
@@ -254,11 +255,11 @@ const AppHome = () => {
           </Card>
         )}
 
-        {/* Weather Widget - Show partner's city weather */}
-        {pair && partner && (
+        {/* Weather Widget - Show partner's city weather (or user's city if no partner) */}
+        {pair && (
           <WeatherWidget 
-            partnerCity={partner?.city} 
-            partnerCountry={partner?.country}
+            partnerCity={partner?.city || userProfile?.city} 
+            partnerCountry={partner?.country || userProfile?.country}
           />
         )}
 
