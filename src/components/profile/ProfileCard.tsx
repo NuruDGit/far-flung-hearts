@@ -10,7 +10,7 @@ interface Profile {
   display_name: string;
   bio?: string;
   interests?: string[];
-  relationship_goals?: string;
+  relationship_status?: string;
   avatar_url?: string;
   created_at?: string;
   birth_date?: string;
@@ -223,14 +223,14 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               </p>
             )}
 
-            {/* Relationship Goals */}
-            {profile.relationship_goals && (
+            {/* Relationship Status */}
+            {profile.relationship_status && (
               <div className="mb-4">
-                <p className="text-sm font-bold text-muted-foreground text-center mb-2">Relationship Goal</p>
+                <p className="text-sm font-bold text-muted-foreground text-center mb-2">Relationship Status</p>
                 <div className="flex items-center justify-center">
                   <Crown className="h-4 w-4 mr-2 text-love-heart" />
                   <span className="text-sm font-medium text-love-deep text-center">
-                    {profile.relationship_goals}
+                    {profile.relationship_status}
                   </span>
                 </div>
               </div>

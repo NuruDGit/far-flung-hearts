@@ -856,7 +856,7 @@ export type Database = {
           last_name: string | null
           phone_number: string | null
           pronouns: string | null
-          relationship_goals: string | null
+          relationship_status: string | null
           tz: string | null
         }
         Insert: {
@@ -874,7 +874,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           pronouns?: string | null
-          relationship_goals?: string | null
+          relationship_status?: string | null
           tz?: string | null
         }
         Update: {
@@ -892,7 +892,7 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           pronouns?: string | null
-          relationship_goals?: string | null
+          relationship_status?: string | null
           tz?: string | null
         }
         Relationships: []

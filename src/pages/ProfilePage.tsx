@@ -15,7 +15,7 @@ interface Profile {
   display_name: string;
   bio?: string;
   interests?: string[];
-  relationship_goals?: string;
+  relationship_status?: string;
   avatar_url?: string;
   created_at?: string;
   birth_date?: string;
@@ -99,7 +99,7 @@ export const ProfilePage = () => {
       }
       
       // If profile is incomplete, show setup
-      if (!profileData.display_name || !profileData.bio || !profileData.interests?.length || !profileData.relationship_goals || !profileData.birth_date || !profileData.city || !profileData.country) {
+      if (!profileData.display_name || !profileData.bio || !profileData.interests?.length || !profileData.relationship_status || !profileData.birth_date || !profileData.city || !profileData.country) {
         setIsEditing(true);
       }
     } catch (error) {

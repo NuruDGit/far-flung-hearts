@@ -110,7 +110,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
           display_name: profile.display_name,
           bio: profile.bio,
           interests: profile.interests,
-          relationship_goals: profile.relationship_status,
+          relationship_status: profile.relationship_status,
           avatar_url: profile.avatar_url,
           birth_date: profile.birth_date || null,
           city: profile.city || null,

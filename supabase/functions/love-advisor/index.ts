@@ -71,7 +71,7 @@ Your Profile:
 - Location: ${userProfile.city && userProfile.country ? `${userProfile.city}, ${userProfile.country}` : 'Not provided'}
 - Interests: ${userProfile.interests?.length > 0 ? userProfile.interests.join(', ') : 'Not provided'}
 - Bio: ${userProfile.bio || 'Not provided'}
-- Relationship Goals: ${userProfile.relationship_goals || 'Not provided'}
+- Relationship Status: ${userProfile.relationship_status || 'Not provided'}
 - Phone: ${userProfile.phone_number || 'Not provided'}
 - Email: ${userProfile.email || 'Not provided'}
 `;
@@ -106,7 +106,7 @@ Your Partner's Profile:
 - Location: ${partnerProfile.city && partnerProfile.country ? `${partnerProfile.city}, ${partnerProfile.country}` : 'Not provided'}
 - Interests: ${partnerProfile.interests?.length > 0 ? partnerProfile.interests.join(', ') : 'Not provided'}
 - Bio: ${partnerProfile.bio || 'Not provided'}
-- Relationship Goals: ${partnerProfile.relationship_goals || 'Not provided'}
+- Relationship Status: ${partnerProfile.relationship_status || 'Not provided'}
 
 Relationship Duration: Since ${new Date(pair.created_at).toLocaleDateString()}
 `;
