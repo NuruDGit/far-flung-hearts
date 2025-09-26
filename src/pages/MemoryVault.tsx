@@ -135,24 +135,30 @@ const MemoryVault = () => {
           // Fetch memories from messages table
           console.log('Fetching memories for pair:', pairData.id);
           
-          const { data: memoriesData, error } = await supabase
+          const { data: messagesData, error } = await supabase
             .from('messages')
-            .select(`
-              *,
-              message_favorites!left(id)
-            `)
+            .select('*')
             .eq('pair_id', pairData.id)
-            .in('type', ['image', 'video'])
+            .in('type', ['image', 'video', 'media'])
             .not('media_url', 'is', null)
             .order('created_at', { ascending: false });
 
           if (error) {
             console.error('Error fetching memories:', error);
           } else {
-            console.log('Memories found:', memoriesData?.length || 0);
-            const memoriesWithFavorites = (memoriesData || []).map(message => ({
+            console.log('Memories found:', messagesData?.length || 0);
+            
+            // Fetch favorites separately
+            const { data: favoritesData } = await supabase
+              .from('message_favorites')
+              .select('message_id')
+              .eq('user_id', user.id);
+            
+            const favoriteMessageIds = new Set(favoritesData?.map(f => f.message_id) || []);
+            
+            const memoriesWithFavorites = (messagesData || []).map(message => ({
               ...message,
-              is_favorited: message.message_favorites && message.message_favorites.length > 0
+              is_favorited: favoriteMessageIds.has(message.id)
             }));
             setMemories(memoriesWithFavorites);
           }
