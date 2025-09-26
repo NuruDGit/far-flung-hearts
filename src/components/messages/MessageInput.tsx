@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Send, Smile, Paperclip, Camera, FileText, Mic, MapPin, User, Heart } from 'lucide-react';
+import { Send, Smile, Paperclip, Camera, FileText, Mic, MapPin, User, Vault } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -338,7 +338,7 @@ export const MessageInput = ({
                     onClick={handleMemoryVaultAccess}
                     className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
-                    <Heart size={16} className="text-pink-500" />
+                    <Vault size={16} className="text-pink-500" />
                     Memory Vault
                   </Button>
                 </div>
