@@ -19,12 +19,12 @@ const INTERESTS = [
 ];
 
 const RELATIONSHIP_STATUS = [
-  'Dating',
   'In a Relationship',
+  'Living Together',
   'Engaged',
   'Married',
-  'Long Distance',
-  'It\'s Complicated'
+  'Civil Partnership',
+  'Common Law Partners'
 ];
 
 interface Profile {
