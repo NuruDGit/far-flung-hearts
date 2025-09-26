@@ -194,6 +194,7 @@ export type Database = {
       goal_tasks: {
         Row: {
           archived_at: string | null
+          assigned_to: string | null
           completed_at: string | null
           due_at: string | null
           goal_id: string | null
@@ -206,6 +207,7 @@ export type Database = {
         }
         Insert: {
           archived_at?: string | null
+          assigned_to?: string | null
           completed_at?: string | null
           due_at?: string | null
           goal_id?: string | null
@@ -218,6 +220,7 @@ export type Database = {
         }
         Update: {
           archived_at?: string | null
+          assigned_to?: string | null
           completed_at?: string | null
           due_at?: string | null
           goal_id?: string | null
@@ -229,6 +232,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "goal_tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "goal_tasks_goal_id_fkey"
             columns: ["goal_id"]

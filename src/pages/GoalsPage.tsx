@@ -12,6 +12,8 @@ import { CreateGoalDialog } from '@/components/goals/CreateGoalDialog';
 import { EditGoalDialog } from '@/components/goals/EditGoalDialog';
 import { CreateTaskDialog } from '@/components/goals/CreateTaskDialog';
 import { AIRecommendations } from '@/components/goals/AIRecommendations';
+import { ExpandableTaskDescription } from '@/components/goals/ExpandableTaskDescription';
+import { TaskAssignmentSelector } from '@/components/goals/TaskAssignmentSelector';
 import AppNavigation from '@/components/AppNavigation';
 
 interface Task {
@@ -25,6 +27,7 @@ interface Task {
   completed_at?: string;
   archived_at?: string;
   is_archived?: boolean;
+  assigned_to?: string;
 }
 
 interface Goal {
@@ -91,7 +94,7 @@ export default function GoalsPage() {
       console.log('User pair:', pairData);
 
       const [tasksResponse, goalsResponse] = await Promise.all([
-        supabase.from('goal_tasks').select('*').eq('pair_id', pairData.id),
+        supabase.from('goal_tasks').select('*, assigned_to').eq('pair_id', pairData.id),
         supabase.from('goalboard').select('*').eq('pair_id', pairData.id)
       ]);
 
@@ -554,33 +557,44 @@ export default function GoalsPage() {
                                       </Badge>
                                     )}
                                   </div>
-                                  {task.notes && (
-                                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{task.notes}</p>
-                                  )}
-                                  <div className="flex flex-wrap gap-2 mb-2">
-                                    {task.goal_id && (() => {
-                                      const goal = getGoalForTask(task.goal_id);
-                                      if (goal) {
-                                        const IconComponent = getIconComponent(goal.icon);
-                                        return (
-                                          <Badge 
-                                            variant="outline" 
-                                            className={`text-xs flex items-center gap-1 ${getBorderColorClass(goal.color)} ${getColorClass(goal.color)}`}
-                                          >
-                                            <IconComponent size={12} className={getColorClass(goal.color)} />
-                                            {goal.description || 'Unknown Goal'}
-                                          </Badge>
-                                        );
-                                      }
-                                      return null;
-                                    })()}
-                                  </div>
-                                  {task.due_at && (
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <Calendar className="h-3 w-3" />
-                                      Due: {new Date(task.due_at).toLocaleDateString()}
-                                    </div>
-                                  )}
+                                   {task.notes && (
+                                     <div className="mb-3">
+                                       <ExpandableTaskDescription description={task.notes} />
+                                     </div>
+                                   )}
+                                   <div className="flex flex-wrap gap-2 mb-3">
+                                     {task.goal_id && (() => {
+                                       const goal = getGoalForTask(task.goal_id);
+                                       if (goal) {
+                                         const IconComponent = getIconComponent(goal.icon);
+                                         return (
+                                           <Badge 
+                                             variant="outline" 
+                                             className={`text-xs flex items-center gap-1 ${getBorderColorClass(goal.color)} ${getColorClass(goal.color)} bg-background/50`}
+                                           >
+                                             <IconComponent size={12} className={getColorClass(goal.color)} />
+                                             <span className="font-medium">Goal:</span>
+                                             {goal.description || 'Unknown Goal'}
+                                           </Badge>
+                                         );
+                                       }
+                                       return null;
+                                     })()}
+                                   </div>
+                                   
+                                   <div className="flex items-center justify-between mb-2">
+                                     <TaskAssignmentSelector 
+                                       taskId={task.id}
+                                       currentAssignee={task.assigned_to}
+                                       onAssignmentChange={fetchData}
+                                     />
+                                   </div>
+                                   {task.due_at && (
+                                     <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+                                       <Calendar className="h-3 w-3" />
+                                       <span>Due: {new Date(task.due_at).toLocaleDateString()}</span>
+                                     </div>
+                                   )}
                                 </CardContent>
                               </Card>
                             )}
