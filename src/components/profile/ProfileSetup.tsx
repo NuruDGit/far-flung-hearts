@@ -206,8 +206,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             {/* Basic Info Section */}
             <div className="space-y-6">
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 bg-love-heart rounded-full"></div>
+                <h3 className="text-lg font-semibold text-foreground">
                   Basic Information
                 </h3>
                 
