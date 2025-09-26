@@ -19,6 +19,8 @@ const AppHome = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dailyQuestion, setDailyQuestion] = useState<any>(null);
+  const [streak, setStreak] = useState<number>(0);
+  const [loadingStreak, setLoadingStreak] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -63,6 +65,17 @@ const AppHome = () => {
           if (questionData && questionData.length > 0) {
             setDailyQuestion(questionData[0]);
           }
+
+          // Calculate streak for the pair
+          setLoadingStreak(true);
+          const { data: streakData } = await supabase.rpc('calculate_pair_streak', {
+            target_pair_id: pairData.id
+          });
+          
+          if (streakData !== null) {
+            setStreak(streakData);
+          }
+          setLoadingStreak(false);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -283,7 +296,9 @@ const AppHome = () => {
                 <div>
                   <Flame className="h-5 w-5 mx-auto mb-1 text-orange-500" />
                   <p className="text-sm text-muted-foreground">Streak</p>
-                  <p className="font-semibold">7 days</p>
+                  <p className="font-semibold">
+                    {loadingStreak ? '--' : `${streak} ${streak === 1 ? 'day' : 'days'}`}
+                  </p>
                 </div>
                 <div>
                   <MessageSquareQuote className="h-5 w-5 mx-auto mb-1 text-love-deep" />
