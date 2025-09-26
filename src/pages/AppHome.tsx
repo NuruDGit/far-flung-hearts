@@ -356,7 +356,7 @@ const AppHome = () => {
           {quickActions.map((action, index) => (
             <Card 
               key={index} 
-              className={`cursor-pointer hover:scale-105 transition-transform bg-white/80 backdrop-blur-sm ${!pair ? 'opacity-50' : ''}`}
+              className={`cursor-pointer active:scale-95 focus:ring-2 focus:ring-love-heart/20 transition-transform bg-white/80 backdrop-blur-sm ${!pair ? 'opacity-50' : ''}`}
               onClick={pair ? action.action : () => {}}
             >
               <CardContent className="p-4 text-center">
@@ -392,11 +392,11 @@ const AppHome = () => {
           {/* Interactive Cards Grid */}
           <div className="grid md:grid-cols-2 gap-4">
             {/* Daily Question Card */}
-            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-love-coral/5 to-love-heart/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-love-heart/20 transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-love-coral/5 to-love-heart/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-coral/20 to-love-heart/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-coral/20 to-love-heart/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
                     <MessageSquareQuote className="text-love-coral h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-3">
@@ -415,8 +415,8 @@ const AppHome = () => {
                       <Button 
                         size="sm" 
                         className={`${pair && dailyQuestion && !dailyQuestion.answered_by 
-                          ? 'bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart' 
-                          : 'bg-secondary'} transition-all duration-200 font-medium`}
+                          ? 'bg-gradient-to-r from-love-heart to-love-coral active:from-love-coral active:to-love-heart active:scale-95 focus:ring-2 focus:ring-love-heart/20' 
+                          : 'bg-secondary'} transition-all duration-200 font-medium transform`}
                         disabled={!pair || !dailyQuestion} 
                         onClick={handleAnswerQuestion}
                       >
@@ -429,11 +429,11 @@ const AppHome = () => {
             </Card>
 
             {/* Memory Vault Card */}
-            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-love-deep/5 to-love-soft/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-love-deep/20 transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-love-deep/5 to-love-soft/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-deep/20 to-love-soft/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-deep/20 to-love-soft/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
                     <Camera className="text-love-deep h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-3">
