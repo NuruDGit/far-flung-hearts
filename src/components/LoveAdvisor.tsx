@@ -162,9 +162,12 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             {!message.isUser && (
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-love-coral/10 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-love-coral" />
-              </div>
+              <Avatar className="w-8 h-8 ring-1 ring-love-coral/20">
+                <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+                <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                  <Bot className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
             )}
             
             <div
@@ -225,9 +228,12 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         {/* Enhanced Loading Animation */}
         {isLoading && (
           <div className="flex gap-3 justify-start animate-fade-in">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-love-coral/10 flex items-center justify-center">
-              <Bot className="h-4 w-4 text-love-coral" />
-            </div>
+            <Avatar className="w-8 h-8 ring-1 ring-love-coral/20">
+              <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+              <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                <Bot className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             <div className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-gray-200/50 max-w-[75%]">
               <div className="flex items-center gap-2">
                 <div className="flex space-x-1">
