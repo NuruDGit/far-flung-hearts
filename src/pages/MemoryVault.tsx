@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Upload, Camera, Video, Heart, Calendar, Download, Trash2, Archive } from 'lucide-react';
+import { Upload, Camera, Video, Heart, Calendar, Download, Trash2, Archive, Share2 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import MemoryVaultFilters, { FilterState } from '@/components/MemoryVaultFilters';
 import MemoryVaultBulkActions from '@/components/MemoryVaultBulkActions';
 import { MemoryLightbox } from '@/components/MemoryLightbox';
+import { ShareMemoryDialog } from '@/components/ShareMemoryDialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -21,6 +22,7 @@ interface Memory {
   type: string;
   media_url: string;
   body: any;
+  is_favorited?: boolean;
 }
 
 const MemoryVault = () => {
@@ -31,12 +33,17 @@ const MemoryVault = () => {
   const [pair, setPair] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number>(-1);
+  const [shareDialog, setShareDialog] = useState<{ open: boolean; memory: Memory | null }>({
+    open: false,
+    memory: null
+  });
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     mediaType: 'all',
     dateRange: { from: null, to: null },
     sortBy: 'date',
-    sortDirection: 'desc'
+    sortDirection: 'desc',
+    showFavorites: false
   });
 
   // Filtered and sorted memories
@@ -76,6 +83,11 @@ const MemoryVault = () => {
         if (to && memoryDate > to) return false;
         return true;
       });
+    }
+
+    // Apply favorites filter
+    if (filters.showFavorites) {
+      filtered = filtered.filter(memory => memory.is_favorited);
     }
 
     // Apply sorting
@@ -125,9 +137,12 @@ const MemoryVault = () => {
           
           const { data: memoriesData, error } = await supabase
             .from('messages')
-            .select('*')
+            .select(`
+              *,
+              message_favorites!left(id)
+            `)
             .eq('pair_id', pairData.id)
-            .eq('type', 'media')
+            .in('type', ['image', 'video'])
             .not('media_url', 'is', null)
             .order('created_at', { ascending: false });
 
@@ -135,7 +150,11 @@ const MemoryVault = () => {
             console.error('Error fetching memories:', error);
           } else {
             console.log('Memories found:', memoriesData?.length || 0);
-            setMemories(memoriesData || []);
+            const memoriesWithFavorites = (memoriesData || []).map(message => ({
+              ...message,
+              is_favorited: message.message_favorites && message.message_favorites.length > 0
+            }));
+            setMemories(memoriesWithFavorites);
           }
         }
       } catch (error) {
@@ -345,6 +364,49 @@ const MemoryVault = () => {
     });
   };
 
+  const toggleFavorite = async (memory: Memory) => {
+    if (!user) return;
+
+    try {
+      if (memory.is_favorited) {
+        // Remove favorite
+        const { error } = await supabase
+          .from('message_favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('message_id', memory.id);
+
+        if (error) throw error;
+      } else {
+        // Add favorite
+        const { error } = await supabase
+          .from('message_favorites')
+          .insert({
+            user_id: user.id,
+            message_id: memory.id
+          });
+
+        if (error) throw error;
+      }
+
+      // Update local state
+      setMemories(prev => prev.map(m => 
+        m.id === memory.id 
+          ? { ...m, is_favorited: !m.is_favorited }
+          : m
+      ));
+
+      toast(memory.is_favorited ? "Removed from favorites" : "Added to favorites");
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast("Failed to update favorites. Please try again.");
+    }
+  };
+
+  const handleShare = (memory: Memory) => {
+    setShareDialog({ open: true, memory });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
       <AppNavigation />
@@ -535,6 +597,35 @@ const MemoryVault = () => {
                       onClick={() => setLightboxIndex(filteredMemories.findIndex(m => m.id === memory.id))}
                     >
                     </div>
+                    
+                    {/* Action buttons in top-right */}
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="h-8 w-8 p-0 bg-black/50 hover:bg-black/70 border-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(memory);
+                        }}
+                      >
+                        <Heart 
+                          size={14} 
+                          className={memory.is_favorited ? 'fill-red-500 text-red-500' : 'text-white'}
+                        />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="h-8 w-8 p-0 bg-black/50 hover:bg-black/70 border-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(memory);
+                        }}
+                      >
+                        <Share2 size={14} className="text-white" />
+                      </Button>
+                    </div>
                     <div className="absolute top-2 left-2">
                       <div className="bg-black/50 text-white rounded-full p-1">
                         {getFileTypeIcon(fileType)}
@@ -567,6 +658,16 @@ const MemoryVault = () => {
           isOpen={lightboxIndex >= 0}
           onClose={() => setLightboxIndex(-1)}
           onNavigate={setLightboxIndex}
+          onToggleFavorite={toggleFavorite}
+          onShare={handleShare}
+        />
+
+        {/* Share Dialog */}
+        <ShareMemoryDialog
+          memory={shareDialog.memory}
+          isOpen={shareDialog.open}
+          onClose={() => setShareDialog({ open: false, memory: null })}
+          pairId={pair?.id || ''}
         />
       </div>
     </div>

@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Calendar as CalendarIcon, X, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, Filter, Calendar as CalendarIcon, X, ArrowUpDown, ArrowUp, ArrowDown, Heart } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +19,7 @@ export interface FilterState {
   };
   sortBy: 'date' | 'name' | 'size';
   sortDirection: 'asc' | 'desc';
+  showFavorites?: boolean;
 }
 
 interface MemoryVaultFiltersProps {
@@ -45,7 +46,8 @@ const MemoryVaultFilters = ({ filters, onFiltersChange, totalCount, filteredCoun
   const hasActiveFilters = filters.search || 
     filters.mediaType !== 'all' || 
     filters.dateRange.from || 
-    filters.dateRange.to;
+    filters.dateRange.to ||
+    filters.showFavorites;
 
   const clearAllFilters = () => {
     onFiltersChange({
@@ -53,7 +55,8 @@ const MemoryVaultFilters = ({ filters, onFiltersChange, totalCount, filteredCoun
       mediaType: 'all',
       dateRange: { from: null, to: null },
       sortBy: 'date',
-      sortDirection: 'desc'
+      sortDirection: 'desc',
+      showFavorites: false
     });
   };
 
@@ -115,6 +118,17 @@ const MemoryVaultFilters = ({ filters, onFiltersChange, totalCount, filteredCoun
               <SelectItem value="size-asc">Smallest</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Favorites Toggle */}
+          <Button
+            variant={filters.showFavorites ? "default" : "outline"}
+            size="sm"
+            onClick={() => updateFilters({ showFavorites: !filters.showFavorites })}
+            className="flex items-center gap-2"
+          >
+            <Heart size={16} className={filters.showFavorites ? 'fill-current' : ''} />
+            Favorites
+          </Button>
         </div>
       </div>
 
@@ -225,6 +239,13 @@ const MemoryVaultFilters = ({ filters, onFiltersChange, totalCount, filteredCoun
                     Date: {format(filters.dateRange.from, "MMM d")}
                     {filters.dateRange.to && ` - ${format(filters.dateRange.to, "MMM d")}`}
                     <X size={12} className="cursor-pointer" onClick={clearDateRange} />
+                  </Badge>
+                )}
+                {filters.showFavorites && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <Heart size={12} className="fill-current" />
+                    Favorites only
+                    <X size={12} className="cursor-pointer" onClick={() => updateFilters({ showFavorites: false })} />
                   </Badge>
                 )}
               </div>

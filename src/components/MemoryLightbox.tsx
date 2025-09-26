@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, X, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Download, Heart, Share2 } from 'lucide-react';
 
 interface Memory {
   id: string;
@@ -12,6 +12,7 @@ interface Memory {
     attachments?: string[];
   };
   created_at: string;
+  is_favorited?: boolean;
 }
 
 interface MemoryLightboxProps {
@@ -20,6 +21,8 @@ interface MemoryLightboxProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (index: number) => void;
+  onToggleFavorite?: (memory: Memory) => void;
+  onShare?: (memory: Memory) => void;
 }
 
 export const MemoryLightbox: React.FC<MemoryLightboxProps> = ({
@@ -27,7 +30,9 @@ export const MemoryLightbox: React.FC<MemoryLightboxProps> = ({
   currentIndex,
   isOpen,
   onClose,
-  onNavigate
+  onNavigate,
+  onToggleFavorite,
+  onShare
 }) => {
   const currentMemory = memories[currentIndex];
   
@@ -74,17 +79,47 @@ export const MemoryLightbox: React.FC<MemoryLightboxProps> = ({
             <X size={24} />
           </Button>
 
-          {/* Download Button */}
-          <Button
-            variant="ghost"
-            size="icon" 
-            className="absolute top-4 right-16 z-50 text-white hover:bg-white/20"
-            asChild
-          >
-            <a href={mediaUrl} target="_blank" rel="noopener noreferrer">
-              <Download size={20} />
-            </a>
-          </Button>
+          {/* Action Buttons */}
+          <div className="absolute top-4 right-16 z-50 flex gap-2">
+            {/* Favorite Button */}
+            {onToggleFavorite && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/20"
+                onClick={() => onToggleFavorite(currentMemory)}
+              >
+                <Heart 
+                  size={20} 
+                  className={currentMemory.is_favorited ? 'fill-red-500 text-red-500' : 'text-white'}
+                />
+              </Button>
+            )}
+            
+            {/* Share Button */}
+            {onShare && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/20"
+                onClick={() => onShare(currentMemory)}
+              >
+                <Share2 size={20} />
+              </Button>
+            )}
+            
+            {/* Download Button */}
+            <Button
+              variant="ghost"
+              size="icon" 
+              className="text-white hover:bg-white/20"
+              asChild
+            >
+              <a href={mediaUrl} target="_blank" rel="noopener noreferrer">
+                <Download size={20} />
+              </a>
+            </Button>
+          </div>
 
           {/* Navigation Buttons */}
           {memories.length > 1 && (
