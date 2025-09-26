@@ -44,6 +44,7 @@ const MessagesPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,6 +84,19 @@ const MessagesPage = () => {
   useEffect(() => {
     if (user) {
       fetchPairAndMessages();
+      
+      // Check for highlight parameter in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const highlightId = urlParams.get('highlight');
+      if (highlightId) {
+        setHighlightedMessageId(highlightId);
+        // Clear the parameter from URL after 5 seconds
+        setTimeout(() => {
+          setHighlightedMessageId(null);
+          const newUrl = window.location.pathname;
+          window.history.replaceState(null, '', newUrl);
+        }, 5000);
+      }
     }
   }, [user]);
 
@@ -641,6 +655,7 @@ const MessagesPage = () => {
           profiles={profiles}
           loading={loading}
           favorites={favorites}
+          highlightedMessageId={highlightedMessageId}
           onAddReaction={handleAddReaction}
           onRemoveReaction={handleRemoveReaction}
           onFavorite={handleFavorite}

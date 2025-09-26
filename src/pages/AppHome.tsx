@@ -93,7 +93,25 @@ const AppHome = () => {
     if (!pair || !dailyQuestion) return;
     
     try {
-      // Mark question as answered
+      if (dailyQuestion.answered_by) {
+        // If already answered, find the answer message and navigate to it
+        const { data: messages } = await supabase
+          .from('messages')
+          .select('id')
+          .eq('pair_id', pair.id)
+          .eq('sender_id', dailyQuestion.answered_by)
+          .ilike('body->text', `%${dailyQuestion.question_text}%`)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (messages && messages.length > 0) {
+          // Navigate to messages page with the specific message highlighted
+          window.location.href = `/app/messages?highlight=${messages[0].id}`;
+          return;
+        }
+      }
+
+      // If not answered yet, mark as answered and navigate with pre-filled message
       await supabase
         .from('daily_questions')
         .update({ 
@@ -102,12 +120,11 @@ const AppHome = () => {
         })
         .eq('id', dailyQuestion.id);
 
-      // Navigate to messages with the question pre-filled
       const message = `Today's Question: ${dailyQuestion.question_text}`;
       localStorage.setItem('prefilledMessage', message);
       window.location.href = '/app/messages';
     } catch (error) {
-      console.error('Error marking question as answered:', error);
+      console.error('Error handling daily question:', error);
       toast.error('Failed to process question');
     }
   };

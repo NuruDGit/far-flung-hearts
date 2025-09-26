@@ -25,6 +25,7 @@ interface MessagesListProps {
   loading?: boolean;
   filteredMessages?: Message[];
   favorites?: Set<string>;
+  highlightedMessageId?: string | null;
   onEditMessage?: (id: string) => void;
   onDeleteMessage?: (id: string) => void;
   onReplyToMessage?: (id: string) => void;
@@ -42,6 +43,7 @@ export const MessagesList = ({
   loading = false,
   filteredMessages,
   favorites = new Set(),
+  highlightedMessageId,
   onEditMessage,
   onDeleteMessage,
   onReplyToMessage,
@@ -52,6 +54,7 @@ export const MessagesList = ({
   onRemoveReaction
 }: MessagesListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const highlightedRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
   const scrollToBottom = () => {
@@ -63,6 +66,12 @@ export const MessagesList = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (highlightedMessageId && highlightedRef.current) {
+      highlightedRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [highlightedMessageId, messages]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -125,27 +134,34 @@ export const MessagesList = ({
           }
         }
 
+        const isHighlighted = message.id === highlightedMessageId;
+        
         return (
-          <MessageBubble
+          <div
             key={message.id}
-            id={message.id}
-            content={content}
-            senderId={message.sender_id}
-            createdAt={message.created_at}
-            isOwn={isOwn}
-            type={message.type}
-            mediaUrl={message.media_url}
-            senderName={sender?.display_name || 'Partner'}
-            senderAvatar={sender?.avatar_url}
-            reactions={[]} // TODO: Add reactions from database
-            isFavorited={favorites.has(message.id)}
-            onEdit={onEditMessage}
-            onDelete={onDelete}
-            onReply={onReply}
-            onFavorite={onFavorite}
-            onAddReaction={onAddReaction}
-            onRemoveReaction={onRemoveReaction}
-          />
+            ref={isHighlighted ? highlightedRef : undefined}
+            className={`transition-all duration-500 ${isHighlighted ? 'ring-2 ring-primary ring-opacity-50 bg-primary/5 rounded-lg p-2 -m-2' : ''}`}
+          >
+            <MessageBubble
+              id={message.id}
+              content={content}
+              senderId={message.sender_id}
+              createdAt={message.created_at}
+              isOwn={isOwn}
+              type={message.type}
+              mediaUrl={message.media_url}
+              senderName={sender?.display_name || 'Partner'}
+              senderAvatar={sender?.avatar_url}
+              reactions={[]} // TODO: Add reactions from database
+              isFavorited={favorites.has(message.id)}
+              onEdit={onEditMessage}
+              onDelete={onDelete}
+              onReply={onReply}
+              onFavorite={onFavorite}
+              onAddReaction={onAddReaction}
+              onRemoveReaction={onRemoveReaction}
+            />
+          </div>
         );
       })}
       <div ref={messagesEndRef} />
