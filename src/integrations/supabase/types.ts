@@ -720,6 +720,153 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_history: {
+        Row: {
+          clicked_at: string | null
+          data: Json | null
+          delivery_method: string
+          id: string
+          message: string
+          notification_type: string
+          pair_id: string | null
+          read_at: string | null
+          sent_at: string
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          data?: Json | null
+          delivery_method: string
+          id?: string
+          message: string
+          notification_type: string
+          pair_id?: string | null
+          read_at?: string | null
+          sent_at?: string
+          status: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          clicked_at?: string | null
+          data?: Json | null
+          delivery_method?: string
+          id?: string
+          message?: string
+          notification_type?: string
+          pair_id?: string | null
+          read_at?: string | null
+          sent_at?: string
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          daily_questions: boolean
+          email_notifications: boolean
+          event_reminders: boolean
+          id: string
+          mood_alerts: boolean
+          push_notifications: boolean
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          task_reminders: boolean
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_questions?: boolean
+          email_notifications?: boolean
+          event_reminders?: boolean
+          id?: string
+          mood_alerts?: boolean
+          push_notifications?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          task_reminders?: boolean
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_questions?: boolean
+          email_notifications?: boolean
+          event_reminders?: boolean
+          id?: string
+          mood_alerts?: boolean
+          push_notifications?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          task_reminders?: boolean
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_queue: {
+        Row: {
+          attempts: number | null
+          created_at: string
+          data: Json | null
+          delivery_method: string[]
+          error_message: string | null
+          id: string
+          max_attempts: number | null
+          message: string
+          notification_type: string
+          pair_id: string | null
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          created_at?: string
+          data?: Json | null
+          delivery_method?: string[]
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          message: string
+          notification_type: string
+          pair_id?: string | null
+          scheduled_for: string
+          sent_at?: string | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          created_at?: string
+          data?: Json | null
+          delivery_method?: string[]
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          message?: string
+          notification_type?: string
+          pair_id?: string | null
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pair_invites: {
         Row: {
           code: string
@@ -1028,6 +1175,24 @@ export type Database = {
           question_date: string
           question_text: string
         }[]
+      }
+      get_user_notification_preferences: {
+        Args: { target_user_id: string }
+        Returns: {
+          created_at: string
+          daily_questions: boolean
+          email_notifications: boolean
+          event_reminders: boolean
+          id: string
+          mood_alerts: boolean
+          push_notifications: boolean
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          task_reminders: boolean
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
       }
       halfvec_avg: {
         Args: { "": number[] }
