@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.book-search]
 verify_jwt = false
+
+[functions.archive-completed-tasks]
+verify_jwt = false
