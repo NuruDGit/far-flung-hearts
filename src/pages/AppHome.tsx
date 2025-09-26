@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2 } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
@@ -227,9 +228,51 @@ const AppHome = () => {
               {partner ? `Connected with ${partner.first_name || partner.display_name}` : 'Exploring solo'}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut}>
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="hover:bg-white/10">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-sm border border-love-coral/20">
+              <DropdownMenuItem 
+                onClick={() => navigate('/profile')}
+                className="cursor-pointer hover:bg-love-light/20"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Profile Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => navigate('/mood')}
+                className="cursor-pointer hover:bg-love-light/20"
+              >
+                <Smile className="mr-2 h-4 w-4" />
+                Mood Tracker
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => navigate('/mood-analytics')}
+                className="cursor-pointer hover:bg-love-light/20"
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                Mood Analytics
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => navigate('/goals')}
+                className="cursor-pointer hover:bg-love-light/20"
+              >
+                <Heart className="mr-2 h-4 w-4" />
+                Relationship Goals
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-love-coral/20" />
+              <DropdownMenuItem 
+                onClick={signOut}
+                className="cursor-pointer hover:bg-red-50 text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Solo Mode - Invite Partner Banner */}
