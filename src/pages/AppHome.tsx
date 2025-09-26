@@ -537,7 +537,7 @@ const AppHome = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-heart/20 to-love-coral/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
                     <Calendar className="text-blue-600 h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-3">
