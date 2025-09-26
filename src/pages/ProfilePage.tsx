@@ -115,6 +115,19 @@ export const ProfilePage = () => {
     fetchProfileAndPairData();
   };
 
+  const isProfileComplete = () => {
+    if (!profile) return false;
+    return !!(
+      profile.display_name &&
+      profile.bio &&
+      profile.interests?.length &&
+      profile.relationship_status &&
+      profile.birth_date &&
+      profile.city &&
+      profile.country
+    );
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-love-light to-love-soft flex items-center justify-center">
@@ -210,9 +223,11 @@ export const ProfilePage = () => {
 
         {/* Additional Actions */}
         <div className="max-w-2xl mx-auto mt-8 text-center">
-          <p className="text-muted-foreground mb-4">
-            Make your profile shine! Complete all sections to help your partner get to know you better.
-          </p>
+          {!isProfileComplete() && (
+            <p className="text-muted-foreground mb-4">
+              Make your profile shine! Complete all sections to help your partner get to know you better.
+            </p>
+          )}
           <Button
             onClick={() => setIsEditing(true)}
             className="bg-love-heart hover:bg-love-coral text-white"
