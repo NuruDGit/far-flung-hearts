@@ -15,6 +15,7 @@ import GoalsPage from "./pages/GoalsPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import MemoryVault from "./pages/MemoryVault";
 import MoodAnalytics from "./pages/MoodAnalytics";
+import CalendarPage from "./pages/CalendarPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/app/mood/analytics" element={<MoodAnalytics />} />
             <Route path="/app/goals" element={<GoalsPage />} />
             <Route path="/app/profile" element={<ProfilePage />} />
+            <Route path="/app/calendar" element={<CalendarPage />} />
             <Route path="/memory-vault" element={<MemoryVault />} />
             <Route path="/app/advisor" element={<AdvisorPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

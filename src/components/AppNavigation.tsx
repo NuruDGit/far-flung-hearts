@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3 } from 'lucide-react';
+import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AppNavigation = () => {
@@ -10,6 +10,7 @@ const AppNavigation = () => {
   const navItems = [
     { path: '/app', icon: Home, label: 'Home' },
     { path: '/app/messages', icon: MessageCircle, label: 'Messages' },
+    { path: '/app/calendar', icon: Calendar, label: 'Calendar' },
     { path: '/app/mood/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/app/goals', icon: Target, label: 'Goals' },
     { path: '/app/profile', icon: User, label: 'Profile' },

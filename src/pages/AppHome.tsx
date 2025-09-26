@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -508,6 +508,42 @@ const AppHome = () => {
                         className="transition-all duration-200 font-medium"
                       >
                         {pair ? "Browse Vault" : "Preview"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Calendar Card */}
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
+                    <Calendar className="text-blue-600 h-6 w-6" />
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <h3 className="font-semibold text-foreground text-lg">Shared Calendar</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {pair ? "Plan dates and sync your schedules together" : "Organize your events and special dates"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pair && (
+                        <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                          Shared calendar
+                        </div>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant={pair ? "default" : "secondary"}
+                        onClick={() => navigate('/app/calendar')}
+                        className="transition-all duration-200 font-medium"
+                      >
+                        {pair ? "View Calendar" : "Preview"}
                       </Button>
                     </div>
                   </div>
