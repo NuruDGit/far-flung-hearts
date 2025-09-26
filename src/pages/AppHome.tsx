@@ -47,6 +47,14 @@ const AppHome = () => {
         if (pairData) {
           setPair(pairData);
           
+          // Calculate streak
+          setLoadingStreak(true);
+          const { data: streakData } = await supabase.rpc('calculate_pair_streak', {
+            target_pair_id: pairData.id
+          });
+          setStreak(streakData || 0);
+          setLoadingStreak(false);
+          
           // Get partner profile
           const partnerId = pairData.user_a === user.id ? pairData.user_b : pairData.user_a;
           const { data: partnerData } = await supabase
@@ -66,22 +74,13 @@ const AppHome = () => {
             setDailyQuestion(questionData[0]);
           }
 
-          // Calculate streak for the pair
-          setLoadingStreak(true);
-          const { data: streakData } = await supabase.rpc('calculate_pair_streak', {
-            target_pair_id: pairData.id
-          });
-          
-          if (streakData !== null) {
-            setStreak(streakData);
-          }
-          setLoadingStreak(false);
         }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          setLoadingStreak(false);
+        } finally {
+          setLoading(false);
+        }
     };
 
     fetchUserData();
