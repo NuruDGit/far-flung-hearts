@@ -409,8 +409,7 @@ const AppHome = () => {
                     <div className="flex items-center gap-2">
                       {pair && dailyQuestion && dailyQuestion.answered_by && (
                         <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                          Answered today
+                          Answered
                         </div>
                       )}
                       <Button 
