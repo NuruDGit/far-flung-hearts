@@ -209,12 +209,18 @@ const MemoryVault = () => {
 
         console.log('File uploaded successfully, getting public URL...');
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
+        // Get signed URL for private bucket
+        const { data: signedUrlData, error: urlError } = await supabase.storage
           .from('media')
-          .getPublicUrl(filePath);
+          .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year expiry
 
-        console.log('Public URL obtained:', publicUrl);
+        if (urlError) {
+          console.error('URL generation error:', urlError);
+          throw urlError;
+        }
+
+        const mediaUrl = signedUrlData.signedUrl;
+        console.log('Signed URL obtained:', mediaUrl);
 
         // Create message record in database
         const { data: messageData, error: messageError } = await supabase
@@ -223,9 +229,9 @@ const MemoryVault = () => {
             pair_id: pair.id,
             sender_id: user.id,
             type: 'media',
-            media_url: publicUrl,
+            media_url: mediaUrl,
             body: {
-              attachments: [publicUrl],
+              attachments: [mediaUrl],
               text: '',
               file_name: file.name,
               file_size: file.size,
