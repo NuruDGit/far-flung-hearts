@@ -230,7 +230,7 @@ const AppHome = () => {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="hover:bg-love-coral/10 hover:text-love-coral transition-colors">
                 <MoreVertical className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
