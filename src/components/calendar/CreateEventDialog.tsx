@@ -353,7 +353,10 @@ export const CreateEventDialog = ({ open, onOpenChange, pairId, selectedDate, on
                       <FormItem>
                         <FormLabel>Start Time</FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} />
+                          <div className="relative">
+                            <Input type="time" {...field} />
+                            <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -367,7 +370,10 @@ export const CreateEventDialog = ({ open, onOpenChange, pairId, selectedDate, on
                       <FormItem>
                         <FormLabel>End Time</FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} />
+                          <div className="relative">
+                            <Input type="time" {...field} />
+                            <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
