@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { MoreVertical, Edit3, Trash2, Reply } from 'lucide-react';
 import { Button } from '@/components/ui/button';
