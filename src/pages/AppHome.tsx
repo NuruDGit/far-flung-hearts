@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
+import WeatherWidget from '@/components/WeatherWidget';
 import { toast } from 'sonner';
 
 const AppHome = () => {
@@ -251,6 +252,14 @@ const AppHome = () => {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Weather Widget - Show partner's city weather */}
+        {pair && partner && (
+          <WeatherWidget 
+            partnerCity={partner?.city} 
+            partnerCountry={partner?.country}
+          />
         )}
 
         {/* Partner Card - Only show if paired */}
