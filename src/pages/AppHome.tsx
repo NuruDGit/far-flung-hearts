@@ -538,7 +538,7 @@ const AppHome = () => {
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-heart/20 to-love-coral/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
-                    <Calendar className="text-blue-600 h-6 w-6" />
+                    <Calendar className="text-love-heart h-6 w-6" />
                   </div>
                   <div className="flex-1 space-y-3">
                     <div>
