@@ -479,7 +479,7 @@ const MessagesPage = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={handleBlockUser}
-                    className="text-destructive focus:text-destructive hover:text-white hover:bg-destructive"
+                    className="text-destructive focus:text-destructive focus:bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground"
                   >
                     <UserX className="mr-2 h-4 w-4" />
                     {isBlocked ? 'Unblock User' : 'Block User'}
