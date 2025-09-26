@@ -13,19 +13,31 @@ interface MessageInputProps {
   placeholder?: string;
 }
 
-const EMOJIS = [
-  // Love & Hearts
-  '❤️', '💕', '💖', '💗', '💓', '💘', '💝', '💋', '🧡', '💛', '💚', '💙', '💜', '🤍', '🖤', '🤎',
-  // Happy & Positive
-  '😊', '😍', '🥰', '😘', '😂', '🤣', '😁', '😄', '😃', '😀', '🤗', '🥳', '😋', '😌', '🤤', '😇',
-  // Playful & Fun
-  '😜', '🤪', '😝', '🤭', '😏', '😎', '🤓', '🥸', '🤯', '😮', '😯', '😲', '🤩', '✨', '🌟', '⭐',
-  // Cute & Sweet
-  '🥺', '🥹', '😚', '😙', '🤏', '👌', '✌️', '🤞', '🫶', '👍', '👏', '🙌', '🤝', '💪', '🦋', '🌈',
-  // Nature & Flowers
-  '🌹', '🌺', '🌸', '🌻', '🌷', '🏵️', '💐', '🌿', '🍀', '🌱', '🌲', '🌳', '🎋', '🎍', '🌾', '🌴',
-  // Celebration & Fun
-  '🎉', '🎊', '🎈', '🎁', '🎂', '🍰', '🧁', '🍾', '🥂', '🍻', '☀️', '🌞', '🌙', '🌛', '💫', '⚡'
+const EMOJI_CATEGORIES = [
+  {
+    title: "❤️ Love & Hearts",
+    emojis: ['❤️', '💕', '💖', '💗', '💓', '💘', '💝', '💋', '🧡', '💛', '💚', '💙', '💜', '🤍', '🖤', '🤎']
+  },
+  {
+    title: "😊 Happy & Positive", 
+    emojis: ['😊', '😍', '🥰', '😘', '😂', '🤣', '😁', '😄', '😃', '😀', '🤗', '🥳', '😋', '😌', '🤤', '😇']
+  },
+  {
+    title: "😜 Playful & Fun",
+    emojis: ['😜', '🤪', '😝', '🤭', '😏', '😎', '🤓', '🥸', '🤯', '😮', '😯', '😲', '🤩', '✨', '🌟', '⭐']
+  },
+  {
+    title: "🥺 Cute & Sweet",
+    emojis: ['🥺', '🥹', '😚', '😙', '🤏', '👌', '✌️', '🤞', '🫶', '👍', '👏', '🙌', '🤝', '💪', '🦋', '🌈']
+  },
+  {
+    title: "🌹 Nature & Flowers",
+    emojis: ['🌹', '🌺', '🌸', '🌻', '🌷', '🏵️', '💐', '🌿', '🍀', '🌱', '🌲', '🌳', '🎋', '🎍', '🌾', '🌴']
+  },
+  {
+    title: "🎉 Celebration",
+    emojis: ['🎉', '🎊', '🎈', '🎁', '🎂', '🍰', '🧁', '🍾', '🥂', '🍻', '☀️', '🌞', '🌙', '🌛', '💫', '⚡']
+  }
 ];
 
 export const MessageInput = ({
@@ -220,20 +232,29 @@ export const MessageInput = ({
                   <Smile size={isMobile ? 18 : 14} />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-80 p-3" align="end" side="top">
-                <div className={`grid gap-1 ${isMobile ? 'grid-cols-6' : 'grid-cols-8'}`}>
-                  {EMOJIS.map((emoji) => (
-                    <Button
-                      key={emoji}
-                      variant="ghost"
-                      size="sm"
-                      className={`text-lg hover:bg-secondary active:bg-secondary active:scale-95 transition-all ${
-                        isMobile ? 'p-2 h-10 w-10 min-w-[44px]' : 'p-1 h-8 w-8'
-                      }`}
-                      onClick={() => handleEmojiSelect(emoji)}
-                    >
-                      {emoji}
-                    </Button>
+              <PopoverContent className="w-80 p-0" align="end" side="top">
+                <div className="max-h-80 overflow-y-auto p-3">
+                  {EMOJI_CATEGORIES.map((category) => (
+                    <div key={category.title} className="mb-4 last:mb-0">
+                      <h4 className="text-xs font-medium text-muted-foreground mb-2 px-1">
+                        {category.title}
+                      </h4>
+                      <div className={`grid gap-1 ${isMobile ? 'grid-cols-6' : 'grid-cols-8'}`}>
+                        {category.emojis.map((emoji) => (
+                          <Button
+                            key={emoji}
+                            variant="ghost"
+                            size="sm"
+                            className={`text-lg hover:bg-secondary active:bg-secondary active:scale-95 transition-all ${
+                              isMobile ? 'p-2 h-10 w-10 min-w-[44px]' : 'p-1 h-8 w-8'
+                            }`}
+                            onClick={() => handleEmojiSelect(emoji)}
+                          >
+                            {emoji}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </PopoverContent>
