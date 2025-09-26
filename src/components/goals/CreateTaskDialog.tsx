@@ -6,21 +6,29 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
+interface Goal {
+  id: string;
+  description?: string;
+}
+
 interface CreateTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTaskCreated: () => void;
+  goals?: Goal[];
 }
 
-export function CreateTaskDialog({ open, onOpenChange, onTaskCreated }: CreateTaskDialogProps) {
+export function CreateTaskDialog({ open, onOpenChange, onTaskCreated, goals = [] }: CreateTaskDialogProps) {
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState<Date>();
+  const [selectedGoalId, setSelectedGoalId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -47,7 +55,8 @@ export function CreateTaskDialog({ open, onOpenChange, onTaskCreated }: CreateTa
           notes: notes.trim() || null,
           due_at: dueDate ? dueDate.toISOString() : null,
           status_column: 'todo',
-          pair_id: pairData.id
+          pair_id: pairData.id,
+          goal_id: selectedGoalId || null
         });
 
       if (error) throw error;
@@ -61,6 +70,7 @@ export function CreateTaskDialog({ open, onOpenChange, onTaskCreated }: CreateTa
       setTitle('');
       setNotes('');
       setDueDate(undefined);
+      setSelectedGoalId('');
       onOpenChange(false);
       onTaskCreated();
     } catch (error) {
@@ -103,6 +113,23 @@ export function CreateTaskDialog({ open, onOpenChange, onTaskCreated }: CreateTa
               onChange={(e) => setNotes(e.target.value)}
               className="min-h-[80px]"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="goal">Goal (Optional)</Label>
+            <Select value={selectedGoalId} onValueChange={setSelectedGoalId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a goal for this task" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No specific goal</SelectItem>
+                {goals.map((goal) => (
+                  <SelectItem key={goal.id} value={goal.id}>
+                    {goal.description || `Goal ${goal.id.slice(0, 8)}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

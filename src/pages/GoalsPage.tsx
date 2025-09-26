@@ -21,6 +21,7 @@ interface Task {
   due_at?: string;
   status_column: 'todo' | 'doing' | 'done';
   pair_id: string;
+  goal_id?: string;
 }
 
 interface Goal {
@@ -233,6 +234,11 @@ export default function GoalsPage() {
     setShowDeleteAlert(true);
   };
 
+  const getGoalForTask = (goalId?: string) => {
+    if (!goalId) return null;
+    return goals.find(goal => goal.id === goalId);
+  };
+
   const confirmDeleteGoal = async () => {
     if (!goalToDelete) return;
 
@@ -416,6 +422,13 @@ export default function GoalsPage() {
                                   {task.notes && (
                                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{task.notes}</p>
                                   )}
+                                  <div className="flex flex-wrap gap-2 mb-2">
+                                    {task.goal_id && (
+                                      <Badge variant="outline" className="text-xs">
+                                        🎯 {getGoalForTask(task.goal_id)?.description || 'Unknown Goal'}
+                                      </Badge>
+                                    )}
+                                  </div>
                                   {task.due_at && (
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                       <Calendar className="h-3 w-3" />
@@ -455,6 +468,7 @@ export default function GoalsPage() {
           open={showCreateTask}
           onOpenChange={setShowCreateTask}
           onTaskCreated={fetchData}
+          goals={goals}
         />
 
         {/* Delete Confirmation Alert */}
