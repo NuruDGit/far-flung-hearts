@@ -114,13 +114,18 @@ export const MessageInput = ({
   };
 
   const handleContactShare = () => {
-    setMessage(prev => prev + '👤 Contact: ');
+    // Create a more comprehensive contact sharing experience
+    const contactInfo = `👤 Contact Info:
+📧 Email: 
+📱 Phone: 
+🏠 Address: `;
+    setMessage(prev => prev + contactInfo);
     setIsAttachOpen(false);
   };
 
   const handleMemoryVaultAccess = () => {
-    // Navigate to memory vault or open in modal
-    window.open('/app/memory-vault', '_blank');
+    // Navigate to the memory vault page within the app
+    window.location.href = '/app/memory-vault';
     setIsAttachOpen(false);
   };
 
@@ -237,8 +242,11 @@ export const MessageInput = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsCameraOpen(true)}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    onClick={() => {
+                      setIsCameraOpen(true);
+                      setIsAttachOpen(false);
+                    }}
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <Camera size={16} className="text-blue-500" />
                     Take Photo
@@ -247,7 +255,7 @@ export const MessageInput = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleAttachClick}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <FileText size={16} className="text-green-500" />
                     Photos & Videos
@@ -256,7 +264,7 @@ export const MessageInput = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleDocumentClick}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <FileText size={16} className="text-orange-500" />
                     Documents
@@ -265,7 +273,7 @@ export const MessageInput = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleAudioClick}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <Mic size={16} className="text-purple-500" />
                     Audio
@@ -274,7 +282,7 @@ export const MessageInput = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleLocationShare}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <MapPin size={16} className="text-red-500" />
                     Location
@@ -283,7 +291,7 @@ export const MessageInput = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleContactShare}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <User size={16} className="text-blue-600" />
                     Contact
@@ -292,7 +300,7 @@ export const MessageInput = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleMemoryVaultAccess}
-                    className="justify-start gap-3 h-10 px-3 text-sm hover:bg-secondary active:bg-secondary"
+                    className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
                     <Heart size={16} className="text-pink-500" />
                     Memory Vault
