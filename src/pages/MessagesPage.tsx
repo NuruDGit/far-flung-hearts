@@ -206,7 +206,7 @@ const MessagesPage = () => {
         .upload(filePath, file);
 
       if (uploadError) {
-        console.error('Error uploading file:', uploadError);
+        
         return null;
       }
 
@@ -216,7 +216,7 @@ const MessagesPage = () => {
 
       return data.publicUrl;
     } catch (error) {
-      console.error('Error in uploadFile:', error);
+      
       return null;
     }
   };

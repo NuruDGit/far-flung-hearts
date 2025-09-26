@@ -226,7 +226,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     };
 
     peerConnection.onconnectionstatechange = () => {
-      console.log('Connection state:', peerConnection.connectionState);
+      
       if (peerConnection.connectionState === 'connected') {
         setCallState(prev => ({ ...prev, isConnected: true, isReconnecting: false }));
       } else if (peerConnection.connectionState === 'disconnected') {
@@ -239,7 +239,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     };
 
     peerConnection.oniceconnectionstatechange = () => {
-      console.log('ICE connection state:', peerConnection.iceConnectionState);
+      
       if (peerConnection.iceConnectionState === 'disconnected') {
         attemptReconnection();
       }

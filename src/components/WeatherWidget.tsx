@@ -27,11 +27,11 @@ const WeatherWidget = ({ partnerCity, partnerCountry, partnerName }: WeatherWidg
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    console.log('WeatherWidget - partnerCity:', partnerCity, 'partnerCountry:', partnerCountry);
+    
     if (partnerCity && partnerCountry) {
       fetchWeatherData();
     } else {
-      console.log('WeatherWidget - Missing city or country data');
+      
     }
   }, [partnerCity, partnerCountry]);
 
@@ -40,7 +40,7 @@ const WeatherWidget = ({ partnerCity, partnerCountry, partnerName }: WeatherWidg
       setLoading(true);
       setError('');
       
-      console.log('Fetching weather for:', partnerCity, partnerCountry);
+      
 
       // Call edge function to get weather data
       const { data, error: weatherError } = await supabase.functions.invoke('get-weather', {
@@ -50,14 +50,14 @@ const WeatherWidget = ({ partnerCity, partnerCountry, partnerName }: WeatherWidg
         }
       });
 
-      console.log('Weather function raw response:', data, weatherError);
+      
 
       if (weatherError) {
         throw new Error(weatherError.message);
       }
 
       if (data?.error) {
-        console.warn('Weather function response error:', data.error, data.message);
+        
         setWeather(null);
         setError(data.error === 'city_not_supported' ? 'city_not_supported' : 'not_available');
         return;

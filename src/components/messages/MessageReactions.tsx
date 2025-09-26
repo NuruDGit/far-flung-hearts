@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface Reaction {
   emoji: string;
@@ -13,8 +15,8 @@ interface Reaction {
 interface MessageReactionsProps {
   messageId: string;
   reactions: Reaction[];
-  onAddReaction: (messageId: string, emoji: string) => void;
-  onRemoveReaction: (messageId: string, emoji: string) => void;
+  onAddReaction?: (messageId: string, emoji: string) => void;
+  onRemoveReaction?: (messageId: string, emoji: string) => void;
   isSelected?: boolean;
 }
 
@@ -28,24 +30,152 @@ export const MessageReactions = ({
   isSelected = false
 }: MessageReactionsProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [localReactions, setLocalReactions] = useState<Reaction[]>(reactions);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
-  const handleReactionClick = (emoji: string, userReacted: boolean) => {
-    if (userReacted) {
-      onRemoveReaction(messageId, emoji);
-    } else {
-      onAddReaction(messageId, emoji);
+  useEffect(() => {
+    setLocalReactions(reactions);
+  }, [reactions]);
+
+  // Set up real-time subscription for reactions
+  useEffect(() => {
+    const channel = supabase
+      .channel('message-reactions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'message_reactions',
+          filter: `message_id=eq.${messageId}`
+        },
+        () => {
+          // Refetch reactions when changes occur
+          fetchReactions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [messageId]);
+
+  const fetchReactions = async () => {
+    try {
+      const { data: reactionsData, error } = await supabase
+        .from('message_reactions')
+        .select('emoji, user_id')
+        .eq('message_id', messageId);
+
+      if (error) throw error;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      const currentUserId = user?.id;
+
+      // Group reactions by emoji
+      const reactionGroups: { [emoji: string]: { count: number; userReacted: boolean } } = {};
+      
+      reactionsData?.forEach(reaction => {
+        if (!reactionGroups[reaction.emoji]) {
+          reactionGroups[reaction.emoji] = { count: 0, userReacted: false };
+        }
+        reactionGroups[reaction.emoji].count++;
+        if (reaction.user_id === currentUserId) {
+          reactionGroups[reaction.emoji].userReacted = true;
+        }
+      });
+
+      const formattedReactions: Reaction[] = Object.entries(reactionGroups).map(([emoji, data]) => ({
+        emoji,
+        count: data.count,
+        userReacted: data.userReacted
+      }));
+
+      setLocalReactions(formattedReactions);
+    } catch (error) {
+      console.error('Error fetching reactions:', error);
     }
   };
 
-  const handleAddReaction = (emoji: string) => {
-    onAddReaction(messageId, emoji);
+  const handleReactionClick = async (emoji: string, userReacted: boolean) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in to react to messages", variant: "destructive" });
+        return;
+      }
+
+      if (userReacted) {
+        await removeReaction(emoji);
+      } else {
+        await addReaction(emoji);
+      }
+
+      // Call parent callbacks if provided
+      if (userReacted && onRemoveReaction) {
+        onRemoveReaction(messageId, emoji);
+      } else if (!userReacted && onAddReaction) {
+        onAddReaction(messageId, emoji);
+      }
+    } catch (error) {
+      toast({ title: "Failed to update reaction", variant: "destructive" });
+    }
+  };
+
+  const handleAddReaction = async (emoji: string) => {
+    await addReaction(emoji);
+    if (onAddReaction) {
+      onAddReaction(messageId, emoji);
+    }
     setIsOpen(false);
+  };
+
+  const addReaction = async (emoji: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('message_reactions')
+        .insert({
+          message_id: messageId,
+          user_id: user.id,
+          emoji
+        });
+
+      if (error) throw error;
+    } catch (error: any) {
+      if (error.code === '23505') {
+        // Unique constraint violation - user already reacted with this emoji
+        return;
+      }
+      throw error;
+    }
+  };
+
+  const removeReaction = async (emoji: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('message_reactions')
+        .delete()
+        .eq('message_id', messageId)
+        .eq('user_id', user.id)
+        .eq('emoji', emoji);
+
+      if (error) throw error;
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (
     <div className="flex items-center gap-1 mt-1">
-      {reactions.map((reaction) => (
+      {localReactions.map((reaction) => (
         <Button
           key={reaction.emoji}
           variant={reaction.userReacted ? "secondary" : "ghost"}

@@ -70,11 +70,11 @@ const PartnerSupport: React.FC<PartnerSupportProps> = ({
 
   const sendSupportMessage = async (message: string, actionType: string) => {
     if (!user || sending) {
-      console.log('Cannot send support message:', { user: !!user, sending });
+      
       return;
     }
 
-    console.log('Sending support message:', { message, actionType, pairId, partnerId });
+    
 
     setSending(true);
     try {

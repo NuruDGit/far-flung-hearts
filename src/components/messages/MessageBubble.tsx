@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageReactions } from './MessageReactions';
 import { MessageActionBar } from './MessageActionBar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Reaction {
   emoji: string;
@@ -62,7 +63,55 @@ export const MessageBubble = ({
   const [showMenu, setShowMenu] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
+  const [localReactions, setLocalReactions] = useState<Reaction[]>(reactions);
   const isMobile = useIsMobile();
+
+  // Fetch reactions for this message
+  useEffect(() => {
+    const fetchReactions = async () => {
+      try {
+        const { data: reactionsData, error } = await supabase
+          .from('message_reactions')
+          .select('emoji, user_id')
+          .eq('message_id', id);
+
+        if (error) return;
+
+        const { data: { user } } = await supabase.auth.getUser();
+        const currentUserId = user?.id;
+
+        // Group reactions by emoji
+        const reactionGroups: { [emoji: string]: { count: number; userReacted: boolean } } = {};
+        
+        reactionsData?.forEach(reaction => {
+          if (!reactionGroups[reaction.emoji]) {
+            reactionGroups[reaction.emoji] = { count: 0, userReacted: false };
+          }
+          reactionGroups[reaction.emoji].count++;
+          if (reaction.user_id === currentUserId) {
+            reactionGroups[reaction.emoji].userReacted = true;
+          }
+        });
+
+        const formattedReactions: Reaction[] = Object.entries(reactionGroups).map(([emoji, data]) => ({
+          emoji,
+          count: data.count,
+          userReacted: data.userReacted
+        }));
+
+        setLocalReactions(formattedReactions);
+      } catch (error) {
+        // Silent fail for reactions
+      }
+    };
+
+    fetchReactions();
+  }, [id]);
+
+  // Update local reactions when props change
+  useEffect(() => {
+    setLocalReactions(reactions);
+  }, [reactions]);
   
   // Auto-deselect after 10 seconds
   useEffect(() => {
@@ -299,15 +348,13 @@ export const MessageBubble = ({
         </span>
 
         {/* Message Reactions */}
-        {(reactions.length > 0 || onAddReaction) && (
-          <MessageReactions
-            messageId={id}
-            reactions={reactions}
-            onAddReaction={onAddReaction || (() => {})}
-            onRemoveReaction={onRemoveReaction || (() => {})}
-            isSelected={isSelected}
-          />
-        )}
+        <MessageReactions
+          messageId={id}
+          reactions={localReactions}
+          onAddReaction={onAddReaction}
+          onRemoveReaction={onRemoveReaction}
+          isSelected={isSelected}
+        />
       </div>
       </div>
     </>
