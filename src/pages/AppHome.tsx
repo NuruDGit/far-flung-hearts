@@ -247,18 +247,22 @@ const AppHome = () => {
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3">
                 <div className="flex items-center relative">
-                  <Avatar className="w-12 h-12 border-2 shadow-lg z-10" style={{ borderImage: 'var(--love-gradient) 1' }}>
-                    <AvatarImage src={userProfile?.avatar_url} />
-                    <AvatarFallback className="bg-love-gradient text-white">
-                      {userProfile?.display_name?.charAt(0).toUpperCase() || userProfile?.first_name?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Avatar className="w-12 h-12 border-2 shadow-lg -ml-3" style={{ borderImage: 'var(--love-gradient) 1' }}>
-                    <AvatarImage src={partner.avatar_url} />
-                    <AvatarFallback className="bg-love-gradient text-white">
-                      {partner.display_name?.charAt(0).toUpperCase() || <Heart size={20} />}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="w-14 h-14 rounded-full love-gradient p-1 shadow-lg z-10">
+                    <Avatar className="w-full h-full">
+                      <AvatarImage src={userProfile?.avatar_url} />
+                      <AvatarFallback className="bg-love-gradient text-white">
+                        {userProfile?.display_name?.charAt(0).toUpperCase() || userProfile?.first_name?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="w-14 h-14 rounded-full love-gradient p-1 shadow-lg -ml-4">
+                    <Avatar className="w-full h-full">
+                      <AvatarImage src={partner.avatar_url} />
+                      <AvatarFallback className="bg-love-gradient text-white">
+                        {partner.display_name?.charAt(0).toUpperCase() || <Heart size={20} />}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">{partner.display_name}</h2>
