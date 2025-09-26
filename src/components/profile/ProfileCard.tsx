@@ -170,98 +170,115 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
   };
 
   return (
-    <Card className="bg-white/95 backdrop-blur border-love-soft shadow-lg hover:shadow-xl transition-all duration-300">
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col items-center space-y-4">
-          {/* Avatar */}
-          <div className="relative">
-            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 ring-love-light">
+    <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-love-light/10 via-transparent to-love-soft/10 pointer-events-none" />
+      
+      <CardContent className="relative p-6 sm:p-8">
+        <div className="flex flex-col items-center space-y-6">
+          {/* Enhanced Avatar Section */}
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-love-heart to-love-coral rounded-full opacity-75 group-hover:opacity-100 transition-opacity blur-sm" />
+            <Avatar className="relative h-24 w-24 sm:h-28 sm:w-28 border-4 border-background">
               <AvatarImage 
                 src={!imageError ? profile.avatar_url : undefined} 
                 onError={() => setImageError(true)}
+                className="object-cover"
               />
-              <AvatarFallback className="bg-love-light text-love-deep text-xl font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-love-light to-love-soft text-love-deep text-2xl font-bold">
                 {profile.display_name?.charAt(0).toUpperCase() || '💝'}
               </AvatarFallback>
             </Avatar>
+            {isOwnProfile && onEdit && (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-card hover:bg-accent shadow-lg border-2 border-background"
+                onClick={onEdit}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
-          {/* Profile Info */}
-          <div className="w-full text-center">
-            <div className="flex flex-col items-center justify-center mb-2">
-              <h3 className="text-lg sm:text-xl font-bold text-love-deep truncate">
+          {/* Profile Header */}
+          <div className="w-full text-center space-y-3">
+            <div className="space-y-1">
+              <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-love-deep to-love-heart bg-clip-text text-transparent">
                 {profile.display_name || 'Anonymous'}
               </h3>
+              {(formatBirthDate(profile.birth_date) || formatLocation()) && (
+                <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+                  {formatBirthDate(profile.birth_date) && (
+                    <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-love-light/20">
+                      <Calendar className="h-3 w-3 text-love-heart" />
+                      <span className="font-medium">{formatBirthDate(profile.birth_date)}</span>
+                    </div>
+                  )}
+                  {formatLocation() && (
+                    <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-love-light/20">
+                      <MapPin className="h-3 w-3 text-love-heart" />
+                      <span className="font-medium">{formatLocation()}</span>
+                      <FlagIcon country={profile.country} />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-
-            {/* Age and Location */}
-            {(formatBirthDate(profile.birth_date) || formatLocation()) && (
-              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground mb-3">
-                {formatBirthDate(profile.birth_date) && (
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1 text-love-heart" />
-                    {formatBirthDate(profile.birth_date)}
-                  </div>
-                )}
-                {formatLocation() && (
-                  <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-1 text-love-heart" />
-                    {formatLocation()}
-                    <span className="ml-2">
-                      <FlagIcon country={profile.country} />
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Bio */}
+            {/* Bio Section */}
             {profile.bio && (
-              <p className="text-muted-foreground text-sm mb-4 leading-relaxed text-center">
-                {profile.bio}
-              </p>
+              <div className="px-4">
+                <p className="text-muted-foreground leading-relaxed text-center max-w-md mx-auto">
+                  {profile.bio}
+                </p>
+              </div>
             )}
 
             {/* Relationship Status */}
             {profile.relationship_status && (
-              <div className="mb-4">
-                <p className="text-sm font-bold text-muted-foreground text-center mb-2">Relationship Status</p>
-                <div className="flex items-center justify-center">
-                  <Crown className="h-4 w-4 mr-2 text-love-heart" />
-                  <span className="text-sm font-medium text-love-deep text-center">
-                    {profile.relationship_status}
-                  </span>
-                </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-love-light/30 to-love-soft/30 border border-love-soft/50">
+                <Heart className="h-4 w-4 text-love-heart" />
+                <span className="text-sm font-semibold text-love-deep">
+                  {profile.relationship_status}
+                </span>
               </div>
             )}
 
-            {/* Interests */}
+            {/* Interests Section */}
             {profile.interests && profile.interests.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-bold text-muted-foreground">Interests</p>
-                <div className="flex flex-wrap justify-center gap-1">
-                  {(showAllInterests ? profile.interests : profile.interests.slice(0, 6)).map((interest, index) => (
+              <div className="space-y-3 pt-2">
+                <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                  Interests
+                </h4>
+                <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+                  {(showAllInterests ? profile.interests : profile.interests.slice(0, 8)).map((interest, index) => (
                     <Badge 
                       key={index} 
                       variant="secondary"
-                      className="text-xs bg-love-light text-love-deep hover:bg-love-soft"
+                      className="text-xs px-3 py-1 bg-love-light/50 text-love-deep hover:bg-love-soft/70 border border-love-soft/30 transition-all duration-200 hover:scale-105"
                     >
                       {interest}
                     </Badge>
                   ))}
-                  {profile.interests.length > 6 && (
+                  {profile.interests.length > 8 && (
                     <Badge 
                       variant="outline" 
-                      className="text-xs border-love-soft text-love-deep hover:bg-love-light cursor-pointer transition-colors"
+                      className="text-xs px-3 py-1 border-love-heart/50 text-love-heart hover:bg-love-heart hover:text-white cursor-pointer transition-all duration-200 hover:scale-105"
                       onClick={() => setShowAllInterests(!showAllInterests)}
                     >
-                      {showAllInterests ? 'Show less' : `+${profile.interests.length - 6} more`}
+                      {showAllInterests ? 'Show less' : `+${profile.interests.length - 8} more`}
                     </Badge>
                   )}
                 </div>
               </div>
             )}
+
+            {/* Join Date */}
+            <div className="pt-4 border-t border-love-soft/20">
+              <p className="text-xs text-muted-foreground font-medium">
+                {formatJoinDate(profile.created_at)}
+              </p>
+            </div>
           </div>
         </div>
       </CardContent>
