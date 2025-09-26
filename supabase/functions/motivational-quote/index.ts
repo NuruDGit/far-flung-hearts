@@ -69,16 +69,12 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Return only the quote text, no quotation marks or extra formatting.`
+            content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Add some randomness with current timestamp: ${Date.now()}. Return only the quote text, no quotation marks or extra formatting.`
           }
         ],
-        temperature: 0.2,
+        temperature: 0.8,
         top_p: 0.9,
-        max_tokens: 50,
-        return_images: false,
-        return_related_questions: false,
-        search_domain_filter: [],
-        search_recency_filter: 'month',
+        max_tokens: 100,
         frequency_penalty: 1,
         presence_penalty: 0
       }),
