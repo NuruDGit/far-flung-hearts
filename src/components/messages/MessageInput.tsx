@@ -219,7 +219,7 @@ export const MessageInput = ({
           />
           
           {/* Emoji and attachment buttons */}
-          <div className="absolute right-2 bottom-2 flex items-center gap-1">
+          <div className="absolute right-2 bottom-2 flex items-center gap-0.5">
             <Popover open={isEmojiOpen} onOpenChange={setIsEmojiOpen}>
               <PopoverTrigger asChild>
                 <Button
