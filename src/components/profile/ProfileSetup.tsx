@@ -151,7 +151,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             <Button
               variant="ghost"
               onClick={() => navigate('/app')}
-              className="hover:bg-primary/10 text-primary hover:text-primary p-2 rounded-full"
+              className="hover:bg-black/10 text-black hover:text-black p-2 rounded-full"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
