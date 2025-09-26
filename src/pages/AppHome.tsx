@@ -260,6 +260,7 @@ const AppHome = () => {
           <WeatherWidget 
             partnerCity={partner?.city || userProfile?.city} 
             partnerCountry={partner?.country || userProfile?.country}
+            partnerName={partner?.first_name || partner?.display_name}
           />
         )}
 

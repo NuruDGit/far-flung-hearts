@@ -17,9 +17,10 @@ interface WeatherData {
 interface WeatherWidgetProps {
   partnerCity?: string;
   partnerCountry?: string;
+  partnerName?: string;
 }
 
-const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
+const WeatherWidget = ({ partnerCity, partnerCountry, partnerName }: WeatherWidgetProps) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [cityImage, setCityImage] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -129,6 +130,13 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
   return (
     <Card className="mb-6 bg-white/80 backdrop-blur-sm overflow-hidden">
       <CardContent className="p-0">
+        {/* Header */}
+        <div className="px-4 pt-3 pb-2 bg-gradient-to-r from-love-coral/5 to-love-heart/5">
+          <h3 className="text-sm font-medium text-love-deep flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Weather at {partnerName ? `${partnerName}'s location` : 'your partner\'s location'}
+          </h3>
+        </div>
         {/* City Image Header */}
         <div className="relative h-32 bg-gradient-to-r from-love-coral/30 to-love-heart/30">
           <img 
