@@ -429,7 +429,7 @@ export default function GoalsPage() {
   return (
     <>
       <AppNavigation />
-      <div className="container mx-auto p-4 max-w-6xl space-y-6">
+      <div className="container mx-auto p-4 max-w-6xl space-y-6 pb-24">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
