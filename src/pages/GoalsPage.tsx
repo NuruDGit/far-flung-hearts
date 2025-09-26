@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -172,6 +173,17 @@ export default function GoalsPage() {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     }, 100); // Small delay to ensure tab state is updated
+  };
+
+  const getGoalProgress = (goalId: string) => {
+    const goalTasks = tasks.filter(task => task.goal_id === goalId && !task.is_archived);
+    if (goalTasks.length === 0) return { completed: 0, total: 0, percentage: 0 };
+    
+    const completed = goalTasks.filter(task => task.status_column === 'done').length;
+    const total = goalTasks.length;
+    const percentage = Math.round((completed / total) * 100);
+    
+    return { completed, total, percentage };
   };
 
   const getGoalStatus = (goal: Goal) => {
@@ -436,6 +448,24 @@ export default function GoalsPage() {
                               <Badge variant={colors.badge as any} className="text-xs px-2 py-1">
                                 {getStatusLabel(status)}
                               </Badge>
+                            </div>
+                            {/* Progress Bar */}
+                            <div className="mt-3 space-y-2">
+                              {(() => {
+                                const progress = getGoalProgress(goal.id);
+                                return (
+                                  <div>
+                                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                                      <span>Task Progress</span>
+                                      <span>{progress.completed}/{progress.total} tasks ({progress.percentage}%)</span>
+                                    </div>
+                                    <Progress 
+                                      value={progress.percentage} 
+                                      className="h-2"
+                                    />
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </div>
                         </div>
