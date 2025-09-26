@@ -320,7 +320,6 @@ const CalendarPage = () => {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-6">
-            <Heart className="h-8 w-8 text-love-heart" />
             <div>
               <h1 className="text-3xl font-bold text-foreground">Shared Calendar</h1>
               <p className="text-muted-foreground">Plan your time together</p>
