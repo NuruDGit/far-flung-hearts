@@ -193,13 +193,13 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-b from-love-light/30 to-white">
-      {/* Smart Welcome Section */}
+      {/* Welcoming image section */}
       {messages.length === 1 && partnerData && (
         <div className="p-4 bg-gradient-to-r from-love-light/30 to-love-coral/10 border-b border-love-coral/10">
           <div className="text-center animate-fade-in">
-            <p className="text-sm text-muted-foreground mb-3">
-              💕 I know all about you and {partnerData.display_name} to give you the best advice!
-            </p>
+            <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-r from-love-heart/20 to-love-coral/20 flex items-center justify-center">
+              <div className="text-3xl">💕</div>
+            </div>
             <div className="flex flex-wrap gap-2 justify-center text-xs">
               <span className="px-2 py-1 bg-white/60 rounded-full">📍 {partnerData.city}, {partnerData.country}</span>
               <span className="px-2 py-1 bg-white/60 rounded-full">💝 Together since {new Date(partnerData.relationship_start_date || '2024-01-01').toLocaleDateString()}</span>
