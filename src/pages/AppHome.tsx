@@ -548,12 +548,6 @@ const AppHome = () => {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {pair && (
-                        <div className="flex items-center gap-1 text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                          Shared calendar
-                        </div>
-                      )}
                       <Button 
                         size="sm" 
                         variant={pair ? "default" : "secondary"}
