@@ -844,6 +844,10 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      calculate_pair_streak: {
+        Args: { target_pair_id: string }
+        Returns: number
+      }
       get_or_create_daily_question: {
         Args: { target_pair_id: string }
         Returns: {
