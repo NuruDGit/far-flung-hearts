@@ -373,68 +373,125 @@ const AppHome = () => {
         </div>
 
         {/* Today's Features */}
-        <div className="grid lg:grid-cols-2 gap-3 space-y-3 lg:space-y-0">
-          <div className="lg:col-span-2">
-            {/* Mood Logger */}
+        <div className="space-y-6">
+          {/* Featured Section Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Today's Features</h2>
+              <p className="text-sm text-muted-foreground">
+                {pair ? "Stay connected with your partner" : "Features available when you connect"}
+              </p>
+            </div>
+          </div>
+
+          {/* Mood Logger - Full Width Featured */}
+          <div className="relative">
             <MoodLogger compact={true} pairId={pair?.id} />
           </div>
 
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-4">
-               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-full bg-love-coral/20 flex items-center justify-center">
-                   <MessageSquareQuote className="text-love-coral" size={16} />
-                 </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">Today's Question</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {pair && dailyQuestion ? dailyQuestion.question_text : "Preview: Daily questions to share together"}
-                    </p>
+          {/* Interactive Cards Grid */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Daily Question Card */}
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-love-coral/5 to-love-heart/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-coral/20 to-love-heart/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <MessageSquareQuote className="text-love-coral h-6 w-6" />
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant={pair && dailyQuestion && !dailyQuestion.answered_by ? "love" : "outline"} 
-                    disabled={!pair || !dailyQuestion} 
-                    onClick={handleAnswerQuestion}
-                  >
-                    {pair && dailyQuestion ? (dailyQuestion.answered_by ? "Answered ✓" : "Answer") : "Preview"}
-                  </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-love-deep/20 flex items-center justify-center">
-                  <Camera className="text-love-deep" size={16} />
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <h3 className="font-semibold text-foreground text-lg">Today's Question</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {pair && dailyQuestion ? dailyQuestion.question_text : "Daily questions help you connect deeper with your partner"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pair && dailyQuestion && dailyQuestion.answered_by && (
+                        <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                          Answered today
+                        </div>
+                      )}
+                      <Button 
+                        size="sm" 
+                        className={`${pair && dailyQuestion && !dailyQuestion.answered_by 
+                          ? 'bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart' 
+                          : 'bg-secondary'} transition-all duration-200 font-medium`}
+                        disabled={!pair || !dailyQuestion} 
+                        onClick={handleAnswerQuestion}
+                      >
+                        {pair && dailyQuestion ? (dailyQuestion.answered_by ? "View Answer" : "Answer Now") : "Preview"}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold">Memory Vault</h3>
-                   <p className="text-sm text-muted-foreground">
-                     {pair ? "Your shared photos and videos" : "Your shared memories will appear here"}
-                   </p>
-                </div>
-                 <Button size="sm" variant="outline" disabled={!pair} onClick={() => navigate('/memory-vault')}>
-                   {pair ? "View" : "Preview"}
-                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Solo Mode - Personal Profile Setup */}
+            {/* Memory Vault Card */}
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-love-deep/5 to-love-soft/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-deep/20 to-love-soft/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Camera className="text-love-deep h-6 w-6" />
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <h3 className="font-semibold text-foreground text-lg">Memory Vault</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {pair ? "Your shared photos and precious moments together" : "Collect and share your special memories"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pair && (
+                        <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                          Active vault
+                        </div>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant={pair ? "default" : "secondary"}
+                        disabled={!pair} 
+                        onClick={() => navigate('/memory-vault')}
+                        className="transition-all duration-200 font-medium"
+                      >
+                        {pair ? "Browse Vault" : "Preview"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Solo Mode - Enhanced Profile Setup */}
           {!pair && (
-            <Card className="bg-white/80 backdrop-blur-sm border-love-heart/20 lg:col-span-2">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-love-heart/20 flex items-center justify-center">
-                    <Users className="text-love-heart" size={16} />
+            <Card className="bg-gradient-to-r from-love-light/30 via-card to-love-soft/30 border-love-heart/20 border shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-r from-love-heart to-love-coral flex items-center justify-center shadow-lg">
+                    <Users className="text-white h-7 w-7" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">Complete Your Profile</h3>
-                    <p className="text-sm text-muted-foreground">Set up your profile while you explore</p>
+                    <h3 className="font-bold text-foreground text-lg">Complete Your Profile</h3>
+                    <p className="text-muted-foreground">Set up your profile and get ready to connect with your partner</p>
+                    <div className="flex items-center gap-2 mt-3">
+                      <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                        <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                        Profile incomplete
+                      </div>
+                      <Button 
+                        size="sm" 
+                        className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart text-white font-medium"
+                        onClick={() => navigate('/app/profile')}
+                      >
+                        Setup Now
+                      </Button>
+                    </div>
                   </div>
-                  <Button size="sm" variant="love">Setup</Button>
                 </div>
               </CardContent>
             </Card>
