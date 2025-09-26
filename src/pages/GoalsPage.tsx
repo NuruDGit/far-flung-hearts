@@ -52,6 +52,7 @@ export default function GoalsPage() {
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
   const [aiRecommendationsTab, setAiRecommendationsTab] = useState("goals");
   const [showArchivedTasks, setShowArchivedTasks] = useState(false);
+  const [preselectedGoalId, setPreselectedGoalId] = useState<string>('');
   const { toast } = useToast();
 
   // Filter tasks based on archive status
@@ -471,7 +472,10 @@ export default function GoalsPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Button 
-                            onClick={scrollToAIRecommendations}
+                            onClick={() => {
+                              setPreselectedGoalId(goal.id);
+                              setShowCreateTask(true);
+                            }}
                             size="sm"
                             variant="outline"
                             className="h-8 px-3 text-xs"
@@ -656,9 +660,13 @@ export default function GoalsPage() {
 
         <CreateTaskDialog
           open={showCreateTask}
-          onOpenChange={setShowCreateTask}
+          onOpenChange={(open) => {
+            setShowCreateTask(open);
+            if (!open) setPreselectedGoalId(''); // Clear preselection when closing
+          }}
           onTaskCreated={fetchData}
           goals={goals}
+          preselectedGoalId={preselectedGoalId}
         />
 
         {/* Delete Confirmation Alert */}

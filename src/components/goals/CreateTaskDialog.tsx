@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,15 +22,23 @@ interface CreateTaskDialogProps {
   onOpenChange: (open: boolean) => void;
   onTaskCreated: () => void;
   goals?: Goal[];
+  preselectedGoalId?: string;
 }
 
-export function CreateTaskDialog({ open, onOpenChange, onTaskCreated, goals = [] }: CreateTaskDialogProps) {
+export function CreateTaskDialog({ open, onOpenChange, onTaskCreated, goals = [], preselectedGoalId }: CreateTaskDialogProps) {
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState<Date>();
   const [selectedGoalId, setSelectedGoalId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Set preselected goal when dialog opens
+  useEffect(() => {
+    if (open && preselectedGoalId) {
+      setSelectedGoalId(preselectedGoalId);
+    }
+  }, [open, preselectedGoalId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
