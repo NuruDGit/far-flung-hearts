@@ -477,7 +477,7 @@ export default function GoalsPage() {
                                 <>No target date set</>
                               )}
                             </div>
-                            <div className="flex items-center gap-2 w-full">
+                            <div className="flex items-center w-full">
                               <Badge variant="secondary" className="text-xs px-3 py-1 flex-1 text-center">
                                 Active Goal
                               </Badge>
