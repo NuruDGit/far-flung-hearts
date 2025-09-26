@@ -200,12 +200,10 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-r from-love-heart/20 to-love-coral/20 flex items-center justify-center">
               <div className="text-3xl">💕</div>
             </div>
-            <div className="flex flex-wrap gap-2 justify-center text-xs">
-              <span className="px-2 py-1 bg-white/60 rounded-full">📍 {partnerData.city}, {partnerData.country}</span>
-              <span className="px-2 py-1 bg-white/60 rounded-full">💝 Together since {new Date(partnerData.relationship_start_date || '2024-01-01').toLocaleDateString()}</span>
-              {partnerData.interests?.slice(0, 2).map((interest: string) => (
-                <span key={interest} className="px-2 py-1 bg-white/60 rounded-full">🎯 {interest}</span>
-              ))}
+            <div className="flex items-center justify-center">
+              <div className="h-px bg-gradient-to-r from-transparent via-love-coral/30 to-transparent w-24"></div>
+              <div className="mx-3 text-love-coral/60">✨</div>
+              <div className="h-px bg-gradient-to-r from-transparent via-love-coral/30 to-transparent w-24"></div>
             </div>
           </div>
         </div>
