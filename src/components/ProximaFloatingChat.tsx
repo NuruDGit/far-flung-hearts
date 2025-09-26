@@ -98,7 +98,7 @@ const ProximaFloatingChat = () => {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-love-deep">Proxima</h2>
+                  <h2 className="text-lg font-bold text-love-deep text-left">Proxima</h2>
                   <p className="text-xs text-muted-foreground">Your AI Love Assistant</p>
                 </div>
               </DialogTitle>
