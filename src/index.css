@@ -199,4 +199,25 @@ All colors MUST be HSL.
   .dark input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
+  
+  /* Override time picker dropdown styling */
+  input[type="time"]::-webkit-list-button {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+  }
+  
+  input[type="time"]::-webkit-inner-spin-button {
+    background: hsl(var(--secondary));
+    border: 1px solid hsl(var(--love-heart));
+  }
+  
+  /* Force time picker to use custom colors */
+  input[type="time"] {
+    accent-color: hsl(var(--love-heart));
+  }
+  
+  /* Override any blue highlighting in time picker */
+  input[type="time"]:focus {
+    accent-color: hsl(var(--love-heart));
+  }
 }
