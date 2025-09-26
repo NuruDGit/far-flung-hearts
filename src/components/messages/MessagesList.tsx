@@ -23,9 +23,12 @@ interface MessagesListProps {
   currentUserId: string;
   profiles: Record<string, Profile>;
   loading?: boolean;
+  filteredMessages?: Message[];
   onEditMessage?: (id: string) => void;
   onDeleteMessage?: (id: string) => void;
   onReplyToMessage?: (id: string) => void;
+  onAddReaction?: (messageId: string, emoji: string) => void;
+  onRemoveReaction?: (messageId: string, emoji: string) => void;
 }
 
 export const MessagesList = ({
@@ -33,9 +36,12 @@ export const MessagesList = ({
   currentUserId,
   profiles,
   loading = false,
+  filteredMessages,
   onEditMessage,
   onDeleteMessage,
-  onReplyToMessage
+  onReplyToMessage,
+  onAddReaction,
+  onRemoveReaction
 }: MessagesListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -95,7 +101,7 @@ export const MessagesList = ({
       className="flex-1 overflow-y-auto p-4 space-y-1"
       onScroll={handleScroll}
     >
-      {messages.map((message) => {
+      {(filteredMessages || messages).map((message) => {
         const isOwn = message.sender_id === currentUserId;
         const sender = profiles[message.sender_id];
         
@@ -123,9 +129,12 @@ export const MessagesList = ({
             mediaUrl={message.media_url}
             senderName={sender?.display_name || 'Partner'}
             senderAvatar={sender?.avatar_url}
+            reactions={[]} // TODO: Add reactions from database
             onEdit={onEditMessage}
             onDelete={onDeleteMessage}
             onReply={onReplyToMessage}
+            onAddReaction={onAddReaction}
+            onRemoveReaction={onRemoveReaction}
           />
         );
       })}

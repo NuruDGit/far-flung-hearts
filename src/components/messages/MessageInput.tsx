@@ -1,8 +1,9 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Send, Smile, Paperclip } from 'lucide-react';
+import { Send, Smile, Paperclip, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CameraCapture } from './CameraCapture';
 
 interface MessageInputProps {
   onSendMessage: (content: string, attachments?: File[]) => void;
@@ -20,6 +21,7 @@ export const MessageInput = ({
   const [message, setMessage] = useState('');
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -72,6 +74,10 @@ export const MessageInput = ({
 
   const handleAttachClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleCameraCapture = (file: File) => {
+    setAttachments(prev => [...prev, file]);
   };
 
   return (
@@ -154,6 +160,16 @@ export const MessageInput = ({
             >
               <Paperclip size={14} />
             </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCameraOpen(true)}
+              className="p-1 h-6 w-6 text-muted-foreground hover:text-white"
+              title="Take photo"
+            >
+              <Camera size={14} />
+            </Button>
           </div>
         </div>
 
@@ -166,6 +182,12 @@ export const MessageInput = ({
           <Send size={16} />
         </Button>
       </div>
+
+      <CameraCapture
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onCapture={handleCameraCapture}
+      />
     </div>
   );
 };

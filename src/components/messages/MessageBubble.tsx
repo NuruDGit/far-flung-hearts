@@ -4,6 +4,13 @@ import { MoreVertical, Edit3, Trash2, Reply } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MessageReactions } from './MessageReactions';
+
+interface Reaction {
+  emoji: string;
+  count: number;
+  userReacted: boolean;
+}
 
 interface MessageBubbleProps {
   id: string;
@@ -15,9 +22,12 @@ interface MessageBubbleProps {
   senderAvatar?: string;
   type?: string;
   mediaUrl?: string;
+  reactions?: Reaction[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onReply?: (id: string) => void;
+  onAddReaction?: (messageId: string, emoji: string) => void;
+  onRemoveReaction?: (messageId: string, emoji: string) => void;
 }
 
 export const MessageBubble = ({
@@ -30,9 +40,12 @@ export const MessageBubble = ({
   senderAvatar,
   type = 'text',
   mediaUrl,
+  reactions = [],
   onEdit,
   onDelete,
-  onReply
+  onReply,
+  onAddReaction,
+  onRemoveReaction
 }: MessageBubbleProps) => {
   const [showMenu, setShowMenu] = useState(false);
   
@@ -47,7 +60,7 @@ export const MessageBubble = ({
   };
 
   return (
-    <div className={`flex items-start gap-3 mb-4 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div className={`flex items-start gap-3 mb-4 group ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       {!isOwn && (
         <Avatar className="w-8 h-8 flex-shrink-0">
           <AvatarImage src={senderAvatar} alt={senderName} />
@@ -141,7 +154,7 @@ export const MessageBubble = ({
             </div>
           )}
           
-          {isOwn && (onEdit || onDelete) && (
+          {(onEdit || onDelete || onReply) && (
             <DropdownMenu open={showMenu} onOpenChange={setShowMenu}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -159,13 +172,13 @@ export const MessageBubble = ({
                     Reply
                   </DropdownMenuItem>
                 )}
-                {onEdit && (
+                {isOwn && onEdit && (
                   <DropdownMenuItem onClick={() => onEdit(id)}>
                     <Edit3 size={14} className="mr-2" />
                     Edit
                   </DropdownMenuItem>
                 )}
-                {onDelete && (
+                {isOwn && onDelete && (
                   <DropdownMenuItem 
                     onClick={() => onDelete(id)}
                     className="text-destructive focus:text-destructive"
@@ -185,6 +198,16 @@ export const MessageBubble = ({
         >
           {timeAgo}
         </span>
+
+        {/* Message Reactions */}
+        {(reactions.length > 0 || onAddReaction) && (
+          <MessageReactions
+            messageId={id}
+            reactions={reactions}
+            onAddReaction={onAddReaction || (() => {})}
+            onRemoveReaction={onRemoveReaction || (() => {})}
+          />
+        )}
       </div>
     </div>
   );

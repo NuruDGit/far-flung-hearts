@@ -3,6 +3,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { MessagesList } from '@/components/messages/MessagesList';
 import { MessageInput } from '@/components/messages/MessageInput';
+import { MessageSearch } from '@/components/messages/MessageSearch';
 import { VideoCallInterface } from '@/components/messages/VideoCallInterface';
 import { CallNotification } from '@/components/messages/CallNotification';
 import { useVideoCall } from '@/hooks/useVideoCall';
@@ -10,7 +11,7 @@ import { useVideoCall } from '@/hooks/useVideoCall';
 import { Card } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Phone, Video, MoreVertical, UserX, Bell, BellOff, User } from 'lucide-react';
+import { ArrowLeft, Phone, Video, MoreVertical, UserX, Bell, BellOff, User, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -42,6 +43,9 @@ const MessagesPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [pair, setPair] = useState<Pair | null>(null);
@@ -281,6 +285,42 @@ const MessagesPage = () => {
     });
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      const filtered = messages.filter(message => {
+        const content = typeof message.body === 'string' 
+          ? message.body 
+          : message.body?.text || message.body?.content || '';
+        return content.toLowerCase().includes(query.toLowerCase());
+      });
+      setFilteredMessages(filtered);
+    } else {
+      setFilteredMessages([]);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setFilteredMessages([]);
+  };
+
+  const handleAddReaction = async (messageId: string, emoji: string) => {
+    // TODO: Implement reaction functionality with database
+    toast({
+      title: "Feature coming soon",
+      description: "Message reactions will be available soon!"
+    });
+  };
+
+  const handleRemoveReaction = async (messageId: string, emoji: string) => {
+    // TODO: Implement reaction removal with database
+    toast({
+      title: "Feature coming soon", 
+      description: "Message reactions will be available soon!"
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -387,6 +427,15 @@ const MessagesPage = () => {
 
             <div className="flex items-center gap-1 flex-shrink-0">
               <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSearch(!showSearch)}
+                className={`p-2 h-8 w-8 ${showSearch ? "bg-secondary" : ""}`}
+                title="Search messages"
+              >
+                <Search size={14} />
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={startVoiceCall}
@@ -444,12 +493,24 @@ const MessagesPage = () => {
           </div>
         </div>
 
+        {/* Search */}
+        <MessageSearch
+          isVisible={showSearch}
+          onSearch={handleSearch}
+          onClear={handleClearSearch}
+          searchQuery={searchQuery}
+          resultCount={filteredMessages.length > 0 ? filteredMessages.length : undefined}
+        />
+
         {/* Messages List */}
         <MessagesList
           messages={messages}
+          filteredMessages={filteredMessages.length > 0 ? filteredMessages : undefined}
           currentUserId={user?.id || ''}
           profiles={profiles}
           loading={loading}
+          onAddReaction={handleAddReaction}
+          onRemoveReaction={handleRemoveReaction}
         />
 
         {/* Message Input */}
