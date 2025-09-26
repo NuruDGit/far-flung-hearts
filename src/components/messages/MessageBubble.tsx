@@ -14,6 +14,7 @@ interface MessageBubbleProps {
   senderName?: string;
   senderAvatar?: string;
   type?: string;
+  mediaUrl?: string;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onReply?: (id: string) => void;
@@ -28,6 +29,7 @@ export const MessageBubble = ({
   senderName,
   senderAvatar,
   type = 'text',
+  mediaUrl,
   onEdit,
   onDelete,
   onReply
@@ -93,6 +95,42 @@ export const MessageBubble = ({
                     </p>
                   )}
                 </>
+              )}
+              
+              {/* Media content */}
+              {(type === 'image' || type === 'media') && mediaUrl && (
+                <div className="space-y-2">
+                  <img 
+                    src={mediaUrl} 
+                    alt="Shared image"
+                    className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                    style={{ maxHeight: '300px' }}
+                    onClick={() => window.open(mediaUrl, '_blank')}
+                  />
+                  {content && (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {content}
+                    </p>
+                  )}
+                </div>
+              )}
+              
+              {type === 'video' && mediaUrl && (
+                <div className="space-y-2">
+                  <video 
+                    src={mediaUrl}
+                    controls
+                    className="max-w-full h-auto rounded-lg"
+                    style={{ maxHeight: '300px' }}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                  {content && (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {content}
+                    </p>
+                  )}
+                </div>
               )}
               
               {type === 'system' && (

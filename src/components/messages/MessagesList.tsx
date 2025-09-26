@@ -115,6 +115,7 @@ export const MessagesList = ({
             createdAt={message.created_at}
             isOwn={isOwn}
             type={message.type}
+            mediaUrl={message.media_url}
             senderName={sender?.display_name || 'Partner'}
             senderAvatar={sender?.avatar_url}
             onEdit={onEditMessage}
