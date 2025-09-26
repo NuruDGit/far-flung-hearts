@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CreateGoalDialog } from '@/components/goals/CreateGoalDialog';
 import { EditGoalDialog } from '@/components/goals/EditGoalDialog';
 import { CreateTaskDialog } from '@/components/goals/CreateTaskDialog';
+import { EditTaskDialog } from '@/components/goals/EditTaskDialog';
 import { AIRecommendations } from '@/components/goals/AIRecommendations';
 import { ExpandableTaskDescription } from '@/components/goals/ExpandableTaskDescription';
 import { TaskAssignmentSelector } from '@/components/goals/TaskAssignmentSelector';
@@ -50,6 +51,10 @@ export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
+  const [showEditTask, setShowEditTask] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showDeleteTaskAlert, setShowDeleteTaskAlert] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [aiRecommendationsTab, setAiRecommendationsTab] = useState("goals");
   const [showArchivedTasks, setShowArchivedTasks] = useState(false);
   const [preselectedGoalId, setPreselectedGoalId] = useState<string>('');
@@ -374,6 +379,45 @@ export default function GoalsPage() {
     }
   };
 
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    setShowEditTask(true);
+  };
+
+  const handleDeleteTask = (task: Task) => {
+    setTaskToDelete(task);
+    setShowDeleteTaskAlert(true);
+  };
+
+  const confirmDeleteTask = async () => {
+    if (!taskToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from('goal_tasks')
+        .delete()
+        .eq('id', taskToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Task deleted!",
+        description: "The task has been removed successfully."
+      });
+
+      setShowDeleteTaskAlert(false);
+      setTaskToDelete(null);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete task. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -581,16 +625,38 @@ export default function GoalsPage() {
                                   snapshot.isDragging ? 'shadow-lg' : ''
                                 }`}
                               >
-                                <CardContent className="p-4">
-                                  <div className="flex items-start justify-between mb-2">
-                                    <h4 className="font-medium text-foreground flex-1">{task.title}</h4>
-                                    {task.is_archived && (
-                                      <Badge variant="secondary" className="text-xs ml-2">
-                                        <Archive className="h-3 w-3 mr-1" />
-                                        Archived
-                                      </Badge>
-                                    )}
-                                  </div>
+                                 <CardContent className="p-4">
+                                   <div className="flex items-start justify-between mb-2">
+                                     <h4 className="font-medium text-foreground flex-1">{task.title}</h4>
+                                     <div className="flex items-center gap-2">
+                                       {task.is_archived && (
+                                         <Badge variant="secondary" className="text-xs">
+                                           <Archive className="h-3 w-3 mr-1" />
+                                           Archived
+                                         </Badge>
+                                       )}
+                                       <DropdownMenu>
+                                         <DropdownMenuTrigger asChild>
+                                           <Button variant="ghost" className="h-6 w-6 p-0">
+                                             <MoreHorizontal className="h-4 w-4" />
+                                           </Button>
+                                         </DropdownMenuTrigger>
+                                         <DropdownMenuContent align="end">
+                                           <DropdownMenuItem onClick={() => handleEditTask(task)}>
+                                             <Edit2 className="h-4 w-4 mr-2" />
+                                             Edit Task
+                                           </DropdownMenuItem>
+                                           <DropdownMenuItem 
+                                             onClick={() => handleDeleteTask(task)}
+                                             className="text-destructive"
+                                           >
+                                             <Trash2 className="h-4 w-4 mr-2" />
+                                             Delete Task
+                                           </DropdownMenuItem>
+                                         </DropdownMenuContent>
+                                       </DropdownMenu>
+                                     </div>
+                                   </div>
                                    {task.notes && (
                                      <div className="mb-3">
                                        <ExpandableTaskDescription description={task.notes} />
@@ -669,7 +735,15 @@ export default function GoalsPage() {
           preselectedGoalId={preselectedGoalId}
         />
 
-        {/* Delete Confirmation Alert */}
+        <EditTaskDialog
+          open={showEditTask}
+          onOpenChange={setShowEditTask}
+          onTaskUpdated={fetchData}
+          task={selectedTask}
+          goals={goals}
+        />
+
+        {/* Delete Goal Confirmation Alert */}
         <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -682,6 +756,27 @@ export default function GoalsPage() {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction 
                 onClick={confirmDeleteGoal}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Delete Task Confirmation Alert */}
+        <AlertDialog open={showDeleteTaskAlert} onOpenChange={setShowDeleteTaskAlert}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Task</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this task? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmDeleteTask}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 Delete
