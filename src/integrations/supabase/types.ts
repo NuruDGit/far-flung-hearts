@@ -238,19 +238,25 @@ export type Database = {
       }
       goalboard: {
         Row: {
+          color: string | null
           description: string | null
+          icon: string | null
           id: string
           pair_id: string
           target_date: string | null
         }
         Insert: {
+          color?: string | null
           description?: string | null
+          icon?: string | null
           id?: string
           pair_id: string
           target_date?: string | null
         }
         Update: {
+          color?: string | null
           description?: string | null
+          icon?: string | null
           id?: string
           pair_id?: string
           target_date?: string | null

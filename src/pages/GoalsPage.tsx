@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal } from 'lucide-react';
+import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +29,8 @@ interface Goal {
   description?: string;
   target_date?: string;
   pair_id: string;
+  color?: string;
+  icon?: string;
 }
 
 export default function GoalsPage() {
@@ -239,6 +241,19 @@ export default function GoalsPage() {
     return goals.find(goal => goal.id === goalId);
   };
 
+  const getIconComponent = (iconName?: string) => {
+    const iconMap: Record<string, any> = {
+      target: Target,
+      heart: Heart,
+      star: Star,
+      trophy: Trophy,
+      flag: Flag,
+      lightbulb: Lightbulb,
+      zap: Zap,
+    };
+    return iconMap[iconName || 'target'] || Target;
+  };
+
   const confirmDeleteGoal = async () => {
     if (!goalToDelete) return;
 
@@ -312,26 +327,41 @@ export default function GoalsPage() {
                 const colors = getGoalStatusColors(status);
                 
                 return (
-                  <Card key={goal.id} className={`${colors.border} ${colors.background}`}>
-                    <CardContent className="p-4">
+                  <Card key={goal.id} className={`${colors.border} ${colors.background} relative overflow-hidden`}>
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-1"
+                      style={{ backgroundColor: goal.color || '#3B82F6' }}
+                    />
+                    <CardContent className="p-4 pl-6">
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                            <Calendar className="h-4 w-4" />
-                            {goal.target_date ? (
-                              <>Target: {new Date(goal.target_date).toLocaleDateString()}</>
-                            ) : (
-                              <>No target date set</>
-                            )}
+                        <div className="flex items-start gap-3 flex-1">
+                          <div 
+                            className="p-2 rounded-lg flex-shrink-0"
+                            style={{ backgroundColor: `${goal.color || '#3B82F6'}20` }}
+                          >
+                            {React.createElement(getIconComponent(goal.icon), { 
+                              size: 20, 
+                              style: { color: goal.color || '#3B82F6' } 
+                            })}
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            <Badge variant="secondary" className="text-xs px-2 py-1">
-                              Active Goal
-                            </Badge>
-                            <Badge variant={colors.badge as any} className="text-xs px-2 py-1">
-                              {getStatusLabel(status)}
-                            </Badge>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                              <Calendar className="h-4 w-4" />
+                              {goal.target_date ? (
+                                <>Target: {new Date(goal.target_date).toLocaleDateString()}</>
+                              ) : (
+                                <>No target date set</>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="secondary" className="text-xs px-2 py-1">
+                                Active Goal
+                              </Badge>
+                              <Badge variant={colors.badge as any} className="text-xs px-2 py-1">
+                                {getStatusLabel(status)}
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
@@ -423,11 +453,26 @@ export default function GoalsPage() {
                                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{task.notes}</p>
                                   )}
                                   <div className="flex flex-wrap gap-2 mb-2">
-                                    {task.goal_id && (
-                                      <Badge variant="outline" className="text-xs">
-                                        🎯 {getGoalForTask(task.goal_id)?.description || 'Unknown Goal'}
-                                      </Badge>
-                                    )}
+                                    {task.goal_id && (() => {
+                                      const goal = getGoalForTask(task.goal_id);
+                                      if (goal) {
+                                        const IconComponent = getIconComponent(goal.icon);
+                                        return (
+                                          <Badge 
+                                            variant="outline" 
+                                            className="text-xs flex items-center gap-1"
+                                            style={{ 
+                                              borderColor: goal.color || '#3B82F6',
+                                              color: goal.color || '#3B82F6'
+                                            }}
+                                          >
+                                            <IconComponent size={12} />
+                                            {goal.description || 'Unknown Goal'}
+                                          </Badge>
+                                        );
+                                      }
+                                      return null;
+                                    })()}
                                   </div>
                                   {task.due_at && (
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
