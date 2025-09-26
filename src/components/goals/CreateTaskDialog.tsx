@@ -64,7 +64,7 @@ export function CreateTaskDialog({ open, onOpenChange, onTaskCreated, goals = []
           due_at: dueDate ? dueDate.toISOString() : null,
           status_column: 'todo',
           pair_id: pairData.id,
-          goal_id: selectedGoalId || null
+          goal_id: selectedGoalId === 'no-goal' ? null : selectedGoalId || null
         });
 
       if (error) throw error;
@@ -130,7 +130,7 @@ export function CreateTaskDialog({ open, onOpenChange, onTaskCreated, goals = []
                 <SelectValue placeholder="Select a goal for this task" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No specific goal</SelectItem>
+                <SelectItem value="no-goal">No specific goal</SelectItem>
                 {goals.map((goal) => (
                   <SelectItem key={goal.id} value={goal.id}>
                     {goal.description || `Goal ${goal.id.slice(0, 8)}`}
