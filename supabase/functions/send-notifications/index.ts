@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -97,7 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
             deliveryResults.push({ 
               method, 
               success: false, 
-              error: methodError.message 
+              error: methodError instanceof Error ? methodError.message : String(methodError)
             });
           }
         }
@@ -144,7 +144,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       } catch (error) {
         console.error(`Error processing notification ${notification.id}:`, error);
-        await markNotificationFailed(supabase, notification.id, error.message);
+        await markNotificationFailed(supabase, notification.id, error instanceof Error ? error.message : String(error));
         failedCount++;
       }
     }
