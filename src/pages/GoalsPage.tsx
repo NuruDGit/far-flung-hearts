@@ -465,7 +465,7 @@ export default function GoalsPage() {
                     <div 
                       className={`absolute left-0 top-0 bottom-0 w-1 ${getBorderColorClass(goal.color)}`}
                     />
-                    <CardContent className="p-4 pl-6">
+                    <CardHeader className="p-4 pl-6 pb-2">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3 flex-1">
                           <div 
@@ -477,7 +477,6 @@ export default function GoalsPage() {
                             })}
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium text-foreground mb-2">{goal.description}</h4>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                               <Calendar className="h-4 w-4" />
                               {goal.target_date ? (
@@ -493,24 +492,6 @@ export default function GoalsPage() {
                               <Badge variant={colors.badge as any} className="text-xs px-2 py-1">
                                 {getStatusLabel(status)}
                               </Badge>
-                            </div>
-                            {/* Progress Bar */}
-                            <div className="mt-3 space-y-2">
-                              {(() => {
-                                const progress = getGoalProgress(goal.id);
-                                return (
-                                  <div>
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                      <span>Task Progress</span>
-                                      <span>{progress.completed}/{progress.total} tasks ({progress.percentage}%)</span>
-                                    </div>
-                                    <Progress 
-                                      value={progress.percentage} 
-                                      className="h-2"
-                                    />
-                                  </div>
-                                );
-                              })()}
                             </div>
                           </div>
                         </div>
@@ -548,9 +529,31 @@ export default function GoalsPage() {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent className="px-4 pb-4 pl-6 pt-0">
+                      <h4 className="font-medium text-foreground mb-4">{goal.description}</h4>
+                      
+                      <div className="space-y-2">
+                        {(() => {
+                          const progress = getGoalProgress(goal.id);
+                          return (
+                            <div>
+                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                                <span>Task Progress</span>
+                                <span>{progress.completed}/{progress.total} tasks ({progress.percentage}%)</span>
+                              </div>
+                              <Progress 
+                                value={progress.percentage} 
+                                className="h-2"
+                              />
+                            </div>
+                          );
+                        })()}
+                        </div>
+                      </CardContent>
+                    </Card>
                 );
               })}
             </div>
