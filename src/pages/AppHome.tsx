@@ -286,9 +286,9 @@ const AppHome = () => {
                   <p className="font-semibold">7 days</p>
                 </div>
                 <div>
-                  <Heart className="h-5 w-5 mx-auto mb-1 text-love-heart" />
+                  <MessageSquareQuote className="h-5 w-5 mx-auto mb-1 text-love-deep" />
                   <p className="text-sm text-muted-foreground">Messages</p>
-                  <p className="font-semibold">42</p>
+                  <p className="font-semibold">--</p>
                 </div>
               </div>
             </CardContent>
