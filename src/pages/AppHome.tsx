@@ -246,12 +246,21 @@ const AppHome = () => {
           <Card className="mb-6 bg-white/80 backdrop-blur-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3">
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src={partner.avatar_url} />
-                  <AvatarFallback className="bg-love-gradient text-white">
-                    {partner.display_name?.charAt(0).toUpperCase() || <Heart size={20} />}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="flex items-center">
+                  <Avatar className="w-10 h-10 border-2 border-white shadow-md">
+                    <AvatarImage src={userProfile?.avatar_url} />
+                    <AvatarFallback className="bg-love-gradient text-white text-sm">
+                      {userProfile?.display_name?.charAt(0).toUpperCase() || userProfile?.first_name?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="w-6 h-0.5 bg-love-coral mx-1"></div>
+                  <Avatar className="w-10 h-10 border-2 border-white shadow-md">
+                    <AvatarImage src={partner.avatar_url} />
+                    <AvatarFallback className="bg-love-gradient text-white text-sm">
+                      {partner.display_name?.charAt(0).toUpperCase() || <Heart size={16} />}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
                 <div>
                   <h2 className="text-lg font-semibold">{partner.display_name}</h2>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
