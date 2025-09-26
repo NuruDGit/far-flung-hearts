@@ -138,43 +138,52 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-love-light to-love-soft flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-white/95 backdrop-blur shadow-xl">
-        <CardHeader className="relative">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-love-light/20 to-love-soft/30 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-love-heart/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-love-coral/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <Card className="w-full max-w-3xl bg-card/95 backdrop-blur-sm shadow-2xl border-0 relative z-10">
+        <CardHeader className="relative text-center pb-8">
+          <div className="absolute top-4 left-4">
             <Button
               variant="ghost"
               onClick={() => navigate('/app')}
-              className="hover:bg-love-light hover:text-love-deep p-2"
+              className="hover:bg-love-light/50 hover:text-love-deep p-2 rounded-full"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-5 w-5" />
             </Button>
-            <CardTitle className="text-xl sm:text-2xl font-bold text-love-deep">
+          </div>
+          <div className="space-y-2">
+            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-love-deep to-love-heart bg-clip-text text-transparent">
               Complete Your Profile
             </CardTitle>
+            <p className="text-muted-foreground text-lg">
+              Let's personalize your love journey together
+            </p>
           </div>
-          <p className="text-muted-foreground">
-            Let's personalize your experience and help you find meaningful connections
-          </p>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Avatar Upload */}
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={profile.avatar_url} />
-                  <AvatarFallback className="bg-love-light text-love-deep text-2xl">
+        <CardContent className="space-y-8 px-8 pb-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Avatar Upload - More prominent and beautiful */}
+            <div className="flex flex-col items-center space-y-6">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-love-heart to-love-coral rounded-full opacity-75 group-hover:opacity-100 transition-opacity blur-sm"></div>
+                <Avatar className="relative h-32 w-32 border-4 border-background">
+                  <AvatarImage src={profile.avatar_url} className="object-cover" />
+                  <AvatarFallback className="bg-gradient-to-br from-love-light to-love-soft text-love-deep text-3xl">
                     {profile.display_name.charAt(0).toUpperCase() || '👤'}
                   </AvatarFallback>
                 </Avatar>
                 <Button
                   type="button"
                   size="sm"
-                  className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-love-heart hover:bg-love-coral"
+                  className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-love-heart hover:bg-love-coral shadow-lg border-2 border-background"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Camera className="h-4 w-4" />
+                  <Camera className="h-5 w-5" />
                 </Button>
               </div>
               <input
@@ -184,107 +193,125 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
                 onChange={handleAvatarUpload}
                 className="hidden"
               />
-              <p className="text-sm text-muted-foreground">
-                Click the camera icon to upload your photo
-              </p>
-            </div>
-
-            {/* Display Name */}
-            <div className="space-y-2">
-              <Label htmlFor="display_name" className="text-love-deep">
-                Display Name *
-              </Label>
-              <Input
-                id="display_name"
-                value={profile.display_name}
-                onChange={(e) => setProfile(prev => ({ ...prev, display_name: e.target.value }))}
-                placeholder="What should we call you?"
-                className="focus:border-love-heart focus:ring-love-heart"
-              />
-            </div>
-
-            {/* Birth Date */}
-            <div className="space-y-2">
-              <Label htmlFor="birth_date" className="text-love-deep flex items-center">
-                <Calendar className="h-4 w-4 mr-1" />
-                Birth Date
-              </Label>
-              <Input
-                id="birth_date"
-                type="date"
-                value={profile.birth_date}
-                onChange={(e) => setProfile(prev => ({ ...prev, birth_date: e.target.value }))}
-                className="focus:border-love-heart focus:ring-love-heart"
-              />
-            </div>
-
-            {/* Location */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city" className="text-love-deep flex items-center">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  City
-                </Label>
-                <Input
-                  id="city"
-                  value={profile.city}
-                  onChange={(e) => setProfile(prev => ({ ...prev, city: e.target.value }))}
-                  placeholder="Your city"
-                  className="focus:border-love-heart focus:ring-love-heart"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country" className="text-love-deep">
-                  Country
-                </Label>
-                <Input
-                  id="country"
-                  value={profile.country}
-                  onChange={(e) => setProfile(prev => ({ ...prev, country: e.target.value }))}
-                  placeholder="Your country"
-                  className="focus:border-love-heart focus:ring-love-heart"
-                />
+              <div className="text-center space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  Upload your photo
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Click the camera icon to add your picture
+                </p>
               </div>
             </div>
 
-            {/* Bio */}
-            <div className="space-y-2">
-              <Label htmlFor="bio" className="text-love-deep">
-                About You
-              </Label>
-              <Textarea
-                id="bio"
-                value={profile.bio}
-                onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
-                placeholder="Tell us a bit about yourself, your hobbies, what makes you unique..."
-                rows={3}
-                className="focus:border-love-heart focus:ring-love-heart"
-              />
+            {/* Basic Info Section */}
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                  <div className="w-2 h-2 bg-love-heart rounded-full"></div>
+                  Basic Information
+                </h3>
+                
+                {/* Display Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="display_name" className="text-sm font-medium text-foreground">
+                    Display Name *
+                  </Label>
+                  <Input
+                    id="display_name"
+                    value={profile.display_name}
+                    onChange={(e) => setProfile(prev => ({ ...prev, display_name: e.target.value }))}
+                    placeholder="What should we call you?"
+                    className="h-12 focus:border-love-heart focus:ring-love-heart/20 border-2"
+                  />
+                </div>
+
+                {/* Birth Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="birth_date" className="text-sm font-medium text-foreground flex items-center">
+                    <CalendarIcon className="h-4 w-4 mr-1" />
+                    Birth Date
+                  </Label>
+                  <Input
+                    id="birth_date"
+                    type="date"
+                    value={profile.birth_date}
+                    onChange={(e) => setProfile(prev => ({ ...prev, birth_date: e.target.value }))}
+                    className="h-12 focus:border-love-heart focus:ring-love-heart/20 border-2"
+                  />
+                </div>
+
+                {/* Location */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="city" className="text-sm font-medium text-foreground flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      City
+                    </Label>
+                    <Input
+                      id="city"
+                      value={profile.city}
+                      onChange={(e) => setProfile(prev => ({ ...prev, city: e.target.value }))}
+                      placeholder="Your city"
+                      className="h-12 focus:border-love-heart focus:ring-love-heart/20 border-2"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country" className="text-sm font-medium text-foreground">
+                      Country
+                    </Label>
+                    <Input
+                      id="country"
+                      value={profile.country}
+                      onChange={(e) => setProfile(prev => ({ ...prev, country: e.target.value }))}
+                      placeholder="Your country"
+                      className="h-12 focus:border-love-heart focus:ring-love-heart/20 border-2"
+                    />
+                  </div>
+                </div>
+
+                {/* Bio */}
+                <div className="space-y-2">
+                  <Label htmlFor="bio" className="text-sm font-medium text-foreground">
+                    About You
+                  </Label>
+                  <Textarea
+                    id="bio"
+                    value={profile.bio}
+                    onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder="Tell us a bit about yourself, your hobbies, what makes you unique..."
+                    rows={4}
+                    className="focus:border-love-heart focus:ring-love-heart/20 border-2 resize-none"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Interests */}
-            <div className="space-y-3">
-              <Label className="text-love-deep">
-                Your Interests
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Select what you're passionate about (choose as many as you like)
-              </p>
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                  <div className="w-2 h-2 bg-love-heart rounded-full"></div>
+                  Your Interests
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Select what you're passionate about (choose as many as you like)
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
                 {INTERESTS.map((interest) => (
                   <Badge
                     key={interest}
                     variant={profile.interests.includes(interest) ? "default" : "outline"}
-                    className={`cursor-pointer transition-colors ${
+                    className={`cursor-pointer transition-all duration-200 px-4 py-2 text-sm ${
                       profile.interests.includes(interest)
-                        ? 'bg-love-heart hover:bg-love-coral text-white'
-                        : 'hover:bg-love-light hover:border-love-heart'
+                        ? 'bg-love-heart hover:bg-love-coral text-white shadow-md'
+                        : 'hover:bg-love-light/50 hover:border-love-heart border-2'
                     }`}
                     onClick={() => handleInterestToggle(interest)}
                   >
                     {interest}
                     {profile.interests.includes(interest) && (
-                      <X className="ml-1 h-3 w-3" />
+                      <X className="ml-2 h-3 w-3" />
                     )}
                   </Badge>
                 ))}
@@ -292,23 +319,26 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             </div>
 
             {/* Relationship Status */}
-            <div className="space-y-3">
-              <Label className="text-love-deep">
-                Relationship Status
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                What type of relationship are you in? This helps us provide better AI recommendations.
-              </p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                  <div className="w-2 h-2 bg-love-heart rounded-full"></div>
+                  Relationship Status
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  What type of relationship are you in? This helps us provide better AI recommendations.
+                </p>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {RELATIONSHIP_STATUS.map((status) => (
                   <Button
                     key={status}
                     type="button"
                     variant={profile.relationship_status === status ? "default" : "outline"}
-                    className={`justify-start text-left h-auto py-3 px-4 whitespace-normal ${
+                    className={`justify-start text-left h-auto py-4 px-4 whitespace-normal border-2 transition-all duration-200 ${
                       profile.relationship_status === status
-                        ? 'bg-love-heart hover:bg-love-coral text-white'
-                        : 'hover:bg-love-light hover:border-love-heart hover:text-love-deep'
+                        ? 'bg-love-heart hover:bg-love-coral text-white shadow-md'
+                        : 'hover:bg-love-light/50 hover:border-love-heart hover:text-love-deep'
                     }`}
                     onClick={() => setProfile(prev => ({ ...prev, relationship_status: status }))}
                   >
@@ -319,20 +349,22 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             </div>
 
             {/* Relationship Start Date */}
-            <div className="space-y-2">
-              <Label className="text-love-deep flex items-center">
-                <Heart className="h-4 w-4 mr-1" />
-                When did your relationship begin?
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                This helps us provide milestone reminders and personalized advice based on your relationship journey.
-              </p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                  <Heart className="h-4 w-4 text-love-heart" />
+                  When did your relationship begin?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  This helps us provide milestone reminders and personalized advice based on your relationship journey.
+                </p>
+              </div>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal focus:border-love-heart focus:ring-love-heart",
+                      "w-full justify-start text-left font-normal h-12 border-2 focus:border-love-heart focus:ring-love-heart/20",
                       !profile.relationship_start_date && "text-muted-foreground"
                     )}
                   >
@@ -360,9 +392,9 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
             <Button
               type="submit"
               disabled={loading || !profile.display_name.trim()}
-              className="w-full bg-love-heart hover:bg-love-coral text-white"
+              className="w-full h-12 bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart text-white font-semibold shadow-lg transition-all duration-200"
             >
-              {loading ? 'Saving...' : 'Complete Profile'}
+              {loading ? 'Saving...' : 'Complete Profile ✨'}
             </Button>
           </form>
         </CardContent>
