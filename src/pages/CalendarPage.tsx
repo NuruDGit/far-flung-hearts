@@ -223,7 +223,7 @@ const CalendarPage = () => {
     const getEventIcon = (kind: string) => {
       switch (kind) {
         case 'date':
-          return <Heart className="h-5 w-5 text-muted-foreground" />;
+          return <Calendar className="h-5 w-5 text-muted-foreground" />;
         case 'anniversary':
           return <Heart className="h-5 w-5 text-muted-foreground" />;
         case 'travel':
@@ -264,7 +264,7 @@ const CalendarPage = () => {
             {dayEvents.map((event) => (
               <div 
                 key={event.id} 
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/30 cursor-pointer transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border/20 hover:bg-secondary/30 cursor-pointer transition-colors"
                 onClick={() => {
                   setSelectedEvent(event);
                   setShowDetailsDialog(true);
@@ -280,6 +280,11 @@ const CalendarPage = () => {
                   )}
                   {event.all_day && (
                     <p className="text-sm text-muted-foreground">All day</p>
+                  )}
+                  {event.meta.location && (
+                    <p className="text-xs text-muted-foreground/70 mt-1">
+                      📍 {event.meta.location}
+                    </p>
                   )}
                 </div>
               </div>
