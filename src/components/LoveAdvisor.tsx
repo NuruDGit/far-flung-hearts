@@ -211,32 +211,14 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         </div>
       )}
 
-      {/* Quick Suggestions */}
-      {showQuickSuggestions && (
-        <div className="p-4 bg-white/60 border-b border-love-coral/10">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {getPersonalizedSuggestions().map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setInputMessage(suggestion);
-                  setShowQuickSuggestions(false);
-                }}
-                className="text-xs px-3 py-2 bg-gradient-to-r from-love-heart/10 to-love-coral/10 border border-love-coral/20 rounded-full hover:from-love-heart/20 hover:to-love-coral/20 transition-all duration-200 text-love-deep hover-scale"
-              >
-                ✨ {suggestion}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Messages Area */}
       <div 
         className="flex-1 overflow-y-auto p-4 space-y-6 min-h-0"
         style={{ scrollBehavior: 'smooth' }}
       >
         {messages.map((message, index) => (
+          <div key={message.id}>
+            {/* Message */}
           <div
             key={message.id}
             className={`flex gap-3 animate-fade-in ${message.isUser ? 'justify-end' : 'justify-start'}`}
@@ -320,6 +302,25 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                 </AvatarFallback>
               </Avatar>
             )}
+          </div>
+
+          {/* Quick Suggestions after first message */}
+          {index === 0 && showQuickSuggestions && (
+            <div className="flex flex-wrap gap-2 justify-center mt-4 mb-2">
+              {getPersonalizedSuggestions().map((suggestion, suggestionIndex) => (
+                <button
+                  key={suggestionIndex}
+                  onClick={() => {
+                    setInputMessage(suggestion);
+                    setShowQuickSuggestions(false);
+                  }}
+                  className="text-xs px-3 py-2 bg-gradient-to-r from-love-heart/10 to-love-coral/10 border border-love-coral/20 rounded-full hover:from-love-heart/20 hover:to-love-coral/20 transition-all duration-200 text-love-deep hover-scale"
+                >
+                  ✨ {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
           </div>
         ))}
         
