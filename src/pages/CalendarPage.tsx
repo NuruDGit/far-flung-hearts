@@ -220,11 +220,28 @@ const CalendarPage = () => {
       parseISO(a.starts_at).getTime() - parseISO(b.starts_at).getTime()
     );
 
+    const getEventIcon = (kind: string) => {
+      switch (kind) {
+        case 'date':
+          return <Heart className="h-5 w-5 text-muted-foreground" />;
+        case 'anniversary':
+          return <Heart className="h-5 w-5 text-muted-foreground" />;
+        case 'travel':
+          return <MapPin className="h-5 w-5 text-muted-foreground" />;
+        case 'birthday':
+          return <Calendar className="h-5 w-5 text-muted-foreground" />;
+        case 'meeting':
+          return <Clock className="h-5 w-5 text-muted-foreground" />;
+        default:
+          return <Calendar className="h-5 w-5 text-muted-foreground" />;
+      }
+    };
+
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-foreground">
-            {format(selectedDate, 'EEEE, MMMM d')}
+            {format(selectedDate, 'MMMM d')}
           </h3>
           <Button 
             variant="outline"
@@ -244,42 +261,29 @@ const CalendarPage = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {dayEvents.map((event) => {
-              const colors = eventTypeColors[event.kind] || eventTypeColors.other;
-              return (
-                <div 
-                  key={event.id} 
-                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-secondary/50 cursor-pointer transition-colors group"
-                  onClick={() => {
-                    setSelectedEvent(event);
-                    setShowDetailsDialog(true);
-                  }}
-                >
-                  <div className={`w-3 h-3 rounded-full mt-1.5 ${colors.bg.replace('/10', '/60')}`} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium text-foreground truncate">{event.title}</h4>
-                      <Badge variant="secondary" className={`text-xs ${colors.bg} ${colors.text}`}>
-                        {event.kind}
-                      </Badge>
-                    </div>
-                    {!event.all_day && (
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
-                        <Clock className="h-3 w-3" />
-                        {format(parseISO(event.starts_at), 'HH:mm')} - {format(parseISO(event.ends_at), 'HH:mm')}
-                      </div>
-                    )}
-                    {event.meta.location && (
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate">{event.meta.location}</span>
-                      </div>
-                    )}
-                  </div>
-                  <Edit className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            {dayEvents.map((event) => (
+              <div 
+                key={event.id} 
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/30 cursor-pointer transition-colors"
+                onClick={() => {
+                  setSelectedEvent(event);
+                  setShowDetailsDialog(true);
+                }}
+              >
+                {getEventIcon(event.kind)}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-foreground mb-1">{event.title}</h4>
+                  {!event.all_day && (
+                    <p className="text-sm text-muted-foreground">
+                      {format(parseISO(event.starts_at), 'h:mm a')} - {format(parseISO(event.ends_at), 'h:mm a')}
+                    </p>
+                  )}
+                  {event.all_day && (
+                    <p className="text-sm text-muted-foreground">All day</p>
+                  )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
       </div>
