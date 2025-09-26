@@ -310,18 +310,6 @@ export const MessageInput = ({
                 </div>
               </PopoverContent>
             </Popover>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCameraOpen(true)}
-              className={`text-muted-foreground hover:text-white active:text-white active:scale-95 transition-all ${
-                isMobile ? 'p-2 h-8 w-8 min-w-[44px]' : 'p-1 h-6 w-6'
-              }`}
-              title="Take photo"
-            >
-              <Camera size={isMobile ? 18 : 14} />
-            </Button>
           </div>
         </div>
 
