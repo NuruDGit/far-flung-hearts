@@ -84,27 +84,22 @@ const ProximaFloatingChat = () => {
         <DialogContent className="w-full max-w-full h-full max-h-full p-0 bg-gradient-to-br from-love-light via-white to-love-coral/10 border-0 rounded-none" aria-describedby="proxima-chat-description">
           <div className="flex flex-col h-full">
             {/* Enhanced Header */}
-            <DialogHeader className="p-6 border-b border-love-coral/20 bg-white/80 backdrop-blur-sm flex-shrink-0">
-              <DialogTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-love-heart to-love-coral p-1 shadow-lg">
-                      <Avatar className="w-full h-full">
-                        <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-                        <AvatarFallback className="bg-love-heart text-white">
-                          <Bot className="h-6 w-6" />
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            <DialogHeader className="p-4 border-b border-love-coral/20 bg-white/90 backdrop-blur-sm flex-shrink-0">
+              <DialogTitle className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-love-heart to-love-coral p-0.5 shadow-md">
+                    <Avatar className="w-full h-full">
+                      <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
+                      <AvatarFallback className="bg-love-heart text-white">
+                        <Bot className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-love-deep">Proxima</h2>
-                    <p className="text-sm text-muted-foreground">Your AI Love Assistant</p>
-                    {pair && (
-                      <p className="text-xs text-love-coral font-medium">✓ Connected to your relationship data</p>
-                    )}
-                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-love-deep">Proxima</h2>
+                  <p className="text-xs text-muted-foreground">Your AI Love Assistant</p>
                 </div>
               </DialogTitle>
               <DialogDescription id="proxima-chat-description" className="sr-only">
