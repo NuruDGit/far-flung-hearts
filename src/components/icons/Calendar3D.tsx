@@ -66,7 +66,7 @@ function CalendarMesh() {
 
 export const Calendar3D = ({ className }: Calendar3DProps) => {
   return (
-    <div className={className} style={{ width: '48px', height: '48px' }}>
+    <div className={className} style={{ width: '24px', height: '24px' }}>
       <Canvas
         camera={{ position: [0, 0, 3], fov: 45 }}
         style={{ width: '100%', height: '100%' }}
