@@ -70,7 +70,7 @@ const MemoryVaultBulkActions = ({
     <Card className="bg-white/80 backdrop-blur-sm">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-start gap-2">
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={isAllSelected}
@@ -88,7 +88,7 @@ const MemoryVaultBulkActions = ({
             </div>
 
             {selectedItems.length > 0 && (
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground ml-6">
                 {isAllSelected ? "All memories selected" : "Some memories selected"}
               </div>
             )}
