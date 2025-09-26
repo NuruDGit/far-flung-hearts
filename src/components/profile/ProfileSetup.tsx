@@ -18,20 +18,20 @@ const INTERESTS = [
   'Fashion', 'Food', 'Nature', 'Animals', 'Fitness'
 ];
 
-const RELATIONSHIP_GOALS = [
-  'Building Our Future Together',
-  'Strengthening Our Bond', 
-  'Planning Marriage',
-  'Just Enjoying Each Other',
-  'Working Through Distance',
-  'Exploring Our Connection'
+const RELATIONSHIP_STATUS = [
+  'Dating',
+  'In a Relationship',
+  'Engaged',
+  'Married',
+  'Long Distance',
+  'It\'s Complicated'
 ];
 
 interface Profile {
   display_name: string;
   bio: string;
   interests: string[];
-  relationship_goals: string;
+  relationship_status: string;
   avatar_url?: string;
   birth_date?: string;
   city?: string;
@@ -47,7 +47,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
     display_name: '',
     bio: '',
     interests: [],
-    relationship_goals: '',
+    relationship_status: '',
     avatar_url: '',
     birth_date: '',
     city: '',
@@ -110,7 +110,7 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
           display_name: profile.display_name,
           bio: profile.bio,
           interests: profile.interests,
-          relationship_goals: profile.relationship_goals,
+          relationship_goals: profile.relationship_status,
           avatar_url: profile.avatar_url,
           birth_date: profile.birth_date || null,
           city: profile.city || null,
@@ -284,28 +284,28 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
               </div>
             </div>
 
-            {/* Relationship Goals */}
+            {/* Relationship Status */}
             <div className="space-y-3">
               <Label className="text-love-deep">
-                Relationship Goals
+                Relationship Status
               </Label>
               <p className="text-sm text-muted-foreground">
-                What are you both working towards in your relationship?
+                What type of relationship are you in? This helps us provide better AI recommendations.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {RELATIONSHIP_GOALS.map((goal) => (
+                {RELATIONSHIP_STATUS.map((status) => (
                   <Button
-                    key={goal}
+                    key={status}
                     type="button"
-                    variant={profile.relationship_goals === goal ? "default" : "outline"}
+                    variant={profile.relationship_status === status ? "default" : "outline"}
                     className={`justify-start text-left h-auto py-3 px-4 whitespace-normal ${
-                      profile.relationship_goals === goal
+                      profile.relationship_status === status
                         ? 'bg-love-heart hover:bg-love-coral text-white'
                         : 'hover:bg-love-light hover:border-love-heart hover:text-love-deep'
                     }`}
-                    onClick={() => setProfile(prev => ({ ...prev, relationship_goals: goal }))}
+                    onClick={() => setProfile(prev => ({ ...prev, relationship_status: status }))}
                   >
-                    {goal}
+                    {status}
                   </Button>
                 ))}
               </div>
