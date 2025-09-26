@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,24 @@ export const MessageSearch = ({
   resultCount
 }: MessageSearchProps) => {
   const [query, setQuery] = useState(searchQuery);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside to close search
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        onClear();
+      }
+    };
+
+    if (isVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isVisible, onClear]);
 
   const handleSearch = (value: string) => {
     setQuery(value);
@@ -34,7 +52,7 @@ export const MessageSearch = ({
   if (!isVisible) return null;
 
   return (
-    <div className="border-b border-border bg-background p-3">
+    <div ref={searchRef} className="border-b border-border bg-background p-3">
       <div className="flex items-center gap-2 max-w-4xl mx-auto">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
