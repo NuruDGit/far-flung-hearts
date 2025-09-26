@@ -353,11 +353,7 @@ export const CreateEventDialog = ({ open, onOpenChange, pairId, selectedDate, on
                       <FormItem>
                         <FormLabel>Start Time</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="time" 
-                            className="border-border bg-background text-foreground focus:border-love-heart focus:ring-love-heart/20 transition-colors hover:border-accent [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-datetime-edit-fields-wrapper]:text-foreground [&::-webkit-datetime-edit-hour-field]:bg-secondary [&::-webkit-datetime-edit-minute-field]:bg-secondary [&::-webkit-datetime-edit-hour-field]:text-secondary-foreground [&::-webkit-datetime-edit-minute-field]:text-secondary-foreground [&::-webkit-datetime-edit-hour-field]:border-love-heart [&::-webkit-datetime-edit-minute-field]:border-love-heart" 
-                            {...field} 
-                          />
+                          <Input type="time" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -371,11 +367,7 @@ export const CreateEventDialog = ({ open, onOpenChange, pairId, selectedDate, on
                       <FormItem>
                         <FormLabel>End Time</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="time" 
-                            className="border-border bg-background text-foreground focus:border-love-heart focus:ring-love-heart/20 transition-colors hover:border-accent [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-datetime-edit-fields-wrapper]:text-foreground [&::-webkit-datetime-edit-hour-field]:bg-secondary [&::-webkit-datetime-edit-minute-field]:bg-secondary [&::-webkit-datetime-edit-hour-field]:text-secondary-foreground [&::-webkit-datetime-edit-minute-field]:text-secondary-foreground [&::-webkit-datetime-edit-hour-field]:border-love-heart [&::-webkit-datetime-edit-minute-field]:border-love-heart" 
-                            {...field} 
-                          />
+                          <Input type="time" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
