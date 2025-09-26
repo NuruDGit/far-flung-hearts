@@ -146,16 +146,18 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
       </div>
       
       <Card className="w-full max-w-3xl bg-card/95 backdrop-blur-sm shadow-2xl border-0 relative z-10">
-        <CardHeader className="relative text-center pb-8">
-          <div className="space-y-2">
-            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-love-deep to-love-heart bg-clip-text text-transparent flex items-center justify-center gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/app')}
-                className="hover:bg-love-light/50 hover:text-love-deep p-1 rounded-full"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
+        <CardHeader className="relative pb-8">
+          <div className="absolute top-4 left-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/app')}
+              className="hover:bg-primary/10 text-primary hover:text-primary p-2 rounded-full"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </div>
+          <div className="text-center space-y-2">
+            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-love-deep to-love-heart bg-clip-text text-transparent">
               Complete Your Profile
             </CardTitle>
             <p className="text-muted-foreground text-lg">
