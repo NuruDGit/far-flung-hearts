@@ -160,8 +160,7 @@ export const ProfilePage = () => {
         <div className="max-w-2xl mx-auto mt-8">
           <Card className="bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5 text-love-heart" />
+              <CardTitle>
                 Relationship Status
               </CardTitle>
             </CardHeader>
