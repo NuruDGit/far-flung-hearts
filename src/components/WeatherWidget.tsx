@@ -48,6 +48,8 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
         }
       });
 
+      console.log('Weather function raw response:', data, weatherError);
+
       if (weatherError) {
         throw new Error(weatherError.message);
       }
@@ -55,14 +57,14 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
       if (data?.error) {
         console.warn('Weather function response error:', data.error, data.message);
         setWeather(null);
-        setError('Weather not available for this location');
+        setError(data.error === 'missing_api_key' ? 'setup_missing_api_key' : 'not_available');
         return;
       }
 
       if (data?.weather) {
         setWeather(data.weather);
       } else {
-        setError('Weather not found');
+        setError('not_found');
       }
       
       if (data?.cityImage) {
@@ -112,7 +114,11 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="w-4 h-4" />
-            <span className="text-sm">Weather unavailable for {partnerCity}</span>
+            {error === 'setup_missing_api_key' ? (
+              <span className="text-sm">Weather setup needed. Add your OpenWeather API key in Supabase Function Secrets.</span>
+            ) : (
+              <span className="text-sm">Weather unavailable for {partnerCity}</span>
+            )}
           </div>
         </CardContent>
       </Card>
