@@ -31,20 +31,20 @@ interface EditGoalDialogProps {
 export function EditGoalDialog({ open, onOpenChange, onGoalUpdated, goal }: EditGoalDialogProps) {
   const [description, setDescription] = useState('');
   const [targetDate, setTargetDate] = useState<Date>();
-  const [selectedColor, setSelectedColor] = useState('#3B82F6');
+  const [selectedColor, setSelectedColor] = useState('heart');
   const [selectedIcon, setSelectedIcon] = useState('target');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const colorOptions = [
-    { value: '#3B82F6', label: 'Blue', class: 'bg-blue-500' },
-    { value: '#EF4444', label: 'Red', class: 'bg-red-500' },
-    { value: '#10B981', label: 'Green', class: 'bg-green-500' },
-    { value: '#F59E0B', label: 'Yellow', class: 'bg-yellow-500' },
-    { value: '#8B5CF6', label: 'Purple', class: 'bg-purple-500' },
-    { value: '#EC4899', label: 'Pink', class: 'bg-pink-500' },
-    { value: '#06B6D4', label: 'Cyan', class: 'bg-cyan-500' },
-    { value: '#84CC16', label: 'Lime', class: 'bg-lime-500' },
+    { value: 'heart', label: 'Heart Red', class: 'bg-love-heart' },
+    { value: 'coral', label: 'Coral Pink', class: 'bg-love-coral' },
+    { value: 'deep', label: 'Deep Pink', class: 'bg-love-deep' },
+    { value: 'primary', label: 'Primary', class: 'bg-primary' },
+    { value: 'accent', label: 'Accent', class: 'bg-accent' },
+    { value: 'secondary', label: 'Secondary', class: 'bg-secondary' },
+    { value: 'muted', label: 'Muted', class: 'bg-muted' },
+    { value: 'destructive', label: 'Alert', class: 'bg-destructive' },
   ];
 
   const iconOptions = [
@@ -61,7 +61,7 @@ export function EditGoalDialog({ open, onOpenChange, onGoalUpdated, goal }: Edit
     if (goal) {
       setDescription(goal.description || '');
       setTargetDate(goal.target_date ? new Date(goal.target_date) : undefined);
-      setSelectedColor(goal.color || '#3B82F6');
+      setSelectedColor(goal.color || 'heart');
       setSelectedIcon(goal.icon || 'target');
     }
   }, [goal]);
@@ -108,7 +108,7 @@ export function EditGoalDialog({ open, onOpenChange, onGoalUpdated, goal }: Edit
     // Reset form when closing
     setDescription(goal?.description || '');
     setTargetDate(goal?.target_date ? new Date(goal.target_date) : undefined);
-    setSelectedColor(goal?.color || '#3B82F6');
+    setSelectedColor(goal?.color || 'heart');
     setSelectedIcon(goal?.icon || 'target');
   };
 

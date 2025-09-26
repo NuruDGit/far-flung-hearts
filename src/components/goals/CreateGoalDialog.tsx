@@ -21,20 +21,20 @@ interface CreateGoalDialogProps {
 export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGoalDialogProps) {
   const [description, setDescription] = useState('');
   const [targetDate, setTargetDate] = useState<Date>();
-  const [selectedColor, setSelectedColor] = useState('#3B82F6');
+  const [selectedColor, setSelectedColor] = useState('heart');
   const [selectedIcon, setSelectedIcon] = useState('target');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const colorOptions = [
-    { value: '#3B82F6', label: 'Blue', class: 'bg-blue-500' },
-    { value: '#EF4444', label: 'Red', class: 'bg-red-500' },
-    { value: '#10B981', label: 'Green', class: 'bg-green-500' },
-    { value: '#F59E0B', label: 'Yellow', class: 'bg-yellow-500' },
-    { value: '#8B5CF6', label: 'Purple', class: 'bg-purple-500' },
-    { value: '#EC4899', label: 'Pink', class: 'bg-pink-500' },
-    { value: '#06B6D4', label: 'Cyan', class: 'bg-cyan-500' },
-    { value: '#84CC16', label: 'Lime', class: 'bg-lime-500' },
+    { value: 'heart', label: 'Heart Red', class: 'bg-love-heart' },
+    { value: 'coral', label: 'Coral Pink', class: 'bg-love-coral' },
+    { value: 'deep', label: 'Deep Pink', class: 'bg-love-deep' },
+    { value: 'primary', label: 'Primary', class: 'bg-primary' },
+    { value: 'accent', label: 'Accent', class: 'bg-accent' },
+    { value: 'secondary', label: 'Secondary', class: 'bg-secondary' },
+    { value: 'muted', label: 'Muted', class: 'bg-muted' },
+    { value: 'destructive', label: 'Alert', class: 'bg-destructive' },
   ];
 
   const iconOptions = [
@@ -83,7 +83,7 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
       // Reset form
       setDescription('');
       setTargetDate(undefined);
-      setSelectedColor('#3B82F6');
+      setSelectedColor('heart');
       setSelectedIcon('target');
       onOpenChange(false);
       onGoalCreated();
@@ -171,7 +171,7 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
                       {iconOptions.find(icon => icon.value === selectedIcon)?.Icon && (
                         React.createElement(iconOptions.find(icon => icon.value === selectedIcon)!.Icon, { 
                           size: 16, 
-                          style: { color: selectedColor } 
+                          className: `text-${selectedColor === 'heart' ? 'love-heart' : selectedColor === 'coral' ? 'love-coral' : selectedColor === 'deep' ? 'love-deep' : selectedColor}`
                         })
                       )}
                       {iconOptions.find(icon => icon.value === selectedIcon)?.label}
@@ -182,7 +182,7 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
                   {iconOptions.map((icon) => (
                     <SelectItem key={icon.value} value={icon.value}>
                       <div className="flex items-center gap-2">
-                        <icon.Icon size={16} style={{ color: selectedColor }} />
+                        <icon.Icon size={16} className={`text-${selectedColor === 'heart' ? 'love-heart' : selectedColor === 'coral' ? 'love-coral' : selectedColor === 'deep' ? 'love-deep' : selectedColor}`} />
                         {icon.label}
                       </div>
                     </SelectItem>

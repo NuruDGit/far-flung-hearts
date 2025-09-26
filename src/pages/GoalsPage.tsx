@@ -254,6 +254,48 @@ export default function GoalsPage() {
     return iconMap[iconName || 'target'] || Target;
   };
 
+  const getColorClass = (colorName?: string) => {
+    const colorMap: Record<string, string> = {
+      heart: 'text-love-heart',
+      coral: 'text-love-coral',
+      deep: 'text-love-deep',
+      primary: 'text-primary',
+      accent: 'text-accent',
+      secondary: 'text-secondary',
+      muted: 'text-muted',
+      destructive: 'text-destructive',
+    };
+    return colorMap[colorName || 'heart'] || 'text-love-heart';
+  };
+
+  const getBgColorClass = (colorName?: string) => {
+    const bgColorMap: Record<string, string> = {
+      heart: 'bg-love-heart/10',
+      coral: 'bg-love-coral/10',
+      deep: 'bg-love-deep/10',
+      primary: 'bg-primary/10',
+      accent: 'bg-accent/10',
+      secondary: 'bg-secondary/10',
+      muted: 'bg-muted/10',
+      destructive: 'bg-destructive/10',
+    };
+    return bgColorMap[colorName || 'heart'] || 'bg-love-heart/10';
+  };
+
+  const getBorderColorClass = (colorName?: string) => {
+    const borderColorMap: Record<string, string> = {
+      heart: 'border-love-heart',
+      coral: 'border-love-coral',
+      deep: 'border-love-deep',
+      primary: 'border-primary',
+      accent: 'border-accent',
+      secondary: 'border-secondary',
+      muted: 'border-muted',
+      destructive: 'border-destructive',
+    };
+    return borderColorMap[colorName || 'heart'] || 'border-love-heart';
+  };
+
   const confirmDeleteGoal = async () => {
     if (!goalToDelete) return;
 
@@ -329,19 +371,17 @@ export default function GoalsPage() {
                 return (
                   <Card key={goal.id} className={`${colors.border} ${colors.background} relative overflow-hidden`}>
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-1"
-                      style={{ backgroundColor: goal.color || '#3B82F6' }}
+                      className={`absolute left-0 top-0 bottom-0 w-1 ${getBorderColorClass(goal.color)}`}
                     />
                     <CardContent className="p-4 pl-6">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3 flex-1">
                           <div 
-                            className="p-2 rounded-lg flex-shrink-0"
-                            style={{ backgroundColor: `${goal.color || '#3B82F6'}20` }}
+                            className={`p-2 rounded-lg flex-shrink-0 ${getBgColorClass(goal.color)}`}
                           >
                             {React.createElement(getIconComponent(goal.icon), { 
                               size: 20, 
-                              style: { color: goal.color || '#3B82F6' } 
+                              className: getColorClass(goal.color)
                             })}
                           </div>
                           <div className="flex-1">
@@ -460,13 +500,9 @@ export default function GoalsPage() {
                                         return (
                                           <Badge 
                                             variant="outline" 
-                                            className="text-xs flex items-center gap-1"
-                                            style={{ 
-                                              borderColor: goal.color || '#3B82F6',
-                                              color: goal.color || '#3B82F6'
-                                            }}
+                                            className={`text-xs flex items-center gap-1 ${getBorderColorClass(goal.color)} ${getColorClass(goal.color)}`}
                                           >
-                                            <IconComponent size={12} />
+                                            <IconComponent size={12} className={getColorClass(goal.color)} />
                                             {goal.description || 'Unknown Goal'}
                                           </Badge>
                                         );
