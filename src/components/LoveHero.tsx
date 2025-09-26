@@ -9,14 +9,25 @@ const LoveHero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background with gradient overlay */}
-      <div className="absolute inset-0 love-gradient-soft"></div>
+      <div className="absolute inset-0 love-gradient-soft animate-gradient-move"></div>
       
-      {/* Floating hearts animation */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Floating hearts and particles animation */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Animated floating hearts */}
         <Heart className="absolute top-20 left-20 text-love-heart animate-float opacity-30" size={24} />
         <Heart className="absolute top-32 right-32 text-love-deep animate-pulse-love opacity-40" size={16} />
         <Heart className="absolute bottom-40 left-40 text-love-coral animate-heartbeat opacity-50" size={20} />
         <Heart className="absolute bottom-20 right-20 text-love-heart animate-float opacity-35" size={18} />
+        
+        {/* Floating particles */}
+        <div className="absolute top-10 left-1/4 w-2 h-2 bg-love-heart/30 rounded-full animate-float-slow"></div>
+        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-love-coral/40 rounded-full animate-float-delayed"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-love-deep/20 rounded-full animate-float-slow"></div>
+        <div className="absolute bottom-10 right-1/3 w-1.5 h-1.5 bg-love-heart/35 rounded-full animate-float"></div>
+        
+        {/* Subtle light orbs */}
+        <div className="absolute top-1/2 left-10 w-8 h-8 bg-love-glow/20 rounded-full blur-sm animate-pulse-glow"></div>
+        <div className="absolute bottom-1/3 right-10 w-6 h-6 bg-love-heart/15 rounded-full blur-md animate-float-glow"></div>
       </div>
 
       <div className="container mx-auto px-6 pt-24 md:pt-32 pb-24 md:pb-32 relative z-10">
@@ -60,8 +71,8 @@ const LoveHero = () => {
                 { icon: Heart, label: "Daily Questions" },
                 { icon: Gift, label: "Gift Exchange" }
               ].map((feature, index) => (
-                <div key={index} className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/50 backdrop-blur-sm">
-                  <feature.icon className="text-love-heart" size={24} />
+                <div key={index} className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/50 backdrop-blur-sm hover-scale transition-all hover:bg-white/70 cursor-pointer group">
+                  <feature.icon className="text-love-heart group-hover:text-love-deep transition-colors" size={24} />
                   <span className="text-sm font-medium text-foreground">{feature.label}</span>
                 </div>
               ))}
@@ -80,8 +91,8 @@ const LoveHero = () => {
             </div>
             
             {/* Floating UI elements */}
-            <div className="absolute -top-4 -right-4 bg-white rounded-full p-4 shadow-card animate-float">
-              <Heart className="text-love-heart animate-heartbeat" size={32} />
+            <div className="absolute -top-4 -right-4 bg-white rounded-full p-4 shadow-card animate-float hover-scale cursor-pointer">
+              <Heart className="text-love-heart animate-heartbeat hover:text-love-deep transition-colors" size={32} />
             </div>
             <div className="absolute -bottom-4 -left-4 bg-white rounded-lg p-3 shadow-card">
               <div className="flex items-center gap-2">

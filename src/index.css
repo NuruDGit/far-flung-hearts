@@ -48,6 +48,12 @@ All colors MUST be HSL.
     --transition-love: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --bounce-heart: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     
+    /* Love colors with defined values */
+    --love-heart: 350 85% 60%;
+    --love-deep: 340 75% 55%;
+    --love-coral: 10 100% 85%;
+    --love-glow: 350 85% 75%;
+    
     /* Shadows */
     --shadow-love: 0 8px 32px hsl(350 85% 60% / 0.15);
     --shadow-card: 0 4px 16px hsl(340 25% 88% / 0.3);
@@ -164,5 +170,65 @@ All colors MUST be HSL.
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
+  }
+  
+  /* New animations for making the hero more alive */
+  .animate-gradient-move {
+    background-size: 400% 400%;
+    animation: gradient-move 8s ease infinite;
+  }
+  
+  @keyframes gradient-move {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .animate-float-slow {
+    animation: float-slow 4s ease-in-out infinite;
+  }
+  
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+  }
+  
+  .animate-float-delayed {
+    animation: float-delayed 3.5s ease-in-out infinite 1.5s;
+  }
+  
+  @keyframes float-delayed {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-12px) scale(1.1); }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { 
+      opacity: 0.3; 
+      transform: scale(1); 
+    }
+    50% { 
+      opacity: 0.6; 
+      transform: scale(1.2); 
+    }
+  }
+  
+  .animate-float-glow {
+    animation: float-glow 4.5s ease-in-out infinite;
+  }
+  
+  @keyframes float-glow {
+    0%, 100% { 
+      transform: translateY(0px) scale(1);
+      opacity: 0.2;
+    }
+    50% { 
+      transform: translateY(-20px) scale(1.3);
+      opacity: 0.4;
+    }
   }
 }
