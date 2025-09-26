@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, parseISO, addMonths, subMonths } from 'date-fns';
 import { Calendar, Plus, ChevronLeft, ChevronRight, Clock, MapPin, Edit, Filter, Search, Heart } from 'lucide-react';
+import { DinnerPlateIcon } from '@/components/icons/DinnerPlateIcon';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -223,7 +224,7 @@ const CalendarPage = () => {
     const getEventIcon = (kind: string) => {
       switch (kind) {
         case 'date':
-          return <Calendar className="h-6 w-6 text-muted-foreground" />;
+          return <DinnerPlateIcon className="h-6 w-6 text-muted-foreground" />;
         case 'anniversary':
           return <Heart className="h-6 w-6 text-muted-foreground" />;
         case 'travel':
