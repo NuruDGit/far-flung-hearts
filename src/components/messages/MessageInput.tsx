@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CameraCapture } from './CameraCapture';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 
 interface MessageInputProps {
   onSendMessage: (content: string, attachments?: File[]) => void;
@@ -29,6 +30,7 @@ export const MessageInput = ({
   const audioInputRef = useRef<HTMLInputElement>(null);
   const documentInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const handleSend = () => {
     const trimmedMessage = message.trim();
@@ -124,8 +126,8 @@ export const MessageInput = ({
   };
 
   const handleMemoryVaultAccess = () => {
-    // Navigate to the memory vault page within the app
-    window.location.href = '/app/memory-vault';
+    // Open memory vault in new tab so users can share without losing chat context
+    window.open('/app/memory-vault', '_blank');
     setIsAttachOpen(false);
   };
 
