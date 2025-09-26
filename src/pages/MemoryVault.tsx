@@ -209,18 +209,13 @@ const MemoryVault = () => {
 
         console.log('File uploaded successfully, getting public URL...');
 
-        // Get signed URL for private bucket
-        const { data: signedUrlData, error: urlError } = await supabase.storage
+        // Get public URL (bucket is public)
+        const { data: { publicUrl } } = supabase.storage
           .from('media')
-          .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year expiry
+          .getPublicUrl(filePath);
 
-        if (urlError) {
-          console.error('URL generation error:', urlError);
-          throw urlError;
-        }
-
-        const mediaUrl = signedUrlData.signedUrl;
-        console.log('Signed URL obtained:', mediaUrl);
+        const mediaUrl = publicUrl;
+        console.log('Public URL obtained:', mediaUrl);
 
         // Create message record in database
         const { data: messageData, error: messageError } = await supabase
@@ -508,6 +503,8 @@ const MemoryVault = () => {
                       <img
                         src={mediaUrl}
                         alt={fileName}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         onLoad={() => {
                           console.log('Image loaded successfully:', mediaUrl);
@@ -524,6 +521,11 @@ const MemoryVault = () => {
                         className="w-full h-full object-cover"
                         controls={false}
                         muted
+                        playsInline
+                        autoPlay
+                        loop
+                        preload="metadata"
+                        poster="/placeholder.svg"
                       />
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
