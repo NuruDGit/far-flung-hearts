@@ -14,6 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
+      call_history: {
+        Row: {
+          call_type: string
+          caller_id: string
+          created_at: string
+          duration_seconds: number | null
+          end_reason: string | null
+          ended_at: string | null
+          id: string
+          pair_id: string
+          quality_score: number | null
+          receiver_id: string
+          started_at: string
+        }
+        Insert: {
+          call_type: string
+          caller_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          end_reason?: string | null
+          ended_at?: string | null
+          id?: string
+          pair_id: string
+          quality_score?: number | null
+          receiver_id: string
+          started_at: string
+        }
+        Update: {
+          call_type?: string
+          caller_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          end_reason?: string | null
+          ended_at?: string | null
+          id?: string
+          pair_id?: string
+          quality_score?: number | null
+          receiver_id?: string
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_call_history_pair"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      call_quality_logs: {
+        Row: {
+          audio_quality: number | null
+          call_session_id: string
+          connection_state: string | null
+          ice_connection_state: string | null
+          id: string
+          latency_ms: number | null
+          packet_loss_rate: number | null
+          timestamp: string
+          video_quality: number | null
+        }
+        Insert: {
+          audio_quality?: number | null
+          call_session_id: string
+          connection_state?: string | null
+          ice_connection_state?: string | null
+          id?: string
+          latency_ms?: number | null
+          packet_loss_rate?: number | null
+          timestamp?: string
+          video_quality?: number | null
+        }
+        Update: {
+          audio_quality?: number | null
+          call_session_id?: string
+          connection_state?: string | null
+          ice_connection_state?: string | null
+          id?: string
+          latency_ms?: number | null
+          packet_loss_rate?: number | null
+          timestamp?: string
+          video_quality?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_call_quality_call_session"
+            columns: ["call_session_id"]
+            isOneToOne: false
+            referencedRelation: "call_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      call_sessions: {
+        Row: {
+          call_type: string
+          caller_id: string
+          created_at: string
+          ended_at: string | null
+          ice_config: Json | null
+          id: string
+          pair_id: string
+          receiver_id: string
+          started_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          call_type: string
+          caller_id: string
+          created_at?: string
+          ended_at?: string | null
+          ice_config?: Json | null
+          id?: string
+          pair_id: string
+          receiver_id: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          call_type?: string
+          caller_id?: string
+          created_at?: string
+          ended_at?: string | null
+          ice_config?: Json | null
+          id?: string
+          pair_id?: string
+          receiver_id?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_call_sessions_pair"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklist_items: {
         Row: {
           assignee: string | null

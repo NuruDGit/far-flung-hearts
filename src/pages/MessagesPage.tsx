@@ -497,9 +497,17 @@ const MessagesPage = () => {
       {/* Video Call Interface */}
       <VideoCallInterface
         isActive={callState.isActive && !callState.isIncoming}
+        isIncoming={callState.isIncoming}
+        isConnected={callState.isConnected}
         partnerName={partner?.display_name || 'Partner'}
         partnerAvatar={partner?.avatar_url}
-        onEndCall={endCall}
+        connectionQuality={callState.connectionQuality}
+        isReconnecting={callState.isReconnecting}
+        localVideoRef={localVideoRef}
+        remoteVideoRef={remoteVideoRef}
+        onAccept={acceptCall}
+        onDecline={declineCall}
+        onEnd={endCall}
         onToggleMic={toggleMic}
         onToggleVideo={toggleVideo}
         onToggleScreenShare={toggleScreenShare}

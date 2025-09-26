@@ -12,6 +12,9 @@ interface CallState {
   callDuration: number;
   partnerId?: string;
   callId?: string;
+  connectionQuality?: 'excellent' | 'good' | 'poor' | 'disconnected';
+  isReconnecting?: boolean;
+  callSessionId?: string;
 }
 
 interface UseVideoCallReturn {
@@ -37,6 +40,8 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     isVideoOn: true,
     isScreenSharing: false,
     callDuration: 0,
+    connectionQuality: 'excellent',
+    isReconnecting: false,
   });
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -45,16 +50,158 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   const localStreamRef = useRef<MediaStream | null>(null);
   const callTimerRef = useRef<NodeJS.Timeout | null>(null);
   const realtimeChannelRef = useRef<any>(null);
+  const qualityMonitorRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // WebRTC configuration
+  // Enhanced WebRTC configuration with TURN servers and fallbacks
   const rtcConfig: RTCConfiguration = {
     iceServers: [
+      // Primary STUN servers
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun3.l.google.com:19302' },
+      // Add more reliable STUN servers
+      { urls: 'stun:stun.services.mozilla.com' },
+      // Add TURN servers for better NAT traversal (configure with your TURN server)
+      // {
+      //   urls: 'turn:your-turn-server.com:3478',
+      //   username: 'your-turn-username',
+      //   credential: 'your-turn-password'
+      // }
     ],
+    iceCandidatePoolSize: 10,
+    bundlePolicy: 'max-bundle',
+    rtcpMuxPolicy: 'require'
   };
 
-  // Initialize peer connection
+  // Create or update call session in database
+  const createCallSession = async (callerId: string, receiverId: string, callType: 'video' | 'audio') => {
+    try {
+      const { data, error } = await supabase
+        .from('call_sessions')
+        .insert({
+          pair_id: pairId,
+          caller_id: callerId,
+          receiver_id: receiverId,
+          call_type: callType,
+          status: 'initiating',
+          ice_config: JSON.parse(JSON.stringify(rtcConfig))
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Failed to create call session:', error);
+      return null;
+    }
+  };
+
+  const updateCallSession = async (sessionId: string, updates: any) => {
+    try {
+      await supabase
+        .from('call_sessions')
+        .update(updates)
+        .eq('id', sessionId);
+    } catch (error) {
+      console.error('Failed to update call session:', error);
+    }
+  };
+
+  // Log call quality metrics
+  const logCallQuality = async (callSessionId: string, quality: any) => {
+    try {
+      await supabase.from('call_quality_logs').insert({
+        call_session_id: callSessionId,
+        connection_state: quality.connectionState,
+        ice_connection_state: quality.iceConnectionState,
+        audio_quality: quality.audioQuality,
+        video_quality: quality.videoQuality,
+        latency_ms: quality.latency,
+        packet_loss_rate: quality.packetLoss
+      });
+    } catch (error) {
+      console.error('Failed to log call quality:', error);
+    }
+  };
+
+  // Monitor connection quality
+  const monitorConnectionQuality = (pc: RTCPeerConnection, callSessionId: string) => {
+    const checkQuality = async () => {
+      try {
+        const stats = await pc.getStats();
+        let connectionQuality: 'excellent' | 'good' | 'poor' | 'disconnected' = 'excellent';
+        let audioQuality = 1.0;
+        let videoQuality = 1.0;
+        let latency = 0;
+        let packetLoss = 0;
+
+        stats.forEach((report) => {
+          if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
+            if (report.packetsLost && report.packetsReceived) {
+              packetLoss = report.packetsLost / (report.packetsLost + report.packetsReceived);
+              videoQuality = Math.max(0, 1 - packetLoss * 2);
+            }
+          }
+          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+            latency = report.currentRoundTripTime * 1000 || 0;
+          }
+        });
+
+        // Determine connection quality
+        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+          connectionQuality = 'disconnected';
+        } else if (packetLoss > 0.05 || latency > 300) {
+          connectionQuality = 'poor';
+        } else if (packetLoss > 0.02 || latency > 150) {
+          connectionQuality = 'good';
+        }
+
+        setCallState(prev => ({ ...prev, connectionQuality }));
+
+        // Log quality metrics
+        await logCallQuality(callSessionId, {
+          connectionState: pc.connectionState,
+          iceConnectionState: pc.iceConnectionState,
+          audioQuality,
+          videoQuality,
+          latency,
+          packetLoss
+        });
+
+      } catch (error) {
+        console.error('Failed to check connection quality:', error);
+      }
+    };
+
+    qualityMonitorRef.current = setInterval(checkQuality, 5000);
+    checkQuality(); // Initial check
+  };
+
+  // Attempt reconnection on connection issues
+  const attemptReconnection = () => {
+    if (reconnectTimeoutRef.current) return;
+
+    setCallState(prev => ({ ...prev, isReconnecting: true }));
+    
+    reconnectTimeoutRef.current = setTimeout(async () => {
+      try {
+        // Attempt to restart ICE
+        if (peerConnectionRef.current) {
+          await peerConnectionRef.current.restartIce();
+        }
+        reconnectTimeoutRef.current = null;
+      } catch (error) {
+        console.error('Reconnection failed:', error);
+        reconnectTimeoutRef.current = null;
+        setCallState(prev => ({ ...prev, isReconnecting: false }));
+      }
+    }, 3000);
+  };
+
+  // Initialize peer connection with enhanced monitoring
   const initializePeerConnection = useCallback(() => {
     const peerConnection = new RTCPeerConnection(rtcConfig);
     
@@ -75,26 +222,47 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
       }
-      setCallState(prev => ({ ...prev, isConnected: true }));
+      setCallState(prev => ({ ...prev, isConnected: true, isReconnecting: false }));
     };
 
     peerConnection.onconnectionstatechange = () => {
+      console.log('Connection state:', peerConnection.connectionState);
       if (peerConnection.connectionState === 'connected') {
-        setCallState(prev => ({ ...prev, isConnected: true }));
-      } else if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed') {
+        setCallState(prev => ({ ...prev, isConnected: true, isReconnecting: false }));
+      } else if (peerConnection.connectionState === 'disconnected') {
+        setCallState(prev => ({ ...prev, isConnected: false, isReconnecting: true }));
+        attemptReconnection();
+      } else if (peerConnection.connectionState === 'failed') {
+        setCallState(prev => ({ ...prev, isConnected: false, connectionQuality: 'disconnected' }));
         endCall();
+      }
+    };
+
+    peerConnection.oniceconnectionstatechange = () => {
+      console.log('ICE connection state:', peerConnection.iceConnectionState);
+      if (peerConnection.iceConnectionState === 'disconnected') {
+        attemptReconnection();
       }
     };
 
     return peerConnection;
   }, [callState.callId]);
 
-  // Get user media
+  // Get user media with enhanced error handling
   const getUserMedia = useCallback(async (video: boolean = true, audio: boolean = true) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: video ? { width: 1280, height: 720 } : false,
-        audio: audio,
+        video: video ? { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        } : false,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 48000
+        },
       });
 
       if (localVideoRef.current) {
@@ -113,17 +281,22 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     }
   }, [toast]);
 
-  // Start outgoing call
+  // Start outgoing call with database logging
   const startCall = useCallback(async (partnerId: string, isVideo: boolean = true) => {
     try {
       const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
+      // Create call session in database
+      const callSession = await createCallSession(userId, partnerId, isVideo ? 'video' : 'audio');
+      if (!callSession) return;
+
       setCallState(prev => ({
         ...prev,
         isActive: true,
         partnerId,
         callId,
         isVideoOn: isVideo,
+        callSessionId: callSession.id,
       }));
 
       // Get user media
@@ -176,16 +349,22 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
             offer,
             isVideo,
             callerId: userId,
+            callSessionId: callSession.id,
           },
         });
       }
 
-      // Start call duration timer
+      // Update call session status
+      await updateCallSession(callSession.id, { status: 'ringing' });
+
+      // Start call duration timer and quality monitoring
       let duration = 0;
       callTimerRef.current = setInterval(() => {
         duration += 1;
         setCallState(prev => ({ ...prev, callDuration: duration }));
       }, 1000);
+
+      monitorConnectionQuality(peerConnectionRef.current, callSession.id);
 
     } catch (error) {
       console.error('Error starting call:', error);
@@ -197,6 +376,11 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   const acceptCall = useCallback(async () => {
     try {
       setCallState(prev => ({ ...prev, isIncoming: false }));
+      
+      // Update call session status
+      if (callState.callSessionId) {
+        await updateCallSession(callState.callSessionId, { status: 'connected' });
+      }
       
       // Get user media
       const stream = await getUserMedia(callState.isVideoOn, true);
@@ -225,6 +409,11 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
             },
           });
         }
+
+        // Start quality monitoring
+        if (callState.callSessionId) {
+          monitorConnectionQuality(peerConnectionRef.current, callState.callSessionId);
+        }
       }
 
       // Start call duration timer
@@ -238,10 +427,48 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       console.error('Error accepting call:', error);
       endCall();
     }
-  }, [callState.isVideoOn, callState.callId, getUserMedia]);
+  }, [callState.isVideoOn, callState.callId, callState.callSessionId, getUserMedia]);
 
-  // End call
-  const endCall = useCallback(() => {
+  // Log call to history
+  const logCallHistory = async (sessionId: string, endReason: string) => {
+    try {
+      const { data: session } = await supabase
+        .from('call_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .single();
+
+      if (session) {
+        const duration = Math.floor((Date.now() - new Date(session.started_at).getTime()) / 1000);
+        
+        await supabase.from('call_history').insert({
+          pair_id: session.pair_id,
+          caller_id: session.caller_id,
+          receiver_id: session.receiver_id,
+          call_type: session.call_type,
+          duration_seconds: duration,
+          end_reason: endReason,
+          started_at: session.started_at,
+          ended_at: new Date().toISOString()
+        });
+
+        await updateCallSession(sessionId, { 
+          status: 'ended', 
+          ended_at: new Date().toISOString() 
+        });
+      }
+    } catch (error) {
+      console.error('Failed to log call history:', error);
+    }
+  };
+
+  // End call with enhanced cleanup and logging
+  const endCall = useCallback(async (endReason: string = 'completed') => {
+    // Log call history if we have a session
+    if (callState.callSessionId) {
+      await logCallHistory(callState.callSessionId, endReason);
+    }
+
     // Send end call signal
     if (realtimeChannelRef.current && callState.callId) {
       realtimeChannelRef.current.send({
@@ -251,6 +478,20 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
           callId: callState.callId,
         },
       });
+    }
+
+    // Clear all timers
+    if (callTimerRef.current) {
+      clearInterval(callTimerRef.current);
+      callTimerRef.current = null;
+    }
+    if (qualityMonitorRef.current) {
+      clearInterval(qualityMonitorRef.current);
+      qualityMonitorRef.current = null;
+    }
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
     }
 
     // Clean up peer connection
@@ -273,12 +514,6 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       remoteVideoRef.current.srcObject = null;
     }
 
-    // Clear timer
-    if (callTimerRef.current) {
-      clearInterval(callTimerRef.current);
-      callTimerRef.current = null;
-    }
-
     // Unsubscribe from realtime
     if (realtimeChannelRef.current) {
       supabase.removeChannel(realtimeChannelRef.current);
@@ -294,12 +529,14 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       isVideoOn: true,
       isScreenSharing: false,
       callDuration: 0,
+      connectionQuality: 'excellent',
+      isReconnecting: false,
     });
-  }, [callState.callId]);
+  }, [callState.callId, callState.callSessionId]);
 
   // Decline call
   const declineCall = useCallback(() => {
-    endCall();
+    endCall('declined');
   }, [endCall]);
 
   // Toggle microphone
@@ -394,6 +631,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
             partnerId: payload.callerId,
             callId: payload.callId,
             isVideoOn: payload.isVideo,
+            callSessionId: payload.callSessionId,
           }));
 
           // Initialize peer connection for incoming call
@@ -412,7 +650,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      endCall();
+      endCall('completed');
     };
   }, [endCall]);
 
@@ -422,7 +660,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     remoteVideoRef,
     startCall,
     acceptCall,
-    endCall,
+    endCall: () => endCall('completed'),
     declineCall,
     toggleMic,
     toggleVideo,
