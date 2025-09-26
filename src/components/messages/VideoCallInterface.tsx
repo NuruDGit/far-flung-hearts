@@ -100,7 +100,7 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
   };
 
   useEffect(() => {
-    if (localVideoRef.current) {
+    if (localVideoRef?.current) {
       localVideoRef.current.muted = true;
     }
   }, [localVideoRef]);
