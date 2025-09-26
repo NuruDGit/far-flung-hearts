@@ -427,15 +427,6 @@ const MessagesPage = () => {
 
             <div className="flex items-center gap-1 flex-shrink-0">
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowSearch(!showSearch)}
-                className={`p-2 h-8 w-8 ${showSearch ? "bg-secondary" : ""}`}
-                title="Search messages"
-              >
-                <Search size={14} />
-              </Button>
-              <Button
                 variant="outline"
                 size="sm"
                 onClick={startVoiceCall}
@@ -461,7 +452,12 @@ const MessagesPage = () => {
                     <MoreVertical size={14} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-48 bg-background border border-border shadow-lg z-50">
+                  <DropdownMenuItem onClick={() => setShowSearch(!showSearch)}>
+                    <Search className="mr-2 h-4 w-4" />
+                    {showSearch ? 'Hide Search' : 'Search Messages'}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleViewProfile}>
                     <User className="mr-2 h-4 w-4" />
                     View Profile
