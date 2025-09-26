@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { MessagesList } from '@/components/messages/MessagesList';
@@ -42,6 +43,7 @@ interface Pair {
 const MessagesPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -279,10 +281,9 @@ const MessagesPage = () => {
   };
 
   const handleViewProfile = () => {
-    toast({
-      title: "View Profile",
-      description: "Profile view coming soon"
-    });
+    // Navigate to partner's profile - this is important for LDR couples to stay connected
+    // and see their partner's current mood, interests, and updates
+    navigate('/app/profile');
   };
 
   const handleSearch = (query: string) => {
