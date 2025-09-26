@@ -52,11 +52,20 @@ const WeatherWidget = ({ partnerCity, partnerCountry }: WeatherWidgetProps) => {
         throw new Error(weatherError.message);
       }
 
-      if (data.weather) {
+      if (data?.error) {
+        console.warn('Weather function response error:', data.error, data.message);
+        setWeather(null);
+        setError('Weather not available for this location');
+        return;
+      }
+
+      if (data?.weather) {
         setWeather(data.weather);
+      } else {
+        setError('Weather not found');
       }
       
-      if (data.cityImage) {
+      if (data?.cityImage) {
         setCityImage(data.cityImage);
       }
 

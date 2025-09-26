@@ -21,26 +21,48 @@ serve(async (req) => {
       );
     }
 
-    const OPENWEATHER_API_KEY = Deno.env.get('OPENWEATHER_API_KEY');
+    const OPENWEATHER_API_KEY = Deno.env.get('OPENWEATHER_API_KEY')?.trim();
     
     if (!OPENWEATHER_API_KEY) {
+      // Return 200 with an error payload to avoid client exceptions
       return new Response(
-        JSON.stringify({ error: 'Weather API key not configured' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        JSON.stringify({ error: 'missing_api_key', message: 'Weather API key not configured' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Fetch weather data from OpenWeatherMap
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)},${encodeURIComponent(country || '')}&appid=${OPENWEATHER_API_KEY}&units=metric`;
-    
-    console.log('Fetching weather for:', city, country);
+    // Resolve city to coordinates using OpenWeather Geocoding API
+    const primaryQuery = country ? `${city},${country}` : city;
+    const geoUrlPrimary = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(primaryQuery)}&limit=1&appid=${OPENWEATHER_API_KEY}`;
+    const geoRespPrimary = await fetch(geoUrlPrimary);
+    let geoResults: any[] = geoRespPrimary.ok ? await geoRespPrimary.json() : [];
+
+    // Fallback: try with city only if nothing found
+    if (!Array.isArray(geoResults) || geoResults.length === 0) {
+      const geoUrlFallback = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${OPENWEATHER_API_KEY}`;
+      const geoRespFallback = await fetch(geoUrlFallback);
+      geoResults = geoRespFallback.ok ? await geoRespFallback.json() : [];
+    }
+
+    if (!Array.isArray(geoResults) || geoResults.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'location_not_found', message: 'Could not locate the specified city' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { lat, lon, name, country: countryCode } = geoResults[0];
+
+    // Fetch weather data by coordinates
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+    console.log('Fetching weather for:', name || city, countryCode || country);
     const weatherResponse = await fetch(weatherUrl);
     
     if (!weatherResponse.ok) {
       console.error('Weather API error:', await weatherResponse.text());
       return new Response(
-        JSON.stringify({ error: 'Weather data not found' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
+        JSON.stringify({ error: 'weather_not_found', message: 'Weather data not found' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
