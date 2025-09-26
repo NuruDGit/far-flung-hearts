@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, parseISO, addMonths, subMonths } from 'date-fns';
-import { Calendar, Plus, ChevronLeft, ChevronRight, Clock, MapPin, Users, Edit, Trash2, Filter, Search } from 'lucide-react';
+import { Calendar, Plus, ChevronLeft, ChevronRight, Clock, MapPin, Edit, Filter, Search, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { CreateEventDialog } from '@/components/calendar/CreateEventDialog';
@@ -39,10 +38,10 @@ const CalendarPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<'month' | 'week' | 'day'>('month');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -144,7 +143,7 @@ const CalendarPage = () => {
     const daysOfWeek = [];
     for (let i = 0; i < 7; i++) {
       daysOfWeek.push(
-        <div key={i} className="p-2 text-center text-sm font-medium text-muted-foreground">
+        <div key={i} className="py-4 text-center text-sm font-medium text-muted-foreground">
           {format(addDays(startOfWeek(new Date()), i), 'EEE')}
         </div>
       );
@@ -157,57 +156,49 @@ const CalendarPage = () => {
         const dayEvents = getEventsForDate(day);
         const isCurrentMonth = isSameMonth(day, monthStart);
         const isToday = isSameDay(day, new Date());
+        const isSelected = isSameDay(day, selectedDate);
 
         days.push(
           <div
             key={day.toString()}
             className={`
-              min-h-[120px] border border-border/50 p-2 cursor-pointer hover:bg-secondary/50 transition-colors
-              ${!isCurrentMonth ? 'text-muted-foreground bg-muted/20' : ''}
-              ${isToday ? 'bg-love-heart/5 border-love-heart/30' : ''}
+              h-16 flex flex-col items-center justify-center cursor-pointer hover:bg-secondary/50 transition-all duration-200 relative
+              ${!isCurrentMonth ? 'text-muted-foreground' : ''}
             `}
-            onClick={() => {
-              setCurrentDate(cloneDay);
-              setView('day');
-            }}
+            onClick={() => setSelectedDate(cloneDay)}
           >
-            <div className={`text-sm font-medium mb-1 ${isToday ? 'text-love-heart' : ''}`}>
+            <div 
+              className={`
+                w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200
+                ${isToday ? 'bg-love-heart text-white shadow-md' : ''}
+                ${isSelected && !isToday ? 'bg-love-heart/10 text-love-heart border-2 border-love-heart' : ''}
+                ${!isSelected && !isToday ? 'hover:bg-secondary' : ''}
+              `}
+            >
               {formattedDate}
             </div>
-            <div className="space-y-1">
-              {dayEvents.slice(0, 3).map((event) => {
-                const colors = eventTypeColors[event.kind] || eventTypeColors.other;
-                return (
-                  <div
-                    key={event.id}
-                    className={`text-xs p-1 rounded ${colors.bg} ${colors.text} ${colors.border} border cursor-pointer hover:opacity-80`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedEvent(event);
-                      setShowDetailsDialog(true);
-                    }}
-                  >
-                    <div className="truncate font-medium">{event.title}</div>
-                    {!event.all_day && (
-                      <div className="text-xs opacity-75">
-                        {format(parseISO(event.starts_at), 'HH:mm')}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              {dayEvents.length > 3 && (
-                <div className="text-xs text-muted-foreground">
-                  +{dayEvents.length - 3} more
-                </div>
-              )}
-            </div>
+            {dayEvents.length > 0 && (
+              <div className="flex gap-1 mt-1">
+                {dayEvents.slice(0, 3).map((event, index) => {
+                  const colors = eventTypeColors[event.kind] || eventTypeColors.other;
+                  return (
+                    <div
+                      key={event.id}
+                      className={`w-1.5 h-1.5 rounded-full ${colors.bg.replace('/10', '/60')}`}
+                    />
+                  );
+                })}
+                {dayEvents.length > 3 && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                )}
+              </div>
+            )}
           </div>
         );
         day = addDays(day, 1);
       }
       rows.push(
-        <div key={day.toString()} className="grid grid-cols-7">
+        <div key={day.toString()} className="grid grid-cols-7 border-b border-border/20 last:border-b-0">
           {days}
         </div>
       );
@@ -215,8 +206,8 @@ const CalendarPage = () => {
     }
 
     return (
-      <div className="border border-border rounded-lg overflow-hidden">
-        <div className="grid grid-cols-7 bg-muted/30">
+      <div className="bg-card rounded-lg border border-border shadow-sm">
+        <div className="grid grid-cols-7 border-b border-border/20 bg-muted/20">
           {daysOfWeek}
         </div>
         {rows}
@@ -224,79 +215,69 @@ const CalendarPage = () => {
     );
   };
 
-  const renderDayView = () => {
-    const dayEvents = getEventsForDate(currentDate).sort((a, b) => 
+  const renderEventList = () => {
+    const dayEvents = getEventsForDate(selectedDate).sort((a, b) => 
       parseISO(a.starts_at).getTime() - parseISO(b.starts_at).getTime()
     );
 
     return (
       <div className="space-y-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-foreground">
-            {format(currentDate, 'EEEE, MMMM d, yyyy')}
-          </h2>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-foreground">
+            {format(selectedDate, 'EEEE, MMMM d')}
+          </h3>
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCreateDialog(true)}
+            className="text-love-heart border-love-heart hover:bg-love-heart hover:text-white"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add
+          </Button>
         </div>
         
         {dayEvents.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Calendar className="mx-auto mb-4 text-muted-foreground" size={48} />
-              <p className="text-muted-foreground">No events scheduled for this day</p>
-              <Button 
-                onClick={() => setShowCreateDialog(true)}
-                className="mt-4 bg-love-heart text-white hover:bg-love-deep"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Event
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="text-center py-8">
+            <Calendar className="mx-auto mb-3 text-muted-foreground/50" size={32} />
+            <p className="text-sm text-muted-foreground">No events for this day</p>
+          </div>
         ) : (
           <div className="space-y-3">
             {dayEvents.map((event) => {
               const colors = eventTypeColors[event.kind] || eventTypeColors.other;
               return (
-                <Card key={event.id} className={`cursor-pointer hover:shadow-md transition-shadow ${colors.border} border`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="secondary" className={`${colors.bg} ${colors.text}`}>
-                            {event.kind}
-                          </Badge>
-                          {!event.all_day && (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              {format(parseISO(event.starts_at), 'HH:mm')} - {format(parseISO(event.ends_at), 'HH:mm')}
-                            </div>
-                          )}
-                        </div>
-                        <h3 className="font-semibold text-foreground mb-1">{event.title}</h3>
-                        {event.meta.description && (
-                          <p className="text-sm text-muted-foreground mb-2">{event.meta.description}</p>
-                        )}
-                        {event.meta.location && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <MapPin className="h-3 w-3" />
-                            {event.meta.location}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedEvent(event);
-                            setShowEditDialog(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
+                <div 
+                  key={event.id} 
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-secondary/50 cursor-pointer transition-colors group"
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    setShowDetailsDialog(true);
+                  }}
+                >
+                  <div className={`w-3 h-3 rounded-full mt-1.5 ${colors.bg.replace('/10', '/60')}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-medium text-foreground truncate">{event.title}</h4>
+                      <Badge variant="secondary" className={`text-xs ${colors.bg} ${colors.text}`}>
+                        {event.kind}
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
+                    {!event.all_day && (
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+                        <Clock className="h-3 w-3" />
+                        {format(parseISO(event.starts_at), 'HH:mm')} - {format(parseISO(event.ends_at), 'HH:mm')}
+                      </div>
+                    )}
+                    {event.meta.location && (
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        <span className="truncate">{event.meta.location}</span>
+                      </div>
+                    )}
+                  </div>
+                  <Edit className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
               );
             })}
           </div>
@@ -337,10 +318,13 @@ const CalendarPage = () => {
       
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Shared Calendar</h1>
-            <p className="text-muted-foreground">Plan your time together</p>
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Heart className="h-8 w-8 text-love-heart" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Shared Calendar</h1>
+              <p className="text-muted-foreground">Plan your time together</p>
+            </div>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
@@ -373,7 +357,7 @@ const CalendarPage = () => {
             
             <Button 
               onClick={() => setShowCreateDialog(true)}
-              className="bg-love-heart text-white hover:bg-love-deep"
+              className="bg-love-heart text-white hover:bg-love-deep shadow-md"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Event
@@ -382,67 +366,65 @@ const CalendarPage = () => {
         </div>
 
         {/* Calendar Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentDate(view === 'month' ? subMonths(currentDate, 1) : addDays(currentDate, -1))}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              
-              <h2 className="text-xl font-semibold text-foreground min-w-[200px] text-center">
-                {view === 'month' 
-                  ? format(currentDate, 'MMMM yyyy')
-                  : format(currentDate, 'EEEE, MMMM d, yyyy')
-                }
-              </h2>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentDate(view === 'month' ? addMonths(currentDate, 1) : addDays(currentDate, 1))}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+              className="hover:bg-love-heart/10 hover:text-love-heart"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            
+            <h2 className="text-2xl font-bold text-foreground min-w-[180px] text-center">
+              {format(currentDate, 'MMMM yyyy')}
+            </h2>
             
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              onClick={() => setCurrentDate(new Date())}
+              onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+              className="hover:bg-love-heart/10 hover:text-love-heart"
             >
-              Today
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
-
-          <Tabs value={view} onValueChange={(value) => setView(value as 'month' | 'week' | 'day')}>
-            <TabsList>
-              <TabsTrigger value="month">Month</TabsTrigger>
-              <TabsTrigger value="day">Day</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setCurrentDate(new Date());
+              setSelectedDate(new Date());
+            }}
+            className="text-love-heart border-love-heart hover:bg-love-heart hover:text-white"
+          >
+            Today
+          </Button>
         </div>
 
         {/* Calendar Content */}
         {loading ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading calendar...</p>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart"></div>
+          </div>
         ) : (
-          <Tabs value={view} className="space-y-4">
-            <TabsContent value="month">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Calendar Grid */}
+            <div className="lg:col-span-2">
               {renderCalendarGrid()}
-            </TabsContent>
-            <TabsContent value="day">
-              {renderDayView()}
-            </TabsContent>
-          </Tabs>
+            </div>
+            
+            {/* Event List */}
+            <div className="lg:col-span-1">
+              <Card className="h-fit">
+                <CardContent className="p-4">
+                  {renderEventList()}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         )}
 
         {/* Dialogs */}
@@ -451,7 +433,7 @@ const CalendarPage = () => {
             open={showCreateDialog}
             onOpenChange={setShowCreateDialog}
             pairId={userPairId}
-            selectedDate={currentDate}
+            selectedDate={selectedDate}
             onEventCreated={handleEventCreated}
           />
         )}
