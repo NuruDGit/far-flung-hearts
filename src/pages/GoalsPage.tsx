@@ -461,15 +461,15 @@ export default function GoalsPage() {
                 const colors = getGoalStatusColors(status);
                 
                 return (
-                  <Card key={goal.id} className={`${colors.border} ${colors.background} relative overflow-hidden`}>
+                  <Card key={goal.id} className={`${colors.border} ${colors.background} relative overflow-hidden shadow-sm hover:shadow-md transition-shadow`}>
                     <div 
                       className={`absolute left-0 top-0 bottom-0 w-1 ${getBorderColorClass(goal.color)}`}
                     />
-                    <CardHeader className="p-4 pl-6 pb-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 flex-1">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                    <CardHeader className="p-6 pl-8 pb-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="flex-1 space-y-4">
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
                               <Calendar className="h-4 w-4" />
                               {goal.target_date ? (
                                 <>Target: {new Date(goal.target_date).toLocaleDateString()}</>
@@ -478,16 +478,16 @@ export default function GoalsPage() {
                               )}
                             </div>
                             <div className="flex flex-wrap gap-2">
-                              <Badge variant="secondary" className="text-xs px-2 py-1">
+                              <Badge variant="secondary" className="text-xs px-3 py-1">
                                 Active Goal
                               </Badge>
-                              <Badge variant={colors.badge as any} className="text-xs px-2 py-1">
+                              <Badge variant={colors.badge as any} className="text-xs px-3 py-1">
                                 {getStatusLabel(status)}
                               </Badge>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                           <Button 
                             onClick={() => {
                               setPreselectedGoalId(goal.id);
@@ -495,15 +495,15 @@ export default function GoalsPage() {
                             }}
                             size="sm"
                             variant="outline"
-                            className="h-8 px-3 text-xs"
+                            className="h-9 px-4 text-xs"
                           >
-                            <Plus className="h-3 w-3 mr-1" />
+                            <Plus className="h-3 w-3 mr-2" />
                             Tasks
                           </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-3 w-3" />
+                              <Button size="sm" variant="ghost" className="h-9 w-9 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -524,21 +524,21 @@ export default function GoalsPage() {
                       </div>
                     </CardHeader>
                     
-                    <CardContent className="px-4 pb-4 pl-6 pt-0">
-                      <h4 className="font-medium text-foreground mb-4">{goal.description}</h4>
+                    <CardContent className="px-6 pb-6 pl-8 pt-0">
+                      <h4 className="font-medium text-foreground mb-6 text-lg">{goal.description}</h4>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {(() => {
                           const progress = getGoalProgress(goal.id);
                           return (
-                            <div>
-                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                <span>Task Progress</span>
-                                <span>{progress.completed}/{progress.total} tasks ({progress.percentage}%)</span>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                <span className="font-medium">Task Progress</span>
+                                <span className="font-medium">{progress.completed}/{progress.total} tasks ({progress.percentage}%)</span>
                               </div>
                               <Progress 
                                 value={progress.percentage} 
-                                className="h-2"
+                                className="h-3 bg-secondary"
                               />
                             </div>
                           );
