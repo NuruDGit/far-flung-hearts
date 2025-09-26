@@ -156,11 +156,11 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </div>
-          <div className="text-center space-y-2">
-            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-love-deep to-love-heart bg-clip-text text-transparent">
+          <div className="text-center space-y-4 pt-4">
+            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-love-deep to-love-heart bg-clip-text text-transparent mx-auto">
               Complete Your Profile
             </CardTitle>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg mx-auto max-w-md">
               Let's personalize your love journey together
             </p>
           </div>
