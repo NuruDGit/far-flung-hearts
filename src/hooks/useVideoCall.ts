@@ -1,6 +1,15 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  createRTCConfiguration, 
+  getMobileOptimizedConstraints, 
+  getBitrateConstraints,
+  detectNetworkQuality,
+  isMobileDevice,
+  isWebRTCSupported,
+  getOptimalVideoCodec
+} from '@/config/webrtc';
 
 interface CallState {
   isActive: boolean;
@@ -53,27 +62,24 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   const qualityMonitorRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Enhanced WebRTC configuration with TURN servers and fallbacks
-  const rtcConfig: RTCConfiguration = {
-    iceServers: [
-      // Primary STUN servers
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'stun:stun2.l.google.com:19302' },
-      { urls: 'stun:stun3.l.google.com:19302' },
-      // Add more reliable STUN servers
-      { urls: 'stun:stun.services.mozilla.com' },
-      // Add TURN servers for better NAT traversal (configure with your TURN server)
-      // {
-      //   urls: 'turn:your-turn-server.com:3478',
-      //   username: 'your-turn-username',
-      //   credential: 'your-turn-password'
-      // }
-    ],
-    iceCandidatePoolSize: 10,
-    bundlePolicy: 'max-bundle',
-    rtcpMuxPolicy: 'require'
-  };
+  // Enhanced WebRTC configuration with TURN servers for mobile reliability
+  const [rtcConfig] = useState<RTCConfiguration>(() => createRTCConfiguration());
+  const [networkQuality, setNetworkQuality] = useState<'slow' | 'fast'>('fast');
+  const [isMobile] = useState(() => isMobileDevice());
+  
+  // Check WebRTC support on initialization
+  useEffect(() => {
+    if (!isWebRTCSupported()) {
+      toast({
+        title: 'Browser Not Supported',
+        description: 'Your browser does not support video calls',
+        variant: 'destructive',
+      });
+    }
+    
+    // Detect network quality for adaptive bitrate
+    detectNetworkQuality().then(setNetworkQuality);
+  }, [toast]);
 
   // Create or update call session in database
   const createCallSession = async (callerId: string, receiverId: string, callType: 'video' | 'audio') => {
@@ -180,30 +186,163 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     checkQuality(); // Initial check
   };
 
-  // Attempt reconnection on connection issues
-  const attemptReconnection = () => {
+  // End call with enhanced cleanup and logging (moved up to avoid dependency issues)
+  const endCall = useCallback(async (endReason: string = 'completed') => {
+    // Log call history if we have a session
+    if (callState.callSessionId) {
+      await logCallHistory(callState.callSessionId, endReason);
+    }
+
+    // Send end call signal
+    if (realtimeChannelRef.current && callState.callId) {
+      realtimeChannelRef.current.send({
+        type: 'broadcast',
+        event: 'call-end',
+        payload: {
+          callId: callState.callId,
+        },
+      });
+    }
+
+    // Clear all timers
+    if (callTimerRef.current) {
+      clearInterval(callTimerRef.current);
+      callTimerRef.current = null;
+    }
+    if (qualityMonitorRef.current) {
+      clearInterval(qualityMonitorRef.current);
+      qualityMonitorRef.current = null;
+    }
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+
+    // Clean up peer connection
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+      peerConnectionRef.current = null;
+    }
+
+    // Stop local stream
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current = null;
+    }
+
+    // Clear video elements
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+    }
+
+    // Unsubscribe from realtime
+    if (realtimeChannelRef.current) {
+      supabase.removeChannel(realtimeChannelRef.current);
+      realtimeChannelRef.current = null;
+    }
+
+    // Reset state
+    setCallState({
+      isActive: false,
+      isIncoming: false,
+      isConnected: false,
+      isMicOn: true,
+      isVideoOn: true,
+      isScreenSharing: false,
+      callDuration: 0,
+      connectionQuality: 'excellent',
+      isReconnecting: false,
+    });
+  }, [callState.callId, callState.callSessionId]);
+
+  // Enhanced reconnection logic for mobile reliability
+  const attemptReconnection = useCallback(() => {
     if (reconnectTimeoutRef.current) return;
 
+    console.log('Attempting reconnection...');
     setCallState(prev => ({ ...prev, isReconnecting: true }));
+    
+    const reconnectionDelay = isMobile ? 2000 : 3000; // Faster reconnection on mobile
     
     reconnectTimeoutRef.current = setTimeout(async () => {
       try {
-        // Attempt to restart ICE
-        if (peerConnectionRef.current) {
-          await peerConnectionRef.current.restartIce();
+        if (!peerConnectionRef.current) {
+          console.log('No peer connection to reconnect');
+          return;
         }
+
+        const pc = peerConnectionRef.current;
+        
+        // Check if connection is still salvageable
+        if (pc.connectionState === 'failed' || pc.iceConnectionState === 'failed') {
+          console.log('Connection failed, restarting ICE...');
+          await pc.restartIce();
+        } else if (pc.connectionState === 'disconnected') {
+          console.log('Connection disconnected, gathering new candidates...');
+          // For mobile networks, try gathering more ICE candidates
+          const configuration = pc.getConfiguration();
+          configuration.iceCandidatePoolSize = 15; // Increase pool for mobile
+          pc.setConfiguration(configuration);
+        }
+        
+        // Re-detect network quality for adaptive adjustments
+        const newNetworkQuality = await detectNetworkQuality();
+        setNetworkQuality(newNetworkQuality);
+        
         reconnectTimeoutRef.current = null;
+        
+        // Set a timeout to stop reconnection attempts
+        setTimeout(() => {
+          if (callState.isReconnecting && pc.connectionState !== 'connected') {
+            console.log('Reconnection timeout, ending call');
+            endCall('reconnection_timeout');
+          }
+        }, isMobile ? 10000 : 15000); // Longer timeout for mobile
+        
       } catch (error) {
         console.error('Reconnection failed:', error);
         reconnectTimeoutRef.current = null;
         setCallState(prev => ({ ...prev, isReconnecting: false }));
+        
+        // On mobile, try one more time with basic settings
+        if (isMobile && error.name !== 'InvalidStateError') {
+          setTimeout(() => {
+            endCall('reconnection_failed');
+          }, 2000);
+        } else {
+          endCall('reconnection_failed');
+        }
       }
-    }, 3000);
-  };
+    }, reconnectionDelay);
+  }, [isMobile, callState.isReconnecting, endCall]);
 
-  // Initialize peer connection with enhanced monitoring
+  // Initialize peer connection with enhanced monitoring and mobile optimizations
   const initializePeerConnection = useCallback(() => {
     const peerConnection = new RTCPeerConnection(rtcConfig);
+    
+    // Apply adaptive bitrate based on network quality
+    const applyBitrateConstraints = async () => {
+      const quality = networkQuality === 'slow' ? 'low' : isMobile ? 'medium' : 'high';
+      const constraints = getBitrateConstraints(quality);
+      
+      const senders = peerConnection.getSenders();
+      for (const sender of senders) {
+        if (sender.track) {
+          const params = sender.getParameters();
+          if (params.encodings && params.encodings.length > 0) {
+            if (sender.track.kind === 'video') {
+              params.encodings[0].maxBitrate = constraints.video.maxBitrate;
+            } else if (sender.track.kind === 'audio') {
+              params.encodings[0].maxBitrate = constraints.audio.maxBitrate;
+            }
+            await sender.setParameters(params);
+          }
+        }
+      }
+    };
     
     peerConnection.onicecandidate = (event) => {
       if (event.candidate && realtimeChannelRef.current) {
@@ -225,61 +364,143 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       setCallState(prev => ({ ...prev, isConnected: true, isReconnecting: false }));
     };
 
-    peerConnection.onconnectionstatechange = () => {
+    peerConnection.onconnectionstatechange = async () => {
+      console.log('Connection state changed:', peerConnection.connectionState);
       
       if (peerConnection.connectionState === 'connected') {
         setCallState(prev => ({ ...prev, isConnected: true, isReconnecting: false }));
+        // Apply adaptive bitrate once connected
+        await applyBitrateConstraints();
       } else if (peerConnection.connectionState === 'disconnected') {
         setCallState(prev => ({ ...prev, isConnected: false, isReconnecting: true }));
         attemptReconnection();
       } else if (peerConnection.connectionState === 'failed') {
         setCallState(prev => ({ ...prev, isConnected: false, connectionQuality: 'disconnected' }));
-        endCall();
+        // On mobile, try one more reconnection before giving up
+        if (isMobile) {
+          setTimeout(() => attemptReconnection(), 1000);
+        } else {
+          endCall('connection_failed');
+        }
       }
     };
 
     peerConnection.oniceconnectionstatechange = () => {
+      console.log('ICE connection state changed:', peerConnection.iceConnectionState);
       
       if (peerConnection.iceConnectionState === 'disconnected') {
+        setCallState(prev => ({ ...prev, isReconnecting: true }));
         attemptReconnection();
+      } else if (peerConnection.iceConnectionState === 'failed') {
+        console.log('ICE connection failed, attempting restart...');
+        peerConnection.restartIce();
+      } else if (peerConnection.iceConnectionState === 'connected' || peerConnection.iceConnectionState === 'completed') {
+        setCallState(prev => ({ ...prev, isReconnecting: false }));
+      }
+    };
+
+    // Handle negotiation needed (for mobile Safari)
+    peerConnection.onnegotiationneeded = async () => {
+      if (peerConnection.signalingState !== 'stable') return;
+      
+      try {
+        console.log('Negotiation needed, creating new offer...');
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        
+        // Send renegotiation offer
+        if (realtimeChannelRef.current && callState.callId) {
+          await realtimeChannelRef.current.send({
+            type: 'broadcast',
+            event: 'renegotiation-offer',
+            payload: {
+              callId: callState.callId,
+              offer,
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error during renegotiation:', error);
       }
     };
 
     return peerConnection;
   }, [callState.callId]);
 
-  // Get user media with enhanced error handling
+  // Get user media with mobile-optimized constraints and fallbacks
   const getUserMedia = useCallback(async (video: boolean = true, audio: boolean = true) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: video ? { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user'
-        } : false,
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 48000
-        },
-      });
+      // Use mobile-optimized constraints
+      const constraints = getMobileOptimizedConstraints(video);
+      
+      let stream: MediaStream;
+      
+      try {
+        // Try with ideal constraints first
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: constraints.video,
+          audio: constraints.audio
+        });
+      } catch (idealError) {
+        console.warn('Failed with ideal constraints, trying fallback:', idealError);
+        
+        // Fallback to basic constraints for older devices
+        const fallbackConstraints = {
+          video: video ? {
+            width: { max: 640 },
+            height: { max: 480 },
+            frameRate: { max: 15 }
+          } : false,
+          audio: audio ? {
+            echoCancellation: true,
+            noiseSuppression: true
+          } : false
+        };
+        
+        stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+      }
 
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        
+        // Mobile-specific video optimizations
+        if (isMobile) {
+          localVideoRef.current.playsInline = true;
+          localVideoRef.current.autoplay = true;
+        }
       }
 
       return stream;
     } catch (error) {
       console.error('Error accessing media devices:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Unable to access camera or microphone';
+      if (error instanceof DOMException) {
+        switch (error.name) {
+          case 'NotAllowedError':
+            errorMessage = 'Camera/microphone access denied. Please allow permissions and try again.';
+            break;
+          case 'NotFoundError':
+            errorMessage = 'No camera or microphone found on this device.';
+            break;
+          case 'NotReadableError':
+            errorMessage = 'Camera or microphone is being used by another application.';
+            break;
+          case 'OverconstrainedError':
+            errorMessage = 'Camera settings not supported. Trying with basic settings...';
+            break;
+        }
+      }
+      
       toast({
-        title: 'Camera/Microphone Error',
-        description: 'Unable to access camera or microphone',
+        title: 'Media Access Error',
+        description: errorMessage,
         variant: 'destructive',
       });
       throw error;
     }
-  }, [toast]);
+  }, [toast, isMobile]);
 
   // Start outgoing call with database logging
   const startCall = useCallback(async (partnerId: string, isVideo: boolean = true) => {
@@ -462,77 +683,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     }
   };
 
-  // End call with enhanced cleanup and logging
-  const endCall = useCallback(async (endReason: string = 'completed') => {
-    // Log call history if we have a session
-    if (callState.callSessionId) {
-      await logCallHistory(callState.callSessionId, endReason);
-    }
-
-    // Send end call signal
-    if (realtimeChannelRef.current && callState.callId) {
-      realtimeChannelRef.current.send({
-        type: 'broadcast',
-        event: 'call-end',
-        payload: {
-          callId: callState.callId,
-        },
-      });
-    }
-
-    // Clear all timers
-    if (callTimerRef.current) {
-      clearInterval(callTimerRef.current);
-      callTimerRef.current = null;
-    }
-    if (qualityMonitorRef.current) {
-      clearInterval(qualityMonitorRef.current);
-      qualityMonitorRef.current = null;
-    }
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-
-    // Clean up peer connection
-    if (peerConnectionRef.current) {
-      peerConnectionRef.current.close();
-      peerConnectionRef.current = null;
-    }
-
-    // Stop local stream
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => track.stop());
-      localStreamRef.current = null;
-    }
-
-    // Clear video elements
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = null;
-    }
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = null;
-    }
-
-    // Unsubscribe from realtime
-    if (realtimeChannelRef.current) {
-      supabase.removeChannel(realtimeChannelRef.current);
-      realtimeChannelRef.current = null;
-    }
-
-    // Reset state
-    setCallState({
-      isActive: false,
-      isIncoming: false,
-      isConnected: false,
-      isMicOn: true,
-      isVideoOn: true,
-      isScreenSharing: false,
-      callDuration: 0,
-      connectionQuality: 'excellent',
-      isReconnecting: false,
-    });
-  }, [callState.callId, callState.callSessionId]);
+  // Moved endCall function up to avoid dependency issues
 
   // Decline call
   const declineCall = useCallback(() => {
