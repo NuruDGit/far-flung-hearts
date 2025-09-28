@@ -75,19 +75,21 @@ export const DisconnectPairDialog = ({ pairId, partnerName }: DisconnectPairDial
           <AlertDialogTitle className="text-red-600">
             Disconnect from {partnerName || 'Your Partner'}?
           </AlertDialogTitle>
-          <AlertDialogDescription className="space-y-3">
-            <p>
-              Are you sure you want to disconnect from your pair? This action will:
-            </p>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
-              <li>End your current pair connection</li>
-              <li>Stop sharing mood logs and activities</li>
-              <li>Disable couple features like messaging and shared goals</li>
-              <li>Require a new invitation to reconnect</li>
-            </ul>
-            <p className="text-red-600 font-medium">
-              This action cannot be undone easily.
-            </p>
+          <AlertDialogDescription>
+            <div className="space-y-3">
+              <p>
+                Are you sure you want to disconnect from your pair? This action will:
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>End your current pair connection</li>
+                <li>Stop sharing mood logs and activities</li>
+                <li>Disable couple features like messaging and shared goals</li>
+                <li>Require a new invitation to reconnect</li>
+              </ul>
+              <p className="text-red-600 font-medium">
+                This action cannot be undone easily.
+              </p>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
