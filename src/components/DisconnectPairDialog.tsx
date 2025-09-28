@@ -48,8 +48,8 @@ export const DisconnectPairDialog = ({ pairId, partnerName }: DisconnectPairDial
       toast.success('You have successfully disconnected from your pair');
       setIsOpen(false);
       
-      // Navigate back to home after disconnect
-      navigate('/app');
+      // Navigate back to pair setup after disconnect
+      navigate('/pair-setup');
     } catch (error) {
       console.error('Error disconnecting pair:', error);
       toast.error('Failed to disconnect. Please try again.');

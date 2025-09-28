@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar, Bell } from 'lucide-react';
+import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AppNavigation = () => {
@@ -13,8 +13,8 @@ const AppNavigation = () => {
     { path: '/app/calendar', icon: Calendar, label: 'Calendar' },
     { path: '/app/mood/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/app/goals', icon: Target, label: 'Goals' },
+    { path: '/app/advisor', icon: Bot, label: 'Advisor' },
     { path: '/app/profile', icon: User, label: 'Profile' },
-    { path: '/app/notification-settings', icon: Bell, label: 'Notifications' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -28,7 +28,7 @@ const AppNavigation = () => {
             <div className="flex items-center gap-2">
               <div className="rounded-full p-1">
                 <img 
-                  src="/src/assets/logo.png" 
+                  src="/logo.png" 
                   alt="Love Beyond Borders Logo" 
                   className="w-8 h-8 object-contain"
                 />
@@ -61,7 +61,7 @@ const AppNavigation = () => {
             <div className="flex items-center gap-2">
               <div className="rounded-full p-1">
                 <img 
-                  src="/src/assets/logo.png" 
+                  src="/logo.png" 
                   alt="Love Beyond Borders Logo" 
                   className="w-10 h-10 md:w-12 md:h-12 object-contain"
                 />

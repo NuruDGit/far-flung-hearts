@@ -69,7 +69,7 @@ const Auth = () => {
           <div className="flex justify-center mb-4">
             <div className="rounded-full p-2">
               <img 
-                src="/src/assets/logo.png" 
+                src="/logo.png" 
                 alt="Love Beyond Borders Logo" 
                 className="w-20 h-20 object-contain"
               />

@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="flex flex-col items-center lg:items-start mb-6">
               <div className="rounded-full p-2 mb-3 bg-white/10 backdrop-blur-sm">
                 <img 
-                  src="/src/assets/logo.png" 
+                  src="/logo.png" 
                   alt="Love Beyond Borders Logo" 
                   className="w-16 h-16 object-contain"
                 />

@@ -4,7 +4,8 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Clock, Heart, Calendar, CheckCircle } from "lucide-react";
+import { Bell, Clock, Heart, Calendar, CheckCircle, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,6 +24,7 @@ interface NotificationPreferences {
 
 export default function NotificationSettings() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     email_notifications: true,
     push_notifications: true,

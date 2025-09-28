@@ -28,7 +28,7 @@ const PairSetup = () => {
         .from('pairs')
         .select('*')
         .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-        .single();
+        .maybeSingle();
 
       if (pairs) {
         setExistingPair(pairs);
@@ -146,9 +146,10 @@ const PairSetup = () => {
         .select('*, pairs(*)')
         .eq('code', inviteCode.toUpperCase())
         .gt('expires_at', new Date().toISOString())
-        .single();
+        .maybeSingle();
 
       if (inviteError || !invite) {
+        console.error('Invite query error:', inviteError);
         toast.error('Invalid or expired invite code');
         return;
       }

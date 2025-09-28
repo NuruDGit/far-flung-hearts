@@ -13,7 +13,7 @@ const Header = () => {
           <div className="flex items-center gap-2">
             <div className="rounded-full p-1">
               <img 
-                src="/src/assets/logo.png" 
+                src="/logo.png" 
                 alt="Love Beyond Borders Logo" 
                 className="w-10 h-10 md:w-12 md:h-12 object-contain"
               />
