@@ -1,8 +1,86 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Heart, Crown, Sparkles } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const SUBSCRIPTION_TIERS = {
+  free: { product_id: null, price_id: null },
+  premium: { 
+    product_id: 'prod_T9pU3mMeyiku9r', 
+    price_id: 'price_1SDVpoKdZMAB4bYTcDme0mJV' 
+  },
+  super_premium: { 
+    product_id: 'prod_T9pVmJTFlbCLAs', 
+    price_id: 'price_1SDVq8KdZMAB4bYTq8TEqwqO' 
+  },
+};
 
 const PricingSection = () => {
+  const { user, subscription } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleCheckout = async (priceId: string | null, tierName: string) => {
+    if (!priceId) {
+      // Free tier - navigate to signup/login
+      if (!user) {
+        navigate('/auth');
+      } else {
+        toast({
+          title: "You're on the Free plan",
+          description: "You're already using the free tier!",
+        });
+      }
+      return;
+    }
+
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to upgrade your plan",
+      });
+      navigate('/auth');
+      return;
+    }
+
+    setLoading(tierName);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session found");
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Checkout failed",
+        description: error.message || "Failed to start checkout process",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const isCurrentPlan = (tierKey: keyof typeof SUBSCRIPTION_TIERS) => {
+    if (tierKey === 'free') return subscription.tier === 'free';
+    return subscription.product_id === SUBSCRIPTION_TIERS[tierKey].product_id;
+  };
+
   const plans = [
     {
       name: "Free",
@@ -19,7 +97,9 @@ const PricingSection = () => {
       ],
       buttonText: "Get Started Free",
       popular: false,
-      variant: "loveOutline" as const
+      variant: "loveOutline" as const,
+      tierKey: 'free' as const,
+      priceId: null,
     },
     {
       name: "Premium",
@@ -39,7 +119,9 @@ const PricingSection = () => {
       ],
       buttonText: "Upgrade to Premium",
       popular: true,
-      variant: "love" as const
+      variant: "love" as const,
+      tierKey: 'premium' as const,
+      priceId: SUBSCRIPTION_TIERS.premium.price_id,
     },
     {
       name: "Super Premium",
@@ -59,7 +141,9 @@ const PricingSection = () => {
       ],
       buttonText: "Go Super Premium",
       popular: false,
-      variant: "love" as const
+      variant: "love" as const,
+      tierKey: 'super_premium' as const,
+      priceId: SUBSCRIPTION_TIERS.super_premium.price_id,
     }
   ];
 
@@ -76,44 +160,61 @@ const PricingSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan, index) => (
-            <Card key={index} className={`relative hover:shadow-love transition-all duration-300 ${plan.popular ? 'ring-2 ring-love-heart transform scale-105' : ''} border-love-coral/20`}>
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="love-gradient text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    Most Popular
+          {plans.map((plan, index) => {
+            const isCurrent = isCurrentPlan(plan.tierKey);
+            
+            return (
+              <Card key={index} className={`relative hover:shadow-love transition-all duration-300 ${plan.popular ? 'ring-2 ring-love-heart transform scale-105' : ''} ${isCurrent ? 'ring-2 ring-green-500' : 'border-love-coral/20'}`}>
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="love-gradient text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      Most Popular
+                    </div>
                   </div>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-6">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mx-auto ${plan.popular ? 'love-gradient' : 'love-gradient-soft'} mb-4`}>
-                  <plan.icon className="text-white" size={28} />
-                </div>
-                <CardTitle className="text-2xl font-bold text-foreground">{plan.name}</CardTitle>
-                <div className="text-4xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
-                  {plan.price}
-                  <span className="text-lg text-muted-foreground font-normal">/{plan.period}</span>
-                </div>
-                <p className="text-muted-foreground">{plan.description}</p>
-              </CardHeader>
+                )}
+                
+                {isCurrent && (
+                  <div className="absolute -top-4 right-4">
+                    <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      Current Plan
+                    </div>
+                  </div>
+                )}
+                
+                <CardHeader className="text-center pb-6">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mx-auto ${plan.popular ? 'love-gradient' : 'love-gradient-soft'} mb-4`}>
+                    <plan.icon className="text-white" size={28} />
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-foreground">{plan.name}</CardTitle>
+                  <div className="text-4xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+                    {plan.price}
+                    <span className="text-lg text-muted-foreground font-normal">/{plan.period}</span>
+                  </div>
+                  <p className="text-muted-foreground">{plan.description}</p>
+                </CardHeader>
 
-              <CardContent className="space-y-6">
-                <ul className="space-y-3">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-3">
-                      <Check className="text-love-heart flex-shrink-0" size={16} />
-                      <span className="text-sm text-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                <CardContent className="space-y-6">
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center gap-3">
+                        <Check className="text-love-heart flex-shrink-0" size={16} />
+                        <span className="text-sm text-foreground">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-                <Button variant={plan.variant} className="w-full">
-                  {plan.buttonText}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <Button 
+                    variant={plan.variant} 
+                    className="w-full"
+                    onClick={() => handleCheckout(plan.priceId, plan.name)}
+                    disabled={loading === plan.name || isCurrent}
+                  >
+                    {loading === plan.name ? "Processing..." : isCurrent ? "Current Plan" : plan.buttonText}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="text-center mt-12">
