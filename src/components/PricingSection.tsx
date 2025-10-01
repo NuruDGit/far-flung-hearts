@@ -10,11 +10,11 @@ import { useNavigate } from "react-router-dom";
 const SUBSCRIPTION_TIERS = {
   free: { product_id: null, price_id: null },
   premium: { 
-    product_id: 'prod_T9pU3mMeyiku9r', 
+    product_id: 'prod_T9p21HN7eGrMXW', 
     price_id: 'price_1SDVpoKdZMAB4bYTcDme0mJV' 
   },
   super_premium: { 
-    product_id: 'prod_T9pVmJTFlbCLAs', 
+    product_id: 'prod_T9p3BJuCvkTJaW', 
     price_id: 'price_1SDVq8KdZMAB4bYTq8TEqwqO' 
   },
 };

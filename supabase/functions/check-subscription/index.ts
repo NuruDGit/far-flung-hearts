@@ -79,9 +79,9 @@ serve(async (req) => {
       productId = subscription.items.data[0].price.product;
       
       // Map product ID to tier
-      if (productId === 'prod_T9pU3mMeyiku9r') {
+      if (productId === 'prod_T9p21HN7eGrMXW') {
         tier = 'premium';
-      } else if (productId === 'prod_T9pVmJTFlbCLAs') {
+      } else if (productId === 'prod_T9p3BJuCvkTJaW') {
         tier = 'super_premium';
       }
       
