@@ -636,35 +636,75 @@ const AppHome = () => {
             </Card>
           </div>
 
-          {/* Solo Mode - Enhanced Profile Setup */}
-          {!pair && (
-            <Card className="bg-gradient-to-r from-love-light/30 via-card to-love-soft/30 border-love-heart/20 border shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-r from-love-heart to-love-coral flex items-center justify-center shadow-lg">
-                    <Users className="text-white h-7 w-7" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-foreground text-lg">Complete Your Profile</h3>
-                    <p className="text-muted-foreground">Set up your profile and get ready to connect with your partner</p>
-                    <div className="flex items-center gap-2 mt-3">
-                      <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
-                        <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                        Profile incomplete
+          {/* Solo Mode - Invite Partner or Complete Profile */}
+          {!pair && (() => {
+            // Check if profile is complete
+            const isProfileComplete = userProfile?.first_name && 
+                                     userProfile?.display_name && 
+                                     userProfile?.birth_date;
+            
+            if (isProfileComplete) {
+              // Profile complete - prompt to invite partner
+              return (
+                <Card className="bg-gradient-to-r from-love-heart/10 via-card to-love-coral/10 border-love-heart/30 border shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-r from-love-heart to-love-coral flex items-center justify-center shadow-lg">
+                        <Heart className="text-white h-7 w-7" />
                       </div>
-                      <Button 
-                        size="sm" 
-                        className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart text-white font-medium"
-                        onClick={() => navigate('/app/profile')}
-                      >
-                        Setup Now
-                      </Button>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-foreground text-lg">Invite Your Partner</h3>
+                        <p className="text-muted-foreground">Connect with your partner to unlock all features together</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          <div className="flex items-center gap-1 text-xs text-love-heart bg-love-light px-2 py-1 rounded-full">
+                            <Heart className="w-3 h-3" />
+                            Ready to pair
+                          </div>
+                          <Button 
+                            size="sm" 
+                            className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart text-white font-medium"
+                            onClick={() => navigate('/pair-setup')}
+                          >
+                            Invite Partner
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  </CardContent>
+                </Card>
+              );
+            } else {
+              // Profile incomplete
+              return (
+                <Card className="bg-gradient-to-r from-love-light/30 via-card to-love-soft/30 border-love-heart/20 border shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-r from-love-heart to-love-coral flex items-center justify-center shadow-lg">
+                        <Users className="text-white h-7 w-7" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-foreground text-lg">Complete Your Profile</h3>
+                        <p className="text-muted-foreground">Set up your profile and get ready to connect with your partner</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                            Profile incomplete
+                          </div>
+                          <Button 
+                            size="sm" 
+                            className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart text-white font-medium"
+                            onClick={() => navigate('/app/profile')}
+                          >
+                            Setup Now
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            }
+          })()}
           
           {/* Achievements Section for Free Users */}
           {subscription.tier === 'free' && (
