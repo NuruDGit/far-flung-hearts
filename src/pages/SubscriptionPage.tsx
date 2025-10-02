@@ -11,11 +11,11 @@ import AppNavigation from "@/components/AppNavigation";
 const SUBSCRIPTION_TIERS = {
   free: { product_id: null, price_id: null },
   premium: { 
-    product_id: 'prod_T9p21HN7eGrMXW', 
+    product_id: 'prod_T9pU3mMeyiku9r', 
     price_id: 'price_1SDVpoKdZMAB4bYTcDme0mJV' 
   },
   super_premium: { 
-    product_id: 'prod_T9p3BJuCvkTJaW', 
+    product_id: 'prod_T9pVmJTFlbCLAs', 
     price_id: 'price_1SDVq8KdZMAB4bYTq8TEqwqO' 
   },
 };
