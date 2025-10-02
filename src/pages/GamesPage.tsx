@@ -208,7 +208,6 @@ export default function GamesPage() {
       description: "Let's play!"
     });
   };
-  };
 
   const startNewGame = async () => {
     if (!pairId || !user || !selectedGameType) return;
