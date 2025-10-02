@@ -7,7 +7,9 @@ import { MessageInput } from '@/components/messages/MessageInput';
 import { MessageSearch } from '@/components/messages/MessageSearch';
 import { VideoCallInterface } from '@/components/messages/VideoCallInterface';
 import { CallNotification } from '@/components/messages/CallNotification';
+import { CallNotificationMobile } from '@/components/messages/CallNotificationMobile';
 import { useVideoCall } from '@/hooks/useVideoCall';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 import { Card } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -63,6 +65,7 @@ const MessagesPage = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const isMobile = useIsMobile();
   
   // Video call functionality
   const {
@@ -509,15 +512,26 @@ const MessagesPage = () => {
   return (
     <div className="min-h-screen bg-background">
       
-      {/* Incoming Call Notification */}
-      <CallNotification
-        isVisible={callState.isIncoming}
-        isVideo={callState.isVideoOn}
-        callerName={partner?.display_name || 'Partner'}
-        callerAvatar={partner?.avatar_url}
-        onAccept={acceptCall}
-        onDecline={declineCall}
-      />
+      {/* Incoming Call Notification - Mobile & Desktop */}
+      {isMobile ? (
+        <CallNotificationMobile
+          isVisible={callState.isIncoming}
+          isVideo={callState.isVideoOn}
+          callerName={partner?.display_name || 'Partner'}
+          callerAvatar={partner?.avatar_url}
+          onAccept={acceptCall}
+          onDecline={declineCall}
+        />
+      ) : (
+        <CallNotification
+          isVisible={callState.isIncoming}
+          isVideo={callState.isVideoOn}
+          callerName={partner?.display_name || 'Partner'}
+          callerAvatar={partner?.avatar_url}
+          onAccept={acceptCall}
+          onDecline={declineCall}
+        />
+      )}
 
       {/* Video Call Interface */}
       <VideoCallInterface

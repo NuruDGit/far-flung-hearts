@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { rateLimiter, RATE_LIMITS } from '@/lib/rateLimiter';
 import { 
   createRTCConfiguration, 
   getMobileOptimizedConstraints, 
@@ -505,11 +506,28 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   // Start outgoing call with database logging
   const startCall = useCallback(async (partnerId: string, isVideo: boolean = true) => {
     try {
+      // Rate limiting
+      if (!rateLimiter.checkLimit('video-call', RATE_LIMITS.API_CALL)) {
+        toast({
+          title: 'Too Many Call Attempts',
+          description: 'Please wait before trying again',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       // Create call session in database
       const callSession = await createCallSession(userId, partnerId, isVideo ? 'video' : 'audio');
-      if (!callSession) return;
+      if (!callSession) {
+        toast({
+          title: 'Call Failed',
+          description: 'Unable to initiate call. Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
 
       setCallState(prev => ({
         ...prev,
@@ -589,9 +607,27 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
 
     } catch (error) {
       console.error('Error starting call:', error);
-      endCall();
+      
+      let errorMessage = 'Failed to start call';
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          errorMessage = 'Camera/microphone access denied';
+        } else if (error.name === 'NotFoundError') {
+          errorMessage = 'No camera or microphone found';
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Network connection error';
+        }
+      }
+      
+      toast({
+        title: 'Call Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      
+      endCall('error');
     }
-  }, [userId, pairId, getUserMedia, initializePeerConnection]);
+  }, [userId, pairId, getUserMedia, initializePeerConnection, toast, endCall]);
 
   // Accept incoming call
   const acceptCall = useCallback(async () => {
@@ -646,9 +682,16 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
 
     } catch (error) {
       console.error('Error accepting call:', error);
-      endCall();
+      
+      toast({
+        title: 'Failed to Accept Call',
+        description: 'Unable to connect. Please check your connection.',
+        variant: 'destructive',
+      });
+      
+      endCall('accept_error');
     }
-  }, [callState.isVideoOn, callState.callId, callState.callSessionId, getUserMedia]);
+  }, [callState.isVideoOn, callState.callId, callState.callSessionId, getUserMedia, toast, endCall]);
 
   // Log call to history
   const logCallHistory = async (sessionId: string, endReason: string) => {

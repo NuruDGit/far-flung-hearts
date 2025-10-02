@@ -78,25 +78,41 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
   };
 
   const getConnectionIcon = () => {
-    if (isReconnecting) return <AlertTriangle className="h-4 w-4 text-yellow-500 animate-pulse" />;
+    if (isReconnecting) return <AlertTriangle className="h-4 w-4 text-warning animate-pulse" />;
     
     switch (connectionQuality) {
       case 'excellent':
-        return <Wifi className="h-4 w-4 text-green-500" />;
+        return <Wifi className="h-4 w-4 text-success" />;
       case 'good':
-        return <Wifi className="h-4 w-4 text-yellow-500" />;
+        return <Wifi className="h-4 w-4 text-warning" />;
       case 'poor':
-        return <Wifi className="h-4 w-4 text-red-500" />;
+        return <Wifi className="h-4 w-4 text-destructive" />;
       case 'disconnected':
-        return <WifiOff className="h-4 w-4 text-red-500" />;
+        return <WifiOff className="h-4 w-4 text-destructive" />;
       default:
-        return <Wifi className="h-4 w-4 text-green-500" />;
+        return <Wifi className="h-4 w-4 text-success" />;
     }
   };
 
   const getConnectionText = () => {
     if (isReconnecting) return 'Reconnecting...';
     return connectionQuality?.charAt(0).toUpperCase() + connectionQuality?.slice(1);
+  };
+
+  const getConnectionColor = () => {
+    if (isReconnecting) return 'bg-warning/20 text-warning';
+    
+    switch (connectionQuality) {
+      case 'excellent':
+        return 'bg-success/20 text-success';
+      case 'good':
+        return 'bg-warning/20 text-warning';
+      case 'poor':
+      case 'disconnected':
+        return 'bg-destructive/20 text-destructive';
+      default:
+        return 'bg-success/20 text-success';
+    }
   };
 
   useEffect(() => {
@@ -240,11 +256,14 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
                   {formatDuration(callDuration)}
                 </span>
                 
-                {/* Connection Quality */}
-                <div className="flex items-center gap-1">
+                {/* Connection Quality Badge */}
+                <Badge 
+                  variant="secondary" 
+                  className={`text-xs flex items-center gap-1 ${getConnectionColor()}`}
+                >
                   {getConnectionIcon()}
-                  <span className="text-xs text-white/60">{getConnectionText()}</span>
-                </div>
+                  <span>{getConnectionText()}</span>
+                </Badge>
               </div>
             </div>
           </div>
@@ -311,14 +330,35 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
           </div>
         </div>
 
-        {/* Reconnection Overlay */}
+        {/* Connection Issue Overlays */}
         {isReconnecting && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-30">
-            <div className="text-center text-white">
-              <AlertTriangle className="h-8 w-8 mx-auto mb-2 animate-pulse" />
-              <p className="text-lg font-medium">Reconnecting...</p>
-              <p className="text-sm opacity-80">Please wait while we restore your connection</p>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-30">
+            <div className="text-center text-white space-y-4 max-w-sm p-6">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-warning/20 animate-ping" />
+                <AlertTriangle className="h-12 w-12 mx-auto text-warning relative z-10 animate-pulse" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-xl font-semibold">Connection Issues</p>
+                <p className="text-sm text-white/80">
+                  We're working to restore your connection. Please wait...
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+              </div>
             </div>
+          </div>
+        )}
+        
+        {connectionQuality === 'poor' && !isReconnecting && (
+          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-30">
+            <Badge variant="destructive" className="flex items-center gap-2 px-4 py-2">
+              <Wifi className="h-4 w-4" />
+              <span>Poor connection quality</span>
+            </Badge>
           </div>
         )}
       </div>

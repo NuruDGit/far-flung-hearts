@@ -1,170 +1,127 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { Phone, PhoneOff, Video, Vibrate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Phone, PhoneOff, Video, Mic } from 'lucide-react';
-import { isMobileDevice } from '@/config/webrtc';
-import MobileCallOptimizer from '@/utils/mobileOptimizations';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface CallNotificationMobileProps {
   isVisible: boolean;
-  isVideo: boolean;
-  callerName: string;
+  isVideo?: boolean;
+  callerName?: string;
   callerAvatar?: string;
   onAccept: () => void;
   onDecline: () => void;
-  duration?: number; // Auto-decline duration in seconds
+  duration?: number;
 }
 
-export const CallNotificationMobile: React.FC<CallNotificationMobileProps> = ({
+export const CallNotificationMobile = ({
   isVisible,
-  isVideo,
-  callerName,
+  isVideo = false,
+  callerName = 'Partner',
   callerAvatar,
   onAccept,
   onDecline,
   duration = 30
-}) => {
+}: CallNotificationMobileProps) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [mobileOptimizer] = useState(() => new MobileCallOptimizer());
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const isMobile = isMobileDevice();
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible) {
+      setTimeLeft(duration);
+      return;
+    }
 
-    // Mobile-specific optimizations for incoming call
-    if (isMobile) {
-      mobileOptimizer.acquireWakeLock();
-      mobileOptimizer.optimizeViewportForCalls();
-      
-      // Vibrate on mobile devices
-      if ('vibrate' in navigator) {
-        navigator.vibrate([500, 300, 500]);
-      }
-
-      // Request notification permission for future calls
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
+    // Vibrate on incoming call (mobile only)
+    if ('vibrate' in navigator) {
+      navigator.vibrate([200, 100, 200, 100, 200]);
     }
 
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
-          onDecline(); // Auto-decline when timer reaches 0
+          onDecline();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => {
-      clearInterval(timer);
-      if (isMobile) {
-        mobileOptimizer.cleanup();
-      }
-    };
-  }, [isVisible, onDecline, isMobile, mobileOptimizer]);
-
-  const handleAccept = async () => {
-    if (isMobile) {
-      // Enter fullscreen for better mobile experience
-      try {
-        await mobileOptimizer.requestFullscreen();
-        setIsFullscreen(true);
-      } catch (error) {
-        console.warn('Could not enter fullscreen:', error);
-      }
-    }
-    onAccept();
-  };
-
-  const handleDecline = () => {
-    if (isMobile) {
-      mobileOptimizer.cleanup();
-    }
-    onDecline();
-  };
+    return () => clearInterval(timer);
+  }, [isVisible, duration, onDecline]);
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-primary/95 to-primary-foreground/95 backdrop-blur-sm">
-      {/* Background pattern for visual appeal */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="h-full w-full bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.5)_1px,transparent_0)] bg-[length:20px_20px]" />
+    <div className="fixed inset-0 bg-gradient-to-br from-primary/95 to-primary-foreground/95 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4">
+      {/* Pulsing rings effect */}
+      <div className="relative">
+        <div className="absolute inset-0 rounded-full bg-white/20 animate-ping" />
+        <div className="absolute inset-0 rounded-full bg-white/10 animate-pulse" />
+        
+        <Avatar className="w-28 h-28 ring-4 ring-white/30 relative z-10">
+          <AvatarImage src={callerAvatar} alt={callerName} />
+          <AvatarFallback className="bg-white/20 text-white text-4xl">
+            {callerName.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+        
+        <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-2.5 z-20">
+          {isVideo ? (
+            <Video className="text-primary" size={20} />
+          ) : (
+            <Phone className="text-primary" size={20} />
+          )}
+        </div>
       </div>
 
-      <div className="relative flex flex-col items-center justify-center min-h-screen p-6 text-center">
-        {/* Caller Information */}
-        <div className="mb-8 space-y-4">
-          <div className="relative">
-            <Avatar className="w-32 h-32 mx-auto ring-4 ring-white/30 ring-offset-4 ring-offset-transparent">
-              <AvatarImage src={callerAvatar} />
-              <AvatarFallback className="text-2xl bg-white/20 text-white">
-                {callerName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            
-            {/* Animated rings around avatar */}
-            <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping" />
-            <div className="absolute inset-2 rounded-full border border-white/20 animate-ping" style={{ animationDelay: '0.5s' }} />
-          </div>
+      <div className="mt-8 text-center space-y-2">
+        <h2 className="text-2xl font-bold text-white">{callerName}</h2>
+        <p className="text-white/80 text-lg">
+          {isVideo ? 'Video' : 'Voice'} call
+        </p>
+        <div className="flex items-center justify-center gap-2 text-white/60">
+          <Vibrate size={16} className="animate-pulse" />
+          <span className="text-sm">
+            Ringing... ({timeLeft}s)
+          </span>
+        </div>
+      </div>
 
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-white">
-              {callerName}
-            </h2>
-            <div className="flex items-center justify-center gap-2 text-white/80">
-              {isVideo ? <Video className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-              <span className="text-lg">
-                Incoming {isVideo ? 'video' : 'voice'} call
-              </span>
-            </div>
-            
-            {/* Auto-decline timer */}
-            <div className="text-white/60">
-              <span className="text-sm">Auto-decline in {timeLeft}s</span>
-              <div className="w-48 h-1 bg-white/20 rounded-full mx-auto mt-2">
-                <div 
-                  className="h-full bg-white/60 rounded-full transition-all duration-1000 ease-linear"
-                  style={{ width: `${(timeLeft / duration) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
+      {/* Call action buttons */}
+      <div className="mt-12 flex items-center justify-center gap-16">
+        <div className="flex flex-col items-center gap-3">
+          <Button
+            onClick={onDecline}
+            variant="destructive"
+            size="lg"
+            className="rounded-full h-16 w-16 p-0 bg-destructive hover:bg-destructive/90 shadow-2xl"
+          >
+            <PhoneOff size={28} />
+          </Button>
+          <span className="text-white/80 text-sm font-medium">Decline</span>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-8">
-          {/* Decline Button */}
+        <div className="flex flex-col items-center gap-3">
           <Button
-            onClick={handleDecline}
+            onClick={onAccept}
+            variant="default"
             size="lg"
-            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 border-4 border-white/30 shadow-2xl transition-all duration-200 hover:scale-110"
+            className="rounded-full h-16 w-16 p-0 bg-success hover:bg-success/90 shadow-2xl animate-pulse"
           >
-            <PhoneOff className="h-6 w-6 text-white" />
+            <Phone size={28} />
           </Button>
-
-          {/* Accept Button */}
-          <Button
-            onClick={handleAccept}
-            size="lg"
-            className="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 border-4 border-white/30 shadow-2xl transition-all duration-200 hover:scale-110"
-          >
-            <Phone className="h-6 w-6 text-white" />
-          </Button>
+          <span className="text-white/80 text-sm font-medium">Accept</span>
         </div>
+      </div>
 
-        {/* Mobile-specific tips */}
-        {isMobile && (
-          <div className="mt-8 text-white/60 text-sm max-w-sm">
-            <p>For the best experience, ensure your device is charged and connected to WiFi</p>
-          </div>
-        )}
+      {/* Progress bar */}
+      <div className="mt-8 w-full max-w-xs">
+        <div className="h-1 bg-white/20 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-white transition-all duration-1000 ease-linear"
+            style={{ width: `${(timeLeft / duration) * 100}%` }}
+          />
+        </div>
       </div>
     </div>
   );
 };
-
-export default CallNotificationMobile;
