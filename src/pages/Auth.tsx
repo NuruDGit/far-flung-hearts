@@ -11,7 +11,7 @@ import { loginSchema, signupSchema, sanitizeInput } from '@/lib/validation';
 import { rateLimiter, RATE_LIMITS, handleRateLimit } from '@/lib/rateLimiter';
 
 const Auth = () => {
-  const { user, signIn, signUp, loading } = useAuth();
+  const { user, signIn, signUp, loading, resetPassword } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +19,8 @@ const Auth = () => {
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
 
   // Redirect if already authenticated
   if (user && !loading) {
@@ -114,6 +116,34 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!resetEmail) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const sanitizedEmail = sanitizeInput(resetEmail.toLowerCase().trim());
+      const { error } = await resetPassword(sanitizedEmail);
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password reset email sent! Check your inbox.');
+        setShowForgotPassword(false);
+        setResetEmail('');
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      toast.error('Failed to send reset email. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -124,7 +154,64 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-love-light via-white to-love-coral/10 p-4">
-      <Card className="w-full max-w-md">
+      {showForgotPassword ? (
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="rounded-full p-2">
+                <img 
+                  src="/logo.png" 
+                  alt="Love Beyond Borders Logo" 
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+              Reset Password
+            </CardTitle>
+            <CardDescription>
+              Enter your email and we'll send you a reset link
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="resetEmail">Email</Label>
+                <Input
+                  id="resetEmail"
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                variant="love"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+              </Button>
+            </form>
+            
+            <div className="mt-6 text-center">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setShowForgotPassword(false);
+                  setResetEmail('');
+                }}
+                className="text-love-heart"
+              >
+                Back to Sign In
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="rounded-full p-2">
@@ -205,8 +292,17 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                minLength={6}
+                minLength={8}
               />
+              {isLogin && (
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-love-heart hover:underline mt-1"
+                >
+                  Forgot password?
+                </button>
+              )}
             </div>
             <Button 
               type="submit" 
@@ -232,6 +328,7 @@ const Auth = () => {
           </div>
         </CardContent>
       </Card>
+      )}
     </div>
   );
 };
