@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { AppLayout } from '@/components/AppLayout';
+import AppNavigation from '@/components/AppNavigation';
 import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
 import WeatherWidget from '@/components/WeatherWidget';
@@ -261,9 +261,9 @@ const AppHome = () => {
   };
 
   return (
-    <AppLayout>
-      <div className="flex-1 bg-gradient-to-br from-love-light via-white to-love-coral/10">
-        <div className="container mx-auto p-4 max-w-md lg:max-w-4xl pt-6 pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
+      <AppNavigation />
+      <div className="container mx-auto p-4 max-w-md lg:max-w-4xl pt-6 pb-24">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex-1">
@@ -828,16 +828,9 @@ const AppHome = () => {
             </Card>
           )}
         </div>
-
-        </div>
-        
-        {/* Proxima Chat */}
-        <ProximaFloatingChat />
-
-        {/* Mood Logger */}
-        <MoodLogger />
       </div>
-    </AppLayout>
+      <ProximaFloatingChat />
+    </div>
   );
 };
 
