@@ -67,6 +67,7 @@ const App = () => {
             } />
             <Route path="/app/notification-settings" element={<NotificationSettings />} />
             <Route path="/app/subscription" element={<SubscriptionPage />} />
+            {/* Games and Wishlist are free features accessible to all tiers */}
             <Route path="/app/games" element={<GamesPage />} />
             <Route path="/app/wishlist" element={<WishlistPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
