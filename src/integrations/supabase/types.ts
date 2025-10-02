@@ -376,6 +376,65 @@ export type Database = {
           },
         ]
       }
+      game_sessions: {
+        Row: {
+          ai_summary: string | null
+          completed_at: string | null
+          created_at: string
+          game_data: Json
+          game_type: string
+          id: string
+          pair_id: string
+          player1_answers: Json | null
+          player1_id: string
+          player1_score: number | null
+          player2_answers: Json | null
+          player2_id: string | null
+          player2_score: number | null
+          status: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          completed_at?: string | null
+          created_at?: string
+          game_data?: Json
+          game_type: string
+          id?: string
+          pair_id: string
+          player1_answers?: Json | null
+          player1_id: string
+          player1_score?: number | null
+          player2_answers?: Json | null
+          player2_id?: string | null
+          player2_score?: number | null
+          status?: string
+        }
+        Update: {
+          ai_summary?: string | null
+          completed_at?: string | null
+          created_at?: string
+          game_data?: Json
+          game_type?: string
+          id?: string
+          pair_id?: string
+          player1_answers?: Json | null
+          player1_id?: string
+          player1_score?: number | null
+          player2_answers?: Json | null
+          player2_id?: string | null
+          player2_score?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_sessions_pair_id_fkey"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gift_wishlist: {
         Row: {
           created_at: string
