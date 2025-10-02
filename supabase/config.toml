@@ -1,5 +1,8 @@
 project_id = "smatdnlednyhqsypmzzl"
 
+[functions.join-pair]
+verify_jwt = true
+
 [functions.love-advisor]
 verify_jwt = false
 
