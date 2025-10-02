@@ -310,7 +310,7 @@ const AppHome = () => {
                     navigate('/app/mood/analytics');
                   } else {
                     toast.error('Mood Analytics requires Premium');
-                    navigate('/#pricing');
+                    navigate('/app/subscription');
                   }
                 }}
                 className="cursor-pointer hover:bg-love-light/20"
@@ -327,7 +327,7 @@ const AppHome = () => {
                     navigate('/app/goals');
                   } else {
                     toast.error('Goals requires Premium');
-                    navigate('/#pricing');
+                    navigate('/app/subscription');
                   }
                 }}
                 className="cursor-pointer hover:bg-love-light/20"
@@ -811,7 +811,7 @@ const AppHome = () => {
                   <Button 
                     size="lg"
                     className="bg-white text-love-heart hover:bg-white/90 font-bold whitespace-nowrap"
-                    onClick={() => navigate('/#pricing')}
+                    onClick={() => navigate('/app/subscription')}
                   >
                     Upgrade Now
                   </Button>
