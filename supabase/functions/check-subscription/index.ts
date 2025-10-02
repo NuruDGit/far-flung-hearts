@@ -12,6 +12,59 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+// Fallback: check local subscriptions table for pair-based plan
+async function checkLocalSubscription(supabaseClient: any, userId: string) {
+  try {
+    logStep("Checking local subscription fallback", { userId });
+
+    const { data: pair, error: pairError } = await supabaseClient
+      .from('pairs')
+      .select('id')
+      .or(`user_a.eq.${userId},user_b.eq.${userId}`)
+      .eq('status', 'active')
+      .limit(1)
+      .single();
+
+    if (pairError) {
+      logStep("No active pair found for user (fallback)", { error: pairError.message });
+      return null;
+    }
+
+    const { data: sub, error: subError } = await supabaseClient
+      .from('subscriptions')
+      .select('plan, renews_on')
+      .eq('pair_id', pair.id)
+      .limit(1)
+      .single();
+
+    if (subError || !sub) {
+      logStep("No local subscription record found", { error: subError?.message });
+      return null;
+    }
+
+    let tier: 'free' | 'premium' | 'super_premium' = 'free';
+    // Map DB plans to app tiers
+    if (sub.plan === 'pro' || sub.plan === 'premium') tier = 'premium';
+    if (sub.plan === 'super_premium') tier = 'super_premium';
+
+    if (tier !== 'free') {
+      logStep("Local subscription detected", { dbPlan: sub.plan, mappedTier: tier });
+      return {
+        subscribed: true,
+        tier,
+        product_id: null,
+        subscription_end: sub.renews_on ?? null,
+      };
+    }
+
+    return null;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    logStep("Error during local subscription check", { message });
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -47,7 +100,15 @@ serve(async (req) => {
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No customer found, returning free tier");
+      logStep("No Stripe customer found, trying local subscription fallback");
+      const local = await checkLocalSubscription(supabaseClient, user.id);
+      if (local) {
+        return new Response(JSON.stringify(local), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+      logStep("No local subscription either, returning free tier");
       return new Response(JSON.stringify({ 
         subscribed: false,
         tier: 'free',
@@ -87,7 +148,14 @@ serve(async (req) => {
       
       logStep("Determined subscription tier", { productId, tier });
     } else {
-      logStep("No active subscription found");
+      logStep("No active Stripe subscription found, trying local fallback");
+      const local = await checkLocalSubscription(supabaseClient, user.id);
+      if (local) {
+        return new Response(JSON.stringify(local), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
     }
 
     return new Response(JSON.stringify({
