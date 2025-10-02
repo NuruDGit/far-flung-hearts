@@ -36,6 +36,30 @@ const PairSetup = () => {
     };
 
     checkExistingPair();
+
+    // Subscribe to realtime pair updates
+    const channel = supabase
+      .channel('pair-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'pairs',
+          filter: `user_a=eq.${user.id},user_b=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Pair update received:', payload);
+          if (payload.new) {
+            setExistingPair(payload.new);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   // Auto-join if invite code in URL
@@ -155,13 +179,15 @@ const PairSetup = () => {
       }
 
       // Update pair with second user
-      const { error: updateError } = await supabase
+      const { data: updatedPair, error: updateError } = await supabase
         .from('pairs')
         .update({
           user_b: user.id,
           status: 'active'
         })
-        .eq('id', invite.pair_id);
+        .eq('id', invite.pair_id)
+        .select()
+        .single();
 
       if (updateError) throw updateError;
 
@@ -171,8 +197,15 @@ const PairSetup = () => {
         .delete()
         .eq('code', inviteCode.toUpperCase());
 
+      // Update local state immediately
+      setExistingPair(updatedPair);
+
       toast.success('Successfully joined pair! Welcome to Love Beyond Borders.');
-      // Redirect will happen automatically when existingPair state updates
+      
+      // Explicit navigation as fallback
+      setTimeout(() => {
+        navigate('/app');
+      }, 1000);
     } catch (error: any) {
       toast.error('Failed to join pair: ' + error.message);
     } finally {
