@@ -19,6 +19,7 @@ import NotificationSettings from "./pages/NotificationSettings";
 import MemoryVault from "./pages/MemoryVault";
 import MoodAnalytics from "./pages/MoodAnalytics";
 import CalendarPage from "./pages/CalendarPage";
+import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,7 @@ const App = () => {
               </SubscriptionGuard>
             } />
             <Route path="/app/notification-settings" element={<NotificationSettings />} />
+            <Route path="/app/subscription" element={<SubscriptionPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

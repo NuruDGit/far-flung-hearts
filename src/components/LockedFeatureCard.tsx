@@ -53,7 +53,7 @@ export const LockedFeatureCard = ({
             size="sm"
             variant="default"
             className={`bg-gradient-to-r ${info.gradient} hover:opacity-90 shadow-md`}
-            onClick={() => navigate('/#pricing')}
+            onClick={() => navigate('/app/subscription')}
           >
             Unlock Feature
           </Button>
