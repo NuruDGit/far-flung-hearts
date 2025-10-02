@@ -27,6 +27,7 @@ interface ProfileCardProps {
 export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCardProps) => {
   const [imageError, setImageError] = useState(false);
   const [showAllInterests, setShowAllInterests] = useState(false);
+  const [showImageLightbox, setShowImageLightbox] = useState(false);
 
   const formatJoinDate = (dateString?: string) => {
     if (!dateString) return 'Recently joined';
@@ -178,7 +179,10 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
           {/* Enhanced Avatar Section */}
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-love-heart to-love-coral rounded-full opacity-75 group-hover:opacity-100 transition-opacity blur-sm" />
-            <Avatar className="relative h-24 w-24 sm:h-28 sm:w-28 border-4 border-background">
+            <Avatar 
+              className="relative h-24 w-24 sm:h-28 sm:w-28 border-4 border-background cursor-pointer"
+              onClick={() => !imageError && profile.avatar_url && setShowImageLightbox(true)}
+            >
               <AvatarImage 
                 src={!imageError ? profile.avatar_url : undefined} 
                 onError={() => setImageError(true)}
@@ -282,6 +286,30 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
           </div>
         </div>
       </CardContent>
+
+      {/* Image Lightbox */}
+      {showImageLightbox && profile.avatar_url && !imageError && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowImageLightbox(false)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] animate-scale-in">
+            <img 
+              src={profile.avatar_url}
+              alt={profile.display_name}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+            <Button
+              variant="secondary"
+              size="icon"
+              className="absolute top-4 right-4 rounded-full"
+              onClick={() => setShowImageLightbox(false)}
+            >
+              ✕
+            </Button>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };
