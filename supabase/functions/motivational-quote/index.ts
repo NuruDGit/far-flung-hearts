@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,8 +15,8 @@ serve(async (req) => {
   }
 
   try {
-    if (!perplexityApiKey) {
-      throw new Error('PERPLEXITY_API_KEY is not set');
+    if (!openAIApiKey) {
+      throw new Error('OPENAI_API_KEY is not set');
     }
 
     const { mood, moodLabel } = await req.json();
@@ -54,14 +54,14 @@ serve(async (req) => {
         systemPrompt = 'Generate a short, universal motivational quote (max 15 words) that inspires and uplifts. Make it positive and encouraging.';
     }
 
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${perplexityApiKey}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
+        model: 'gpt-5-nano-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -72,20 +72,18 @@ serve(async (req) => {
             content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Add some randomness with current timestamp: ${Date.now()}. Return only the quote text, no quotation marks or extra formatting.`
           }
         ],
-        temperature: 0.8,
-        top_p: 0.9,
-        max_tokens: 100,
-        frequency_penalty: 1,
-        presence_penalty: 0
+        max_completion_tokens: 100
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Perplexity response:', data);
+    console.log('OpenAI response:', data);
     
     const quote = data.choices?.[0]?.message?.content?.trim() || 'Every moment is a fresh beginning.';
 
