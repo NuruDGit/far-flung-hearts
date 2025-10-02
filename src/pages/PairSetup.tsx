@@ -24,14 +24,19 @@ const PairSetup = () => {
     const checkExistingPair = async () => {
       if (!user) return;
 
-      const { data: pairs } = await supabase
+      const { data, error } = await supabase
         .from('pairs')
         .select('*')
         .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-        .maybeSingle();
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-      if (pairs) {
-        setExistingPair(pairs);
+      if (error) {
+        console.error('checkExistingPair error:', error);
+      }
+
+      if (data && data.length > 0) {
+        setExistingPair(data[0]);
       }
     };
 
@@ -42,16 +47,12 @@ const PairSetup = () => {
       .channel('pair-updates')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'pairs',
-          filter: `user_a=eq.${user.id},user_b=eq.${user.id}`
-        },
+        { event: '*', schema: 'public', table: 'pairs' },
         (payload) => {
-          console.log('Pair update received:', payload);
-          if (payload.new) {
-            setExistingPair(payload.new);
+          const row = (payload.new || payload.old) as any;
+          if (!row) return;
+          if (row.user_a === user.id || row.user_b === user.id) {
+            setExistingPair(payload.new ? payload.new : row);
           }
         }
       )
@@ -130,11 +131,13 @@ const PairSetup = () => {
   const ensureProfileExists = async () => {
     try {
       // Check if profile exists
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) throw profileError;
 
       // Create profile if it doesn't exist
       if (!profile) {
@@ -164,54 +167,30 @@ const PairSetup = () => {
     try {
       // Ensure profile exists before joining pair
       await ensureProfileExists();
-      // Find valid invite
-      const { data: invites, error: inviteError } = await supabase
-        .from('pair_invites')
-        .select('*, pairs(*)')
-        .eq('code', inviteCode.toUpperCase())
-        .gt('expires_at', new Date().toISOString());
 
-      if (inviteError) {
-        console.error('Invite query error:', inviteError);
-        toast.error('Error checking invite code');
+      // Invoke secure edge function
+      const { data, error } = await supabase.functions.invoke('join-pair', {
+        body: { code: inviteCode.toUpperCase() }
+      });
+
+      if (error) {
+        console.error('join-pair error:', error);
+        // error can be string or object depending on SDK
+        const msg = typeof error === 'string' ? error : (error.message || 'Failed to join pair');
+        toast.error(msg);
         return;
       }
 
-      if (!invites || invites.length === 0) {
-        toast.error('Invalid or expired invite code');
+      if (!data || !(data as any).pair) {
+        toast.error('Failed to join pair');
         return;
       }
 
-      const invite = invites[0];
-
-      // Update pair with second user
-      const { data: updatedPair, error: updateError } = await supabase
-        .from('pairs')
-        .update({
-          user_b: user.id,
-          status: 'active'
-        })
-        .eq('id', invite.pair_id)
-        .select()
-        .single();
-
-      if (updateError) throw updateError;
-
-      // Clean up invite
-      await supabase
-        .from('pair_invites')
-        .delete()
-        .eq('code', inviteCode.toUpperCase());
-
-      // Update local state immediately
-      setExistingPair(updatedPair);
+      const { pair } = data as any;
+      setExistingPair(pair);
 
       toast.success('Successfully joined pair! Welcome to Love Beyond Borders.');
-      
-      // Explicit navigation as fallback
-      setTimeout(() => {
-        navigate('/app');
-      }, 1000);
+      navigate('/app');
     } catch (error: any) {
       toast.error('Failed to join pair: ' + error.message);
     } finally {
