@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Heart } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { toast } from 'sonner';
+import { loginSchema, signupSchema, sanitizeInput } from '@/lib/validation';
+import { rateLimiter, RATE_LIMITS, handleRateLimit } from '@/lib/rateLimiter';
 
 const Auth = () => {
   const { user, signIn, signUp, loading } = useAuth();
@@ -25,12 +27,66 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check rate limit (5 auth attempts per minute)
+    const rateLimitKey = `auth:${isLogin ? 'login' : 'signup'}`;
+    if (!rateLimiter.checkLimit(rateLimitKey, RATE_LIMITS.AUTH_ATTEMPT)) {
+      const resetTime = rateLimiter.getResetTime(rateLimitKey);
+      toast.error(handleRateLimit(resetTime).message);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Sanitize inputs
+      const sanitizedEmail = sanitizeInput(email.toLowerCase().trim());
+      const sanitizedFirstName = sanitizeInput(firstName);
+      const sanitizedLastName = sanitizeInput(lastName);
+      const sanitizedPhone = sanitizeInput(phoneNumber);
+
+      // Validate inputs
+      if (isLogin) {
+        const validation = loginSchema.safeParse({ 
+          email: sanitizedEmail, 
+          password 
+        });
+        
+        if (!validation.success) {
+          const errors = validation.error.errors.map(e => e.message).join(', ');
+          toast.error(errors);
+          setIsSubmitting(false);
+          return;
+        }
+      } else {
+        const validation = signupSchema.safeParse({ 
+          email: sanitizedEmail, 
+          password,
+          confirmPassword: password // Same password for now
+        });
+        
+        if (!validation.success) {
+          const errors = validation.error.errors.map(e => e.message).join(', ');
+          toast.error(errors);
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Validate name fields
+        if (!sanitizedFirstName || !sanitizedLastName) {
+          toast.error('First and last name are required');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const { error } = isLogin 
-        ? await signIn(email, password)
-        : await signUp(email, password, { firstName, lastName, phoneNumber });
+        ? await signIn(sanitizedEmail, password)
+        : await signUp(sanitizedEmail, password, { 
+            firstName: sanitizedFirstName, 
+            lastName: sanitizedLastName, 
+            phoneNumber: sanitizedPhone 
+          });
 
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
@@ -41,6 +97,9 @@ const Auth = () => {
           toast.error(error.message);
         }
       } else {
+        // Clear rate limit on successful auth
+        rateLimiter.clearKey(rateLimitKey);
+        
         if (!isLogin) {
           toast.success('Account created! Please check your email to verify your account.');
         } else {
@@ -48,6 +107,7 @@ const Auth = () => {
         }
       }
     } catch (error) {
+      console.error('Auth error:', error);
       toast.error('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);

@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { checkRateLimit, logSecurityEvent, RATE_LIMITS } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,6 +17,8 @@ serve(async (req) => {
   try {
     const { message, pairId } = await req.json();
     const authHeader = req.headers.get('Authorization');
+    const userAgent = req.headers.get('User-Agent') || 'unknown';
+    const ipAddress = req.headers.get('x-forwarded-for') || 'unknown';
 
     if (!message) {
       throw new Error('Message is required');
@@ -30,7 +33,13 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Initialize Supabase client
+    // Initialize Supabase client with service role for rate limiting
+    const supabaseServiceRole = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Initialize user-specific client
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -44,7 +53,54 @@ serve(async (req) => {
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
+      await logSecurityEvent(
+        supabaseServiceRole,
+        null,
+        'UNAUTHENTICATED_AI_REQUEST',
+        { endpoint: 'love-advisor' },
+        ipAddress,
+        userAgent
+      );
       throw new Error('User not authenticated');
+    }
+
+    // Check rate limit (20 AI requests per minute)
+    const rateLimit = await checkRateLimit(
+      supabaseServiceRole,
+      user.id,
+      'love-advisor',
+      RATE_LIMITS.AI_OPERATION
+    );
+
+    if (!rateLimit.allowed) {
+      await logSecurityEvent(
+        supabaseServiceRole,
+        user.id,
+        'RATE_LIMIT_EXCEEDED',
+        { 
+          endpoint: 'love-advisor',
+          resetTime: rateLimit.resetTime.toISOString()
+        },
+        ipAddress,
+        userAgent
+      );
+
+      return new Response(
+        JSON.stringify({ 
+          error: `Rate limit exceeded. Please try again in ${Math.ceil((rateLimit.resetTime.getTime() - Date.now()) / 1000)} seconds.`,
+          resetTime: rateLimit.resetTime.toISOString()
+        }), 
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Input validation
+    const sanitizedMessage = message.trim().slice(0, 1000); // Limit message length
+    if (sanitizedMessage.length < 1) {
+      throw new Error('Message cannot be empty');
     }
 
     // Fetch user data and partner data if available
@@ -211,7 +267,7 @@ Remember: You're not just giving advice - you're supporting two people who care 
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
+          { role: 'user', content: sanitizedMessage } // Use sanitized message
         ],
         max_tokens: 500,
         temperature: 0.7,
@@ -221,6 +277,17 @@ Remember: You're not just giving advice - you're supporting two people who care 
     if (!response.ok) {
       const error = await response.json();
       console.error('OpenAI API error:', error);
+      
+      // Log AI API failures
+      await logSecurityEvent(
+        supabaseServiceRole,
+        user.id,
+        'AI_API_ERROR',
+        { error: error.error?.message || 'Unknown error', endpoint: 'love-advisor' },
+        ipAddress,
+        userAgent
+      );
+      
       throw new Error(error.error?.message || 'Failed to get response from OpenAI');
     }
 
@@ -231,8 +298,33 @@ Remember: You're not just giving advice - you're supporting two people who care 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    const errorMessage = (error as Error).message;
     console.error('Error in love-advisor function:', error);
-    return new Response(JSON.stringify({ error: (error as Error).message }), {
+    
+    // Log all errors except rate limit (already logged)
+    if (!errorMessage.includes('Rate limit exceeded')) {
+      try {
+        const supabaseServiceRole = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        );
+        
+        await logSecurityEvent(
+          supabaseServiceRole,
+          null,
+          'FUNCTION_ERROR',
+          { 
+            error: errorMessage,
+            endpoint: 'love-advisor',
+            stack: (error as Error).stack
+          }
+        );
+      } catch (logError) {
+        console.error('Failed to log error:', logError);
+      }
+    }
+    
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

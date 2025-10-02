@@ -262,6 +262,7 @@ export type Database = {
       embeddings: {
         Row: {
           content: string
+          created_by: string | null
           embedding: string | null
           id: string
           pair_id: string
@@ -270,6 +271,7 @@ export type Database = {
         }
         Insert: {
           content: string
+          created_by?: string | null
           embedding?: string | null
           id?: string
           pair_id: string
@@ -278,6 +280,7 @@ export type Database = {
         }
         Update: {
           content?: string
+          created_by?: string | null
           embedding?: string | null
           id?: string
           pair_id?: string
@@ -659,6 +662,7 @@ export type Database = {
           id: string
           notes: string | null
           pair_id: string | null
+          shared_with_partner: boolean | null
           user_id: string
         }
         Insert: {
@@ -668,6 +672,7 @@ export type Database = {
           id?: string
           notes?: string | null
           pair_id?: string | null
+          shared_with_partner?: boolean | null
           user_id: string
         }
         Update: {
@@ -677,6 +682,7 @@ export type Database = {
           id?: string
           notes?: string | null
           pair_id?: string | null
+          shared_with_partner?: boolean | null
           user_id?: string
         }
         Relationships: []
@@ -1047,6 +1053,33 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limit_tracking: {
+        Row: {
+          endpoint: string
+          id: string
+          last_request_at: string | null
+          request_count: number | null
+          user_id: string | null
+          window_start: string | null
+        }
+        Insert: {
+          endpoint: string
+          id?: string
+          last_request_at?: string | null
+          request_count?: number | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          endpoint?: string
+          id?: string
+          last_request_at?: string | null
+          request_count?: number | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       rituals: {
         Row: {
           created_at: string | null
@@ -1084,6 +1117,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_audit_log: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       streaks: {
         Row: {
