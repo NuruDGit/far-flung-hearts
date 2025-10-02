@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, parseISO, addMonths, subMonths } from 'date-fns';
 import { Calendar, Plus, ChevronLeft, ChevronRight, Clock, MapPin, Edit, Filter, Search, Heart } from 'lucide-react';
 import { DinnerPlateIcon } from '@/components/icons/DinnerPlateIcon';
@@ -38,6 +38,7 @@ const eventTypeColors: Record<string, { bg: string; text: string; border: string
 
 const CalendarPage = () => {
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -67,6 +68,9 @@ const CalendarPage = () => {
       
       if (pairs) {
         setUserPairId(pairs.id);
+      } else {
+        // No pair found, stop loading
+        setLoading(false);
       }
     };
 
@@ -433,6 +437,24 @@ const CalendarPage = () => {
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart"></div>
+          </div>
+        ) : !userPairId ? (
+          <div className="text-center py-12">
+            <Card className="max-w-md mx-auto">
+              <CardContent className="p-8">
+                <Calendar className="mx-auto mb-4 text-muted-foreground" size={48} />
+                <h2 className="text-xl font-semibold mb-2">No Active Connection</h2>
+                <p className="text-muted-foreground mb-4">
+                  Connect with your partner to start planning events together.
+                </p>
+                <Button 
+                  onClick={() => navigate('/pair-setup')}
+                  className="bg-love-heart text-white hover:bg-love-deep"
+                >
+                  Set Up Connection
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
