@@ -308,7 +308,7 @@ export default function GamesPage() {
                   onClick={() => submitAnswer({ choice: 'A', option: currentQuestion.optionA })}
                   variant="outline"
                   size="lg"
-                  className="h-auto py-8 text-lg hover:bg-primary/10 hover:border-primary"
+                  className="h-auto py-8 text-lg hover:bg-primary/10 hover:border-primary hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
                     <Heart className="h-6 w-6 text-primary" />
@@ -319,7 +319,7 @@ export default function GamesPage() {
                   onClick={() => submitAnswer({ choice: 'B', option: currentQuestion.optionB })}
                   variant="outline"
                   size="lg"
-                  className="h-auto py-8 text-lg hover:bg-accent/10 hover:border-accent"
+                  className="h-auto py-8 text-lg hover:bg-accent/10 hover:border-accent hover:text-accent"
                 >
                   <div className="flex items-center gap-3">
                     <Flame className="h-6 w-6 text-accent" />
