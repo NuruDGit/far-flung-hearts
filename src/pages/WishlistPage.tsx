@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Gift, Plus, Check, ExternalLink } from "lucide-react";
+import { Gift, Plus, Check, ExternalLink, Sparkles, Heart, Star, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -126,24 +126,44 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
       <AppNavigation />
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <Gift className="h-6 w-6 text-love" />
-            <h1 className="text-3xl font-bold">Gift Wishlist</h1>
+        {/* Hero Section */}
+        <div className="text-center mb-12 relative">
+          <div className="absolute inset-0 flex items-center justify-center opacity-10">
+            <Sparkles className="h-64 w-64 text-primary animate-pulse" />
           </div>
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center justify-center gap-3">
+              <Gift className="h-10 w-10 text-primary animate-bounce" />
+              <Heart className="h-8 w-8 text-accent animate-pulse" />
+              <Sparkles className="h-10 w-10 text-primary animate-bounce" style={{ animationDelay: '0.2s' }} />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Where Wishes Come True
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Share your dreams and make your partner's wishes a reality. Every gift tells a story of love.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center mb-12">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Item
+              <Button size="lg" className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <Plus className="mr-2 h-5 w-5" />
+                Add Wish
+                <Sparkles className="ml-2 h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Add Wishlist Item</DialogTitle>
+                <DialogTitle className="flex items-center gap-2 text-2xl">
+                  <Star className="h-6 w-6 text-primary" />
+                  Make a Wish
+                </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -201,74 +221,212 @@ export default function WishlistPage() {
           </Dialog>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">My Wishlist</h2>
-            <div className="space-y-3">
-              {myItems.map((item) => (
-                <Card key={item.id} className={item.purchased ? 'opacity-50' : ''}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{item.title}</span>
-                      <Badge variant={getPriorityColor(item.priority)}>
-                        {item.priority}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {item.description && <p className="text-sm text-muted-foreground">{item.description}</p>}
-                    {item.price && <p className="font-semibold">${item.price}</p>}
-                    {item.link && (
-                      <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-sm text-love hover:underline flex items-center gap-1">
-                        View Item <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
-                    {item.purchased && <p className="text-sm text-success">✓ Purchased by partner</p>}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* My Wishlist */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+                <Heart className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">My Wishlist</h2>
+                <p className="text-sm text-muted-foreground">Dreams waiting to come true</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              {myItems.length === 0 ? (
+                <Card className="border-dashed border-2 border-primary/20 bg-primary/5">
+                  <CardContent className="p-12 text-center">
+                    <Star className="h-12 w-12 text-primary/40 mx-auto mb-4" />
+                    <p className="text-muted-foreground">Your wishlist is empty. Add your first wish!</p>
                   </CardContent>
                 </Card>
-              ))}
+              ) : (
+                myItems.map((item) => (
+                  <Card 
+                    key={item.id} 
+                    className={`group hover:shadow-xl transition-all duration-300 border-2 ${
+                      item.purchased 
+                        ? 'border-success/50 bg-success/5' 
+                        : 'border-primary/20 hover:border-primary/50'
+                    }`}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            item.purchased ? 'bg-success/20' : 'bg-gradient-to-br from-primary/20 to-accent/20'
+                          }`}>
+                            {item.purchased ? (
+                              <Check className="h-5 w-5 text-success" />
+                            ) : (
+                              <Gift className="h-5 w-5 text-primary" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                              {item.title}
+                            </CardTitle>
+                            {item.purchased && (
+                              <p className="text-sm text-success font-medium mt-1 flex items-center gap-1">
+                                <Sparkles className="h-3 w-3" />
+                                Wish granted by partner!
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <Badge 
+                          variant={getPriorityColor(item.priority)}
+                          className="flex-shrink-0"
+                        >
+                          {item.priority}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {item.description && (
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {item.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between pt-2">
+                        {item.price && (
+                          <p className="text-lg font-bold text-primary">
+                            ${item.price.toFixed(2)}
+                          </p>
+                        )}
+                        {item.link && (
+                          <a 
+                            href={item.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-sm text-primary hover:text-accent transition-colors flex items-center gap-1 font-medium"
+                          >
+                            View Item <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Partner's Wishlist</h2>
-            <div className="space-y-3">
-              {partnerItems.map((item) => (
-                <Card key={item.id} className={item.purchased ? 'border-success' : ''}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{item.title}</span>
-                      <Badge variant={getPriorityColor(item.priority)}>
-                        {item.priority}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {item.description && <p className="text-sm text-muted-foreground">{item.description}</p>}
-                    {item.price && <p className="font-semibold">${item.price}</p>}
-                    {item.link && (
-                      <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-sm text-love hover:underline flex items-center gap-1">
-                        View Item <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
-                    <Button
-                      onClick={() => togglePurchased(item)}
-                      variant={item.purchased ? "outline" : "default"}
-                      size="sm"
-                      className="w-full"
-                    >
-                      {item.purchased ? (
-                        <>
-                          <Check className="mr-2 h-4 w-4" />
-                          Purchased
-                        </>
-                      ) : (
-                        "Mark as Purchased"
-                      )}
-                    </Button>
+          {/* Partner's Wishlist */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg">
+                <ShoppingBag className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">Partner's Wishlist</h2>
+                <p className="text-sm text-muted-foreground">Make their dreams come true</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              {partnerItems.length === 0 ? (
+                <Card className="border-dashed border-2 border-accent/20 bg-accent/5">
+                  <CardContent className="p-12 text-center">
+                    <Heart className="h-12 w-12 text-accent/40 mx-auto mb-4" />
+                    <p className="text-muted-foreground">Your partner hasn't added any wishes yet.</p>
                   </CardContent>
                 </Card>
-              ))}
+              ) : (
+                partnerItems.map((item) => (
+                  <Card 
+                    key={item.id} 
+                    className={`group hover:shadow-xl transition-all duration-300 border-2 ${
+                      item.purchased 
+                        ? 'border-success bg-success/10 shadow-success/20' 
+                        : 'border-accent/20 hover:border-accent/50 hover:shadow-accent/10'
+                    }`}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            item.purchased 
+                              ? 'bg-success shadow-success/30 shadow-lg' 
+                              : 'bg-gradient-to-br from-accent/20 to-primary/20'
+                          }`}>
+                            {item.purchased ? (
+                              <Check className="h-5 w-5 text-white" />
+                            ) : (
+                              <Star className="h-5 w-5 text-accent" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-lg group-hover:text-accent transition-colors">
+                              {item.title}
+                            </CardTitle>
+                            {item.purchased && (
+                              <p className="text-sm text-success font-medium mt-1 flex items-center gap-1">
+                                <Heart className="h-3 w-3 fill-current" />
+                                You made this wish come true!
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <Badge 
+                          variant={getPriorityColor(item.priority)}
+                          className="flex-shrink-0"
+                        >
+                          {item.priority}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {item.description && (
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {item.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between pt-2">
+                        {item.price && (
+                          <p className="text-lg font-bold text-accent">
+                            ${item.price.toFixed(2)}
+                          </p>
+                        )}
+                        {item.link && (
+                          <a 
+                            href={item.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-sm text-accent hover:text-primary transition-colors flex items-center gap-1 font-medium"
+                          >
+                            View Item <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                      <Button
+                        onClick={() => togglePurchased(item)}
+                        variant={item.purchased ? "outline" : "default"}
+                        size="lg"
+                        className={`w-full transition-all duration-300 ${
+                          item.purchased 
+                            ? 'border-success text-success hover:bg-success/10' 
+                            : 'bg-gradient-to-r from-accent to-primary hover:shadow-lg hover:scale-[1.02]'
+                        }`}
+                      >
+                        {item.purchased ? (
+                          <>
+                            <Check className="mr-2 h-5 w-5" />
+                            Wish Granted
+                            <Sparkles className="ml-2 h-4 w-4" />
+                          </>
+                        ) : (
+                          <>
+                            <Gift className="mr-2 h-5 w-5" />
+                            Grant This Wish
+                            <Heart className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         </div>
