@@ -239,7 +239,7 @@ export const ReunionCountdown = ({ pairId }: { pairId: string }) => {
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="w-full border-primary/20 hover:bg-primary/5">
+            <Button variant="outline" size="sm" className="w-full border-primary/20 hover:bg-primary/10 hover:text-primary">
               <Calendar className="mr-2 h-4 w-4" />
               Edit Reunion
             </Button>
