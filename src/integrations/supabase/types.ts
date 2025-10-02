@@ -338,6 +338,97 @@ export type Database = {
           },
         ]
       }
+      game_scores: {
+        Row: {
+          created_at: string
+          game_data: Json | null
+          game_type: string
+          id: string
+          pair_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_data?: Json | null
+          game_type: string
+          id?: string
+          pair_id: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          game_data?: Json | null
+          game_type?: string
+          id?: string
+          pair_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_scores_pair_id_fkey"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_wishlist: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          link: string | null
+          pair_id: string
+          price: number | null
+          priority: string | null
+          purchased: boolean | null
+          purchased_at: string | null
+          purchased_by: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          link?: string | null
+          pair_id: string
+          price?: number | null
+          priority?: string | null
+          purchased?: boolean | null
+          purchased_at?: string | null
+          purchased_by?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          link?: string | null
+          pair_id?: string
+          price?: number | null
+          priority?: string | null
+          purchased?: boolean | null
+          purchased_at?: string | null
+          purchased_by?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_wishlist_pair_id_fkey"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goal_tasks: {
         Row: {
           archived_at: string | null
@@ -1079,6 +1170,44 @@ export type Database = {
           window_start?: string | null
         }
         Relationships: []
+      }
+      reunion_countdown: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          location: string | null
+          pair_id: string
+          reunion_date: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          location?: string | null
+          pair_id: string
+          reunion_date: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          location?: string | null
+          pair_id?: string
+          reunion_date?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reunion_countdown_pair_id_fkey"
+            columns: ["pair_id"]
+            isOneToOne: true
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rituals: {
         Row: {

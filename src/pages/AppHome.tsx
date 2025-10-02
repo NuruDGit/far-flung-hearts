@@ -17,6 +17,7 @@ import { LockedFeatureCard } from '@/components/LockedFeatureCard';
 import { AchievementBadge } from '@/components/AchievementBadge';
 import { hasFeatureAccess, SUBSCRIPTION_TIERS } from '@/config/subscriptionFeatures';
 import { toast } from 'sonner';
+import { ReunionCountdown } from '@/components/ReunionCountdown';
 
 const AppHome = () => {
   const { user, signOut, subscription } = useAuth();
@@ -740,6 +741,13 @@ const AppHome = () => {
                   total={7}
                 />
               </div>
+            </div>
+          )}
+
+          {/* Reunion Countdown Widget */}
+          {pair && (
+            <div className="mt-6">
+              <ReunionCountdown pairId={pair.id} />
             </div>
           )}
 

@@ -21,6 +21,8 @@ import MoodAnalytics from "./pages/MoodAnalytics";
 import CalendarPage from "./pages/CalendarPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
+import GamesPage from "./pages/GamesPage";
+import WishlistPage from "./pages/WishlistPage";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +67,8 @@ const App = () => {
             } />
             <Route path="/app/notification-settings" element={<NotificationSettings />} />
             <Route path="/app/subscription" element={<SubscriptionPage />} />
+            <Route path="/app/games" element={<GamesPage />} />
+            <Route path="/app/wishlist" element={<WishlistPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.translate-message]
+verify_jwt = true

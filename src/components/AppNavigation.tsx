@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar } from 'lucide-react';
+import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar, Gamepad2, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AppNavigation = () => {
@@ -12,8 +12,8 @@ const AppNavigation = () => {
     { path: '/app/messages', icon: MessageCircle, label: 'Messages' },
     { path: '/app/calendar', icon: Calendar, label: 'Calendar' },
     { path: '/app/goals', icon: Target, label: 'Goals' },
-    { path: '/app/advisor', icon: Bot, label: 'Advisor' },
-    { path: '/app/profile', icon: User, label: 'Profile' },
+    { path: '/app/games', icon: Gamepad2, label: 'Games' },
+    { path: '/app/wishlist', icon: Gift, label: 'Wishlist' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
