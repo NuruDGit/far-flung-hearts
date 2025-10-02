@@ -59,6 +59,26 @@ const SubscriptionPage = () => {
     );
   }
 
+  // Helper to redirect to checkout, handling iframe scenarios
+  const redirectToCheckout = (url: string) => {
+    try {
+      // If we're in an iframe, try to break out to the top window
+      if (window.self !== window.top) {
+        window.top!.location.href = url;
+      } else {
+        // Normal redirect
+        window.location.assign(url);
+      }
+    } catch (e) {
+      // If blocked by browser security, open in new tab
+      window.open(url, '_blank');
+      toast({
+        title: "Opening checkout",
+        description: "Stripe checkout opened in a new tab",
+      });
+    }
+  };
+
   const handleCheckout = async (priceId: string | null, tierName: string) => {
     if (!priceId) {
       toast({
@@ -83,8 +103,7 @@ const SubscriptionPage = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Redirect in the same window instead of opening new tab
-        window.location.href = data.url;
+        redirectToCheckout(data.url);
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
