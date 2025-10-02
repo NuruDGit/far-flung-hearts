@@ -54,6 +54,8 @@ serve(async (req) => {
         systemPrompt = 'Generate a short, universal motivational quote (max 15 words) that inspires and uplifts. Make it positive and encouraging.';
     }
 
+    console.log('Generating quote for mood:', moodLabel);
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -69,10 +71,11 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Add some randomness with current timestamp: ${Date.now()}. Return only the quote text, no quotation marks or extra formatting.`
+            content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Current timestamp: ${Date.now()}. Return ONLY the quote text without quotation marks, attribution, or any other formatting.`
           }
         ],
-        max_completion_tokens: 100
+        max_completion_tokens: 100,
+        temperature: 0.9
       }),
     });
 
@@ -83,9 +86,20 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('OpenAI response:', data);
+    console.log('OpenAI full response:', JSON.stringify(data, null, 2));
     
-    const quote = data.choices?.[0]?.message?.content?.trim() || 'Every moment is a fresh beginning.';
+    const quote = data.choices?.[0]?.message?.content?.trim();
+    
+    if (!quote) {
+      console.error('No quote content in response, using fallback');
+      return new Response(JSON.stringify({ 
+        quote: 'Every moment is a fresh beginning.' 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    console.log('Generated quote:', quote);
 
     return new Response(JSON.stringify({ quote }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
