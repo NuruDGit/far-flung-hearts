@@ -211,10 +211,10 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-b from-love-light/30 to-white">
+    <div className="h-full flex flex-col">
       {/* Welcoming image section */}
       {messages.length === 1 && partnerData && (
-        <div className="p-4 bg-gradient-to-r from-love-light/30 to-love-coral/10 border-b border-love-coral/10">
+        <div className="p-4 bg-gradient-to-r from-primary/5 to-accent/5 border-b border-border flex-shrink-0">
           <div className="text-center animate-fade-in">
             <div className="w-full h-32 mb-3 rounded-lg overflow-hidden">
               <img 
@@ -224,9 +224,9 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
               />
             </div>
             <div className="flex items-center justify-center">
-              <div className="h-px bg-gradient-to-r from-transparent via-love-coral/30 to-transparent w-24"></div>
-              <div className="mx-3 text-love-coral/60">✨</div>
-              <div className="h-px bg-gradient-to-r from-transparent via-love-coral/30 to-transparent w-24"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent w-24"></div>
+              <div className="mx-3 text-primary/60">✨</div>
+              <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent w-24"></div>
             </div>
           </div>
         </div>
@@ -235,11 +235,6 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
       <div 
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6"
-        style={{ 
-          scrollBehavior: 'smooth',
-          height: 'calc(100vh - 300px)',
-          minHeight: 0
-        }}
       >
         {messages.map((message, index) => (
           <div key={message.id}>
@@ -250,9 +245,9 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             {!message.isUser && (
-              <Avatar className="w-8 h-8 ring-1 ring-love-coral/20">
+              <Avatar className="w-8 h-8 ring-1 ring-primary/20">
                 <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-                <AvatarFallback className="bg-love-coral/10 text-love-coral">
+                <AvatarFallback className="bg-primary/10 text-primary">
                   <Bot className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
@@ -268,8 +263,8 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
               <div
                 className={`p-4 rounded-2xl shadow-lg border backdrop-blur-sm transition-all duration-200 hover:shadow-xl ${
                   message.isUser
-                    ? 'bg-gradient-to-br from-love-heart to-love-coral text-white border-love-heart/20 shadow-love-heart/20'
-                    : 'bg-white/95 text-gray-900 border-love-coral/20 shadow-love-coral/10'
+                    ? 'bg-primary text-primary-foreground border-primary/20'
+                    : 'bg-card text-card-foreground border-border'
                 }`}
               >
                 <div 
@@ -294,7 +289,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
               <div className={`flex items-center justify-between mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
                 message.isUser ? 'flex-row-reverse' : 'flex-row'
               }`}>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
                 
@@ -316,13 +311,13 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             </div>
             
             {message.isUser && (
-              <Avatar className="w-10 h-10 ring-2 ring-love-heart/20 ring-offset-2 hover-scale">
+              <Avatar className="w-10 h-10 ring-2 ring-primary/20 ring-offset-2 hover-scale">
                 <AvatarImage 
                   src={userProfile?.avatar_url} 
                   alt={userProfile?.display_name || userProfile?.first_name || "User"} 
                   className="object-cover" 
                 />
-                <AvatarFallback className="bg-love-heart/10 text-love-heart">
+                <AvatarFallback className="bg-primary/10 text-primary">
                   {userProfile?.display_name?.[0] || userProfile?.first_name?.[0] || <User className="h-5 w-5" />}
                 </AvatarFallback>
               </Avatar>
@@ -339,7 +334,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                     setInputMessage(suggestion);
                     setShowQuickSuggestions(false);
                   }}
-                  className="text-xs px-3 py-2 bg-gradient-to-r from-love-heart/10 to-love-coral/10 border border-love-coral/20 rounded-full hover:from-love-heart/20 hover:to-love-coral/20 transition-all duration-200 text-love-deep hover-scale"
+                  className="text-xs px-3 py-2 bg-primary/10 border border-border rounded-full hover:bg-primary/20 transition-all duration-200 text-foreground hover-scale"
                 >
                   ✨ {suggestion}
                 </button>
@@ -352,20 +347,20 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         {/* Enhanced Loading Animation */}
         {isLoading && (
           <div className="flex gap-3 justify-start animate-fade-in">
-            <Avatar className="w-8 h-8 ring-1 ring-love-coral/20">
+            <Avatar className="w-8 h-8 ring-1 ring-primary/20">
               <AvatarImage src={proximaAvatar} alt="Proxima" className="object-cover" />
-              <AvatarFallback className="bg-love-coral/10 text-love-coral">
+              <AvatarFallback className="bg-primary/10 text-primary">
                 <Bot className="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
-            <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-love-coral/20 max-w-[75%]">
+            <div className="bg-card backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-border max-w-[75%]">
               <div className="flex items-center gap-3">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-love-coral rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
-                <span className="text-xs text-love-deep font-medium">Proxima is crafting the perfect advice...</span>
+                <span className="text-xs text-foreground font-medium">Proxima is crafting the perfect advice...</span>
               </div>
             </div>
           </div>
@@ -374,21 +369,21 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
       </div>
       
       {/* Enhanced Input Area */}
-      <div className="border-t border-love-coral/10 bg-white/80 backdrop-blur-sm p-4">
+      <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4 flex-shrink-0">
         <div className="relative">
           <Textarea
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="💭 Ask Proxima anything about love, relationships, or date ideas..."
-            className="pr-14 min-h-[52px] max-h-[120px] resize-none border-love-coral/20 focus:border-love-coral/40 focus:ring-love-coral/20 rounded-xl text-sm"
+            className="pr-14 min-h-[52px] max-h-[120px] resize-none rounded-xl text-sm"
             disabled={isLoading}
           />
           <Button
             onClick={sendMessage}
             disabled={!inputMessage.trim() || isLoading}
             size="sm"
-            className="absolute right-2 bottom-2 w-10 h-10 rounded-full bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart shadow-lg hover:shadow-xl transition-all duration-200 border-2 border-white/20 hover-scale"
+            className="absolute right-2 bottom-2 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover-scale"
           >
             <Send className="h-4 w-4" />
           </Button>
@@ -396,7 +391,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         
         {/* Character counter for longer messages */}
         {inputMessage.length > 100 && (
-          <div className="text-xs text-gray-500 mt-1 text-right">
+          <div className="text-xs text-muted-foreground mt-1 text-right">
             {inputMessage.length}/500
           </div>
         )}
