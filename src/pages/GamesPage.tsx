@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { 
   Gamepad2, 
   Trophy, 
@@ -81,6 +82,7 @@ export default function GamesPage() {
   const [pairId, setPairId] = useState<string | null>(null);
   const [partnerId, setPartnerId] = useState<string | null>(null);
   const [recentSessions, setRecentSessions] = useState<GameSession[]>([]);
+  const [selectedGameType, setSelectedGameType] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -117,14 +119,15 @@ export default function GamesPage() {
     if (data) setRecentSessions(data as any);
   };
 
-  const startNewGame = async (gameType: string) => {
-    if (!pairId || !user) return;
+  const startNewGame = async () => {
+    if (!pairId || !user || !selectedGameType) return;
 
+    setSelectedGameType(null);
     setGeneratingGame(true);
     try {
       // Generate AI-powered game content
       const { data: gameData, error: gameError } = await supabase.functions.invoke('generate-game', {
-        body: { gameType }
+        body: { gameType: selectedGameType }
       });
 
       if (gameError) throw gameError;
@@ -134,7 +137,7 @@ export default function GamesPage() {
         .from('game_sessions')
         .insert({
           pair_id: pairId,
-          game_type: gameType,
+          game_type: selectedGameType,
           player1_id: user.id,
           game_data: gameData.gameData,
           status: 'waiting'
@@ -389,7 +392,7 @@ export default function GamesPage() {
                   <Card 
                     key={game.id}
                     className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden border-2 hover:border-primary/30"
-                    onClick={() => startNewGame(game.id)}
+                    onClick={() => setSelectedGameType(game.id)}
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${game.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                     <CardHeader className="relative">
@@ -458,6 +461,51 @@ export default function GamesPage() {
                 </CardContent>
               </Card>
             )}
+
+            <Dialog open={!!selectedGameType} onOpenChange={(open) => !open && setSelectedGameType(null)}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-3">
+                    {selectedGameType && (() => {
+                      const game = GAME_TYPES.find(g => g.id === selectedGameType);
+                      const Icon = game?.icon;
+                      return (
+                        <>
+                          {Icon && <Icon className={`h-6 w-6 ${game.iconColor}`} />}
+                          {game?.title}
+                        </>
+                      );
+                    })()}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {GAME_TYPES.find(g => g.id === selectedGameType)?.description}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Sparkles className="h-4 w-4 text-accent" />
+                    <span>AI-generated questions tailored for you two</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Trophy className="h-4 w-4 text-primary" />
+                    <span>Compete with your partner and earn points</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Heart className="h-4 w-4 text-accent" />
+                    <span>Get personalized relationship insights</span>
+                  </div>
+                </div>
+                <DialogFooter className="gap-2 sm:gap-0">
+                  <Button variant="outline" onClick={() => setSelectedGameType(null)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={startNewGame} className="gap-2">
+                    <PartyPopper className="h-4 w-4" />
+                    Start Game
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </main>
