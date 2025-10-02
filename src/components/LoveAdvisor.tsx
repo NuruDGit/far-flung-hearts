@@ -30,7 +30,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   const [showQuickSuggestions, setShowQuickSuggestions] = useState(true);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   // Fetch user profile and partner data
@@ -105,7 +105,9 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -214,10 +216,14 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
         </div>
       )}
 
-      {/* Messages Area */}
       <div 
-        className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6 min-h-0 max-h-full"
-        style={{ scrollBehavior: 'smooth' }}
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6"
+        style={{ 
+          scrollBehavior: 'smooth',
+          height: 'calc(100vh - 300px)',
+          minHeight: 0
+        }}
       >
         {messages.map((message, index) => (
           <div key={message.id}>
@@ -348,7 +354,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
+        
       </div>
       
       {/* Enhanced Input Area */}
