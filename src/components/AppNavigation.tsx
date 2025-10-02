@@ -11,7 +11,6 @@ const AppNavigation = () => {
     { path: '/app', icon: Home, label: 'Home' },
     { path: '/app/messages', icon: MessageCircle, label: 'Messages' },
     { path: '/app/calendar', icon: Calendar, label: 'Calendar' },
-    { path: '/app/mood/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/app/goals', icon: Target, label: 'Goals' },
     { path: '/app/advisor', icon: Bot, label: 'Advisor' },
     { path: '/app/profile', icon: User, label: 'Profile' },
