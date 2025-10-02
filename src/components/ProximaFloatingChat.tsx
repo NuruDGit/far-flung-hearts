@@ -60,8 +60,8 @@ const ProximaFloatingChat = () => {
           </Button>
         </DialogTrigger>
         
-        <DialogContent className="w-full max-w-full h-full max-h-full p-0 bg-gradient-to-br from-love-light via-white to-love-coral/10 border-0 rounded-none" aria-describedby="proxima-chat-description">
-          <div className="flex flex-col h-full">
+        <DialogContent className="fixed inset-0 translate-x-0 translate-y-0 p-0 border-0 rounded-none bg-gradient-to-br from-love-light via-white to-love-coral/10 flex flex-col overflow-hidden" aria-describedby="proxima-chat-description">
+          <div className="flex flex-col h-full min-h-0">
             {/* Enhanced Header */}
             <DialogHeader className="p-4 border-b border-love-coral/20 bg-white/90 backdrop-blur-sm flex-shrink-0">
               <DialogTitle className="flex items-center gap-3">
@@ -87,7 +87,7 @@ const ProximaFloatingChat = () => {
             </DialogHeader>
             
             {/* Chat Content - Full Height */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden">
               <LoveAdvisor pairId={pair?.id} />
             </div>
           </div>

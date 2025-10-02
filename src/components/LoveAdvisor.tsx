@@ -211,7 +211,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full min-h-0 flex flex-col">
       {/* Welcoming image section */}
       {messages.length === 1 && partnerData && (
         <div className="p-4 bg-gradient-to-r from-primary/5 to-accent/5 border-b border-border flex-shrink-0">
@@ -234,7 +234,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
 
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-4 space-y-6"
       >
         {messages.map((message, index) => (
           <div key={message.id}>
@@ -374,7 +374,12 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
           <Textarea
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
             placeholder="💭 Ask Proxima anything about love, relationships, or date ideas..."
             className="pr-14 min-h-[52px] max-h-[120px] resize-none rounded-xl text-sm"
             disabled={isLoading}
