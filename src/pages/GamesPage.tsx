@@ -391,10 +391,9 @@ export default function GamesPage() {
                 return (
                   <Card 
                     key={game.id}
-                    className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden border-2 hover:border-primary/30"
+                    className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden border-2 hover:border-primary hover:scale-[1.02]"
                     onClick={() => setSelectedGameType(game.id)}
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${game.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                     <CardHeader className="relative">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
