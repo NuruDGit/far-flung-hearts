@@ -24,10 +24,19 @@ interface WishlistItem {
   user_id: string;
 }
 
+interface Profile {
+  id: string;
+  display_name?: string;
+  first_name?: string;
+  avatar_url?: string;
+}
+
 export default function WishlistPage() {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [pairId, setPairId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState<Profile | null>(null);
+  const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -47,15 +56,35 @@ export default function WishlistPage() {
     if (!user) return;
     setCurrentUserId(user.id);
 
+    // Fetch current user profile
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('id, display_name, first_name, avatar_url')
+      .eq('id', user.id)
+      .single();
+    
+    if (userProfile) setCurrentUserProfile(userProfile);
+
     const { data: pairData } = await supabase
       .from('pairs')
-      .select('id')
+      .select('id, user_a, user_b')
       .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
       .eq('status', 'active')
       .single();
 
     if (pairData) {
       setPairId(pairData.id);
+      
+      // Fetch partner profile
+      const partnerId = pairData.user_a === user.id ? pairData.user_b : pairData.user_a;
+      const { data: partnerProfileData } = await supabase
+        .from('profiles')
+        .select('id, display_name, first_name, avatar_url')
+        .eq('id', partnerId)
+        .single();
+      
+      if (partnerProfileData) setPartnerProfile(partnerProfileData);
+      
       loadWishlist(pairData.id);
     }
   };
@@ -116,6 +145,14 @@ export default function WishlistPage() {
   const myItems = items.filter(i => i.user_id === currentUserId);
   const partnerItems = items.filter(i => i.user_id !== currentUserId);
 
+  // Calculate stats
+  const myGrantedWishes = partnerItems.filter(i => i.purchased && i.purchased_by === currentUserId).length;
+  const partnerGrantedWishes = myItems.filter(i => i.purchased && i.purchased_by !== currentUserId).length;
+
+  const getUserName = (profile: Profile | null) => {
+    return profile?.display_name || profile?.first_name || 'Partner';
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'destructive';
@@ -144,10 +181,34 @@ export default function WishlistPage() {
               Where Wishes Come True
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Share your dreams and make your partner's wishes a reality. Every gift tells a story of love.
+              Share your dreams and make {getUserName(partnerProfile)}'s wishes a reality. Every gift tells a story of love.
             </p>
           </div>
         </div>
+
+        {/* Stats Section */}
+        {(myGrantedWishes > 0 || partnerGrantedWishes > 0) && (
+          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <p className="text-sm text-muted-foreground">Wishes You Granted</p>
+                </div>
+                <p className="text-4xl font-bold text-primary">{myGrantedWishes}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-primary/5">
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Heart className="h-5 w-5 text-accent" />
+                  <p className="text-sm text-muted-foreground">{getUserName(partnerProfile)} Granted</p>
+                </div>
+                <p className="text-4xl font-bold text-accent">{partnerGrantedWishes}</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="flex items-center justify-center mb-12">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -225,11 +286,19 @@ export default function WishlistPage() {
           {/* My Wishlist */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-                <Heart className="h-6 w-6 text-white" />
-              </div>
+              {currentUserProfile?.avatar_url ? (
+                <img 
+                  src={currentUserProfile.avatar_url} 
+                  alt={getUserName(currentUserProfile)}
+                  className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-lg"
+                />
+              ) : (
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+                  <Heart className="h-6 w-6 text-white" />
+                </div>
+              )}
               <div>
-                <h2 className="text-2xl font-bold">My Wishlist</h2>
+                <h2 className="text-2xl font-bold">{getUserName(currentUserProfile)}'s Wishlist</h2>
                 <p className="text-sm text-muted-foreground">Dreams waiting to come true</p>
               </div>
             </div>
@@ -316,11 +385,19 @@ export default function WishlistPage() {
           {/* Partner's Wishlist */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg">
-                <ShoppingBag className="h-6 w-6 text-white" />
-              </div>
+              {partnerProfile?.avatar_url ? (
+                <img 
+                  src={partnerProfile.avatar_url} 
+                  alt={getUserName(partnerProfile)}
+                  className="h-12 w-12 rounded-full object-cover border-2 border-accent shadow-lg"
+                />
+              ) : (
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg">
+                  <ShoppingBag className="h-6 w-6 text-white" />
+                </div>
+              )}
               <div>
-                <h2 className="text-2xl font-bold">Partner's Wishlist</h2>
+                <h2 className="text-2xl font-bold">{getUserName(partnerProfile)}'s Wishlist</h2>
                 <p className="text-sm text-muted-foreground">Make their dreams come true</p>
               </div>
             </div>
@@ -329,7 +406,7 @@ export default function WishlistPage() {
                 <Card className="border-dashed border-2 border-accent/20 bg-accent/5">
                   <CardContent className="p-12 text-center">
                     <Heart className="h-12 w-12 text-accent/40 mx-auto mb-4" />
-                    <p className="text-muted-foreground">Your partner hasn't added any wishes yet.</p>
+                    <p className="text-muted-foreground">{getUserName(partnerProfile)} hasn't added any wishes yet.</p>
                   </CardContent>
                 </Card>
               ) : (
