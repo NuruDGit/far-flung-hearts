@@ -74,8 +74,7 @@ serve(async (req) => {
             content: `Generate a unique motivational quote for someone feeling ${moodLabel}. Current timestamp: ${Date.now()}. Return ONLY the quote text without quotation marks, attribution, or any other formatting.`
           }
         ],
-        max_completion_tokens: 100,
-        temperature: 0.9
+        max_completion_tokens: 100
       }),
     });
 
