@@ -88,7 +88,69 @@ export default function GamesPage() {
 
   useEffect(() => {
     loadPairAndSessions();
-  }, [user]);
+    
+    // Subscribe to realtime updates for game sessions
+    const channel = supabase
+      .channel('game-sessions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_sessions',
+          filter: pairId ? `pair_id=eq.${pairId}` : undefined
+        },
+        (payload) => {
+          console.log('Game session update:', payload);
+          
+          if (payload.eventType === 'UPDATE' && activeSession?.id === payload.new.id) {
+            setActiveSession(payload.new as any);
+            
+            // Check if partner just joined
+            if (!activeSession.player2_id && payload.new.player2_id && payload.new.player2_id === user?.id) {
+              toast({
+                title: "Partner joined! 🎮",
+                description: "The game has started!"
+              });
+            }
+            
+            // Check if it's my turn
+            const isPlayer1 = payload.new.player1_id === user?.id;
+            const myAnswers = isPlayer1 ? payload.new.player1_answers : payload.new.player2_answers;
+            const partnerAnswers = isPlayer1 ? payload.new.player2_answers : payload.new.player1_answers;
+            
+            if (Array.isArray(partnerAnswers) && Array.isArray(myAnswers) && 
+                partnerAnswers.length > myAnswers.length) {
+              toast({
+                title: "Your turn! 🎯",
+                description: "Your partner just answered. It's your turn now!"
+              });
+            }
+          }
+          
+          if (payload.eventType === 'INSERT' && !activeSession) {
+            // Partner started a new game
+            if (payload.new.player1_id !== user?.id) {
+              const gameType = GAME_TYPES.find(g => g.id === payload.new.game_type);
+              toast({
+                title: "New game invitation! 🎮",
+                description: `Your partner started ${gameType?.title}. Click to join!`,
+                action: (
+                  <Button size="sm" onClick={() => joinGame(payload.new.id)}>
+                    Join Game
+                  </Button>
+                ),
+              });
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, pairId, activeSession]);
 
   const loadPairAndSessions = async () => {
     if (!user) return;
@@ -117,6 +179,35 @@ export default function GamesPage() {
       .limit(5);
 
     if (data) setRecentSessions(data as any);
+  };
+
+  const joinGame = async (sessionId: string) => {
+    if (!user) return;
+    
+    const { data: session, error } = await supabase
+      .from('game_sessions')
+      .update({ player2_id: user.id, status: 'active' })
+      .eq('id', sessionId)
+      .select()
+      .single();
+    
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to join game",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setActiveSession(session as any);
+    setCurrentQuestionIndex(0);
+    
+    toast({
+      title: "Game joined! 🎮",
+      description: "Let's play!"
+    });
+  };
   };
 
   const startNewGame = async () => {
@@ -173,12 +264,19 @@ export default function GamesPage() {
     const answers = Array.isArray(currentAnswers) ? currentAnswers : [];
     const updatedAnswers = [...answers, answer];
 
+    // Calculate score for this answer if applicable
+    let newScore = isPlayer1 ? activeSession.player1_score : activeSession.player2_score;
+    if (answer.correct) {
+      newScore = (newScore || 0) + 1;
+    }
+
+    const updateData = isPlayer1 
+      ? { player1_answers: updatedAnswers, player1_score: newScore }
+      : { player2_answers: updatedAnswers, player2_score: newScore };
+
     const { error } = await supabase
       .from('game_sessions')
-      .update(isPlayer1 
-        ? { player1_answers: updatedAnswers }
-        : { player2_answers: updatedAnswers }
-      )
+      .update(updateData)
       .eq('id', activeSession.id);
 
     if (error) {
@@ -190,23 +288,29 @@ export default function GamesPage() {
       return;
     }
 
-    // Check if game is complete
+    // Check if game is complete (both players answered all questions)
     const questions = activeSession.game_data.questions || [];
-    if (currentQuestionIndex < questions.length - 1) {
+    const player1Complete = (isPlayer1 ? updatedAnswers : activeSession.player1_answers || []).length >= questions.length;
+    const player2Complete = (!isPlayer1 ? updatedAnswers : activeSession.player2_answers || []).length >= questions.length;
+    
+    if (player1Complete && player2Complete) {
+      await completeGame();
+    } else if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      await completeGame(updatedAnswers);
+      // Player finished their questions, waiting for partner
+      toast({
+        title: "All done! ⏳",
+        description: "Waiting for your partner to finish..."
+      });
     }
   };
 
-  const completeGame = async (finalAnswers: any[]) => {
+  const completeGame = async () => {
     if (!activeSession) return;
 
     setLoading(true);
     try {
-      // Calculate score
-      const score = finalAnswers.filter(a => a.correct).length;
-
       // Generate AI summary
       const { data: summaryData } = await supabase.functions.invoke('generate-game-summary', {
         body: {
@@ -214,7 +318,7 @@ export default function GamesPage() {
           player1Answers: activeSession.player1_answers,
           player2Answers: activeSession.player2_answers,
           player1Score: activeSession.player1_score,
-          player2Score: score
+          player2Score: activeSession.player2_score
         }
       });
 
@@ -224,8 +328,7 @@ export default function GamesPage() {
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
-          ai_summary: summaryData?.summary,
-          player2_score: score
+          ai_summary: summaryData?.summary
         })
         .eq('id', activeSession.id);
 
@@ -259,6 +362,64 @@ export default function GamesPage() {
 
     if (!currentQuestion) return null;
 
+    const isPlayer1 = activeSession.player1_id === user?.id;
+    const myAnswers = isPlayer1 ? activeSession.player1_answers || [] : activeSession.player2_answers || [];
+    const partnerAnswers = isPlayer1 ? activeSession.player2_answers || [] : activeSession.player1_answers || [];
+    const isMyTurn = myAnswers.length <= partnerAnswers.length && myAnswers.length < questions.length;
+    const waitingForPartner = !activeSession.player2_id;
+
+    if (waitingForPartner) {
+      return (
+        <Card className="border-primary/20 shadow-xl">
+          <CardContent className="p-8 text-center space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+            <h3 className="text-xl font-semibold">Waiting for partner to join...</h3>
+            <p className="text-muted-foreground">Share this game with your partner!</p>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (!isMyTurn && myAnswers.length >= questions.length) {
+      return (
+        <Card className="border-primary/20 shadow-xl">
+          <CardContent className="p-8 text-center space-y-4">
+            <Trophy className="h-12 w-12 text-accent mx-auto" />
+            <h3 className="text-xl font-semibold">All done! 🎉</h3>
+            <p className="text-muted-foreground">Waiting for your partner to finish...</p>
+            <div className="flex justify-center gap-4 text-sm">
+              <Badge variant="secondary">
+                You: {myAnswers.length}/{questions.length}
+              </Badge>
+              <Badge variant="secondary">
+                Partner: {partnerAnswers.length}/{questions.length}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (!isMyTurn) {
+      return (
+        <Card className="border-primary/20 shadow-xl">
+          <CardContent className="p-8 text-center space-y-4">
+            <Heart className="h-12 w-12 text-accent mx-auto animate-pulse" />
+            <h3 className="text-xl font-semibold">Partner's turn...</h3>
+            <p className="text-muted-foreground">Waiting for them to answer</p>
+            <div className="flex justify-center gap-4 text-sm">
+              <Badge variant="secondary">
+                You: {myAnswers.length}/{questions.length}
+              </Badge>
+              <Badge variant="secondary">
+                Partner: {partnerAnswers.length}/{questions.length}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     return (
       <Card className="border-primary/20 shadow-xl">
         <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
@@ -268,10 +429,16 @@ export default function GamesPage() {
                 {GAME_TYPES.find(g => g.id === activeSession.game_type)?.title}
               </CardTitle>
               <CardDescription>
-                Question {currentQuestionIndex + 1} of {questions.length}
+                Question {Math.min(myAnswers.length + 1, questions.length)} of {questions.length} • Your Turn!
               </CardDescription>
             </div>
-            <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+            <div className="flex items-center gap-3">
+              <div className="flex gap-2">
+                <Badge variant="secondary">You: {myAnswers.length}</Badge>
+                <Badge variant="secondary">Partner: {partnerAnswers.length}</Badge>
+              </div>
+              <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-8 space-y-6">
@@ -362,9 +529,8 @@ export default function GamesPage() {
           </Card>
         </main>
       </div>
-    );
-  }
-
+  );
+}
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5">
       <AppNavigation />
