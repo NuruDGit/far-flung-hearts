@@ -28,7 +28,7 @@ const HowItWorksSection = () => {
     {
       icon: Heart,
       title: "Start Your Journey",
-      description: "Begin daily check-ins, play games, share memories, and count down to reunions.",
+      description: "Begin messaging, share memories, track moods together, and get AI-powered relationship advice.",
       step: "04"
     }
   ];

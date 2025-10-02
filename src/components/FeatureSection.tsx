@@ -1,42 +1,43 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MessageSquare, HelpCircle, Clock, Gift, Vault, Globe, GamepadIcon } from "lucide-react";
+import { Calendar, MessageSquare, HelpCircle, Clock, Vault, Globe, Target, Brain } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const FeatureSection = () => {
   const features = [
     {
-      icon: Calendar,
-      title: "Shared Calendar",
-      description: "Sync your schedules across time zones and never miss a special moment together.",
+      icon: MessageSquare,
+      title: "Real-Time Messaging",
+      description: "Chat with your partner instantly with message reactions, replies, and media sharing.",
       color: "love-heart"
     },
     {
-      icon: MessageSquare,
-      title: "Smart Translation", 
-      description: "AI-powered translation breaks language barriers, letting love speak in any tongue.",
+      icon: Calendar,
+      title: "Shared Calendar",
+      description: "Sync your schedules across time zones and never miss a special moment together.",
       color: "love-deep"
     },
     {
       icon: HelpCircle,
-      title: "Daily Questions",
-      description: "Deepen your connection with thoughtful prompts designed for couples.",
+      title: "Mood Tracking",
+      description: "Track your emotional journey together with insights and partner support features.",
       color: "love-coral"
     },
     {
-      icon: Clock,
-      title: "Reunion Countdown",
-      description: "Count down the days, hours, and minutes until you're together again.",
+      icon: Target,
+      title: "Goals & Tasks",
+      description: "Set and achieve relationship goals together with shared task management.",
       color: "love-heart"
-    },
-    {
-      icon: Gift,
-      title: "Gift Exchange",
-      description: "Send meaningful gifts and surprises across any distance with ease.",
-      color: "love-deep"
     },
     {
       icon: Vault,
       title: "Memory Vault",
       description: "Securely store your precious photos and messages in an encrypted vault.",
+      color: "love-deep"
+    },
+    {
+      icon: Brain,
+      title: "AI Love Advisor",
+      description: "Get personalized relationship advice and book recommendations powered by AI.",
       color: "love-coral"
     },
     {
@@ -46,10 +47,11 @@ const FeatureSection = () => {
       color: "love-heart"
     },
     {
-      icon: GamepadIcon,
-      title: "Couple Games",
-      description: "Play interactive mini-games together and earn hearts to unlock rewards.",
-      color: "love-deep"
+      icon: Clock,
+      title: "Video Calling",
+      description: "Connect face-to-face with high-quality video calls right from the app.",
+      color: "love-deep",
+      comingSoon: true
     }
   ];
 
@@ -81,12 +83,17 @@ const FeatureSection = () => {
             };
 
             return (
-              <Card key={index} className="group hover:shadow-love transition-all duration-300 hover:-translate-y-1 border-0 bg-white/80 backdrop-blur-sm">
+              <Card key={index} className="group hover:shadow-love transition-all duration-300 hover:-translate-y-1 border-0 bg-white/80 backdrop-blur-sm relative">
                 <CardContent className="p-6 text-center">
                   <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${getIconBgClass(feature.color)} mb-4 group-hover:animate-heartbeat`}>
                     <feature.icon className="text-white" size={28} />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-foreground">{feature.title}</h3>
+                    {feature.comingSoon && (
+                      <Badge variant="secondary" className="text-xs">Beta</Badge>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </CardContent>
               </Card>

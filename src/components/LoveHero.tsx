@@ -36,10 +36,10 @@ const LoveHero = () => {
           <div className="text-center lg:text-left space-y-8">
             <div className="space-y-4">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight">
-                The #1 App to Keep Love Strong Across Any Distance
+                Stay Connected Across Any Distance
               </h1>
               <p className="text-xl text-muted-foreground max-w-lg text-center lg:text-left mx-auto lg:mx-0">
-                Bridge the distance with your special someone. Stay connected, share moments, and count down to your next reunion.
+                Real-time messaging, shared calendar, mood tracking, and AI-powered relationship advice. Everything you need to keep your love strong.
               </p>
             </div>
 
@@ -68,8 +68,8 @@ const LoveHero = () => {
               {[
                 { icon: MessageCircle, label: "Real-time Chat" },
                 { icon: Calendar, label: "Shared Calendar" },
-                { icon: Heart, label: "Daily Questions" },
-                { icon: Gift, label: "Gift Exchange" }
+                { icon: Heart, label: "Mood Tracking" },
+                { icon: Gift, label: "Memory Vault" }
               ].map((feature, index) => (
                 <div key={index} className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/50 backdrop-blur-sm hover-scale transition-all hover:bg-white/70 cursor-pointer group">
                   <feature.icon className="text-love-heart group-hover:text-love-deep transition-colors" size={24} />
