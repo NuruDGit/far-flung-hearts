@@ -43,8 +43,8 @@ interface CreateEventDialogProps {
 }
 
 const eventTypes = [
-  { value: 'date', label: 'Date Night', icon: Heart, color: 'bg-love-heart/10 text-love-heart border-love-heart/20' },
-  { value: 'anniversary', label: 'Anniversary', icon: Gift, color: 'bg-love-deep/10 text-love-deep border-love-deep/20' },
+  { value: 'date', label: 'Date Night', icon: Heart, color: 'bg-primary/10 text-primary border-primary/20' },
+  { value: 'anniversary', label: 'Anniversary', icon: Gift, color: 'bg-accent/10 text-accent-foreground border-accent/20' },
   { value: 'travel', label: 'Travel', icon: Plane, color: 'bg-primary/10 text-primary border-primary/20' },
   { value: 'birthday', label: 'Birthday', icon: Cake, color: 'bg-secondary/10 text-secondary-foreground border-secondary/20' },
   { value: 'home', label: 'Cozy Night In', icon: Home, color: 'bg-muted/10 text-muted-foreground border-muted/20' },

@@ -165,7 +165,7 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
               
               <Button
                 onClick={onAccept}
-                className="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Phone className="h-6 w-6" />
               </Button>

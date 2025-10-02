@@ -86,7 +86,7 @@ export const CallNotification = ({
             onClick={onAccept}
             variant="default"
             size="lg"
-            className="rounded-full h-16 w-16 p-0 bg-green-500 hover:bg-green-600 shadow-lg hover:scale-105 transition-transform"
+            className="rounded-full h-16 w-16 p-0 bg-primary hover:bg-primary/90 shadow-lg hover:scale-105 transition-transform"
           >
             <Phone size={24} />
           </Button>

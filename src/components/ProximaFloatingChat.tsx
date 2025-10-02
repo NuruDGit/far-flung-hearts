@@ -55,7 +55,7 @@ const ProximaFloatingChat = () => {
                   <Bot className="h-6 w-6" />
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse border-2 border-white"></div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full animate-pulse border-2 border-white"></div>
             </div>
           </Button>
         </DialogTrigger>
@@ -74,7 +74,7 @@ const ProximaFloatingChat = () => {
                       </AvatarFallback>
                     </Avatar>
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full border-2 border-white"></div>
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-love-deep text-left">Proxima</h2>

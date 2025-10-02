@@ -77,15 +77,15 @@ const MoodInsights: React.FC<MoodInsightsProps> = ({ data, partnerData, period }
   const partnerAverage = partnerData ? calculateAverageScore(partnerData) : null;
 
   const getScoreColor = (score: number) => {
-    if (score >= 4) return 'text-green-600 dark:text-green-400';
-    if (score >= 3) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
+    if (score >= 4) return 'text-primary';
+    if (score >= 3) return 'text-accent';
+    return 'text-destructive';
   };
 
   const getTrendIcon = () => {
-    if (trend === 'improving') return <TrendingUp className="text-green-500" size={16} />;
-    if (trend === 'declining') return <TrendingDown className="text-red-500" size={16} />;
-    return <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>;
+    if (trend === 'improving') return <TrendingUp className="text-primary" size={16} />;
+    if (trend === 'declining') return <TrendingDown className="text-destructive" size={16} />;
+    return <div className="w-4 h-4 bg-accent rounded-full"></div>;
   };
 
   return (
@@ -163,7 +163,7 @@ const MoodInsights: React.FC<MoodInsightsProps> = ({ data, partnerData, period }
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+          <div className="text-2xl font-bold text-primary">
             {happyStreak}
           </div>
           <p className="text-sm text-muted-foreground">

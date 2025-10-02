@@ -175,7 +175,7 @@ const PricingSection = () => {
                 
                 {isCurrent && (
                   <div className="absolute -top-4 right-4">
-                    <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    <div className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
                       Current Plan
                     </div>
                   </div>

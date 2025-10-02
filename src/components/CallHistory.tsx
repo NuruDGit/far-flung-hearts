@@ -107,7 +107,7 @@ const CallHistory: React.FC<CallHistoryProps> = ({ pairId, userId }) => {
     if (!score) return null;
     
     const quality = score >= 0.8 ? 'Excellent' : score >= 0.6 ? 'Good' : 'Poor';
-    const color = score >= 0.8 ? 'text-green-600' : score >= 0.6 ? 'text-yellow-600' : 'text-red-600';
+    const color = score >= 0.8 ? 'text-primary' : score >= 0.6 ? 'text-accent' : 'text-destructive';
     
     return <span className={`text-sm ${color}`}>{quality}</span>;
   };

@@ -416,7 +416,7 @@ const AppHome = () => {
                 <div>
                   <h2 className="text-lg font-semibold">{partner.display_name}</h2>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
                     Active now
                   </p>
                 </div>
@@ -430,7 +430,7 @@ const AppHome = () => {
                   <p className="font-semibold">{new Date().toLocaleTimeString()}</p>
                 </div>
                 <div>
-                  <Flame className="h-5 w-5 mx-auto mb-1 text-orange-500" />
+                  <Flame className="h-5 w-5 mx-auto mb-1 text-accent" />
                   <p className="text-sm text-muted-foreground">Streak</p>
                   <p className="font-semibold">
                     {loadingStreak ? '--' : `${streak} ${streak === 1 ? 'day' : 'days'}`}
@@ -534,7 +534,7 @@ const AppHome = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       {pair && dailyQuestion && dailyQuestion.answered_by && (
-                        <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-1 text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
                           Answered
                         </div>
                       )}
@@ -607,8 +607,8 @@ const AppHome = () => {
             )}
 
             {/* Calendar Card */}
-            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-primary/20 transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-heart/20 to-love-coral/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
@@ -687,8 +687,8 @@ const AppHome = () => {
                         <h3 className="font-bold text-foreground text-lg">Complete Your Profile</h3>
                         <p className="text-muted-foreground">Set up your profile and get ready to connect with your partner</p>
                         <div className="flex items-center gap-2 mt-3">
-                          <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
-                            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                          <div className="flex items-center gap-1 text-xs text-accent bg-accent/10 px-2 py-1 rounded-full">
+                            <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
                             Profile incomplete
                           </div>
                           <Button 

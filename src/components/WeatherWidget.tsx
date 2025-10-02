@@ -83,11 +83,11 @@ const WeatherWidget = ({ partnerCity, partnerCountry, partnerName }: WeatherWidg
 
   const getWeatherIcon = (iconCode: string) => {
     // Map OpenWeather icons to Lucide icons
-    if (iconCode.includes('01')) return <Sun className="w-6 h-6 text-yellow-500" />;
-    if (iconCode.includes('02') || iconCode.includes('03') || iconCode.includes('04')) return <Cloud className="w-6 h-6 text-gray-500" />;
-    if (iconCode.includes('09') || iconCode.includes('10') || iconCode.includes('11')) return <CloudRain className="w-6 h-6 text-blue-500" />;
-    if (iconCode.includes('13')) return <CloudSnow className="w-6 h-6 text-blue-200" />;
-    return <Cloud className="w-6 h-6 text-gray-500" />;
+    if (iconCode.includes('01')) return <Sun className="w-6 h-6 text-accent" />;
+    if (iconCode.includes('02') || iconCode.includes('03') || iconCode.includes('04')) return <Cloud className="w-6 h-6 text-muted-foreground" />;
+    if (iconCode.includes('09') || iconCode.includes('10') || iconCode.includes('11')) return <CloudRain className="w-6 h-6 text-primary" />;
+    if (iconCode.includes('13')) return <CloudSnow className="w-6 h-6 text-primary/60" />;
+    return <Cloud className="w-6 h-6 text-muted-foreground" />;
   };
 
   if (!partnerCity || !partnerCountry) {

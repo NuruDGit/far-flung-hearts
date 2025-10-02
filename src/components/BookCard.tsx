@@ -56,7 +56,7 @@ export const BookCard = ({
             <div className="flex items-center gap-2 mb-2">
               {rating && rating > 0 && (
                 <div className="flex items-center gap-1">
-                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  <Star className="h-3 w-3 fill-accent text-accent" />
                   <span className="text-xs">{rating}</span>
                 </div>
               )}
@@ -82,7 +82,7 @@ export const BookCard = ({
             {/* Amazon Link */}
             <Button 
               size="sm" 
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs"
+              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xs"
               onClick={() => window.open(amazonLink, '_blank')}
             >
               <ExternalLink className="h-3 w-3 mr-1" />

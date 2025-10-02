@@ -30,7 +30,7 @@ export const MessageActionBar = ({
           variant="ghost"
           size="sm"
           onClick={() => onFavorite(messageId)}
-          className={`h-10 px-3 ${isFavorited ? 'text-yellow-500' : 'text-muted-foreground'} hover:text-yellow-500 min-w-[44px]`}
+          className={`h-10 px-3 ${isFavorited ? 'text-accent' : 'text-muted-foreground'} hover:text-accent min-w-[44px]`}
           title={isFavorited ? "Remove from favorites" : "Add to favorites"}
         >
           <Star size={18} fill={isFavorited ? "currentColor" : "none"} />

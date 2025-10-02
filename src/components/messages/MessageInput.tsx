@@ -304,7 +304,7 @@ export const MessageInput = ({
                     }}
                     className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
-                    <Camera size={16} className="text-blue-500" />
+                    <Camera size={16} className="text-primary" />
                     Take Photo
                   </Button>
                   <Button
@@ -313,7 +313,7 @@ export const MessageInput = ({
                     onClick={handleAttachClick}
                     className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
-                    <FileText size={16} className="text-green-500" />
+                    <FileText size={16} className="text-primary" />
                     Photos & Videos
                   </Button>
                   <Button
@@ -322,7 +322,7 @@ export const MessageInput = ({
                     onClick={handleDocumentClick}
                     className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
-                    <FileText size={16} className="text-orange-500" />
+                    <FileText size={16} className="text-accent" />
                     Documents
                   </Button>
                   <Button
@@ -331,7 +331,7 @@ export const MessageInput = ({
                     onClick={handleAudioClick}
                     className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
-                    <Mic size={16} className="text-purple-500" />
+                    <Mic size={16} className="text-accent" />
                     Audio
                   </Button>
                   <Button
@@ -349,7 +349,7 @@ export const MessageInput = ({
                     onClick={handleContactShare}
                     className="justify-start gap-3 h-10 px-3 text-sm text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent"
                   >
-                    <User size={16} className="text-blue-600" />
+                    <User size={16} className="text-primary" />
                     Contact
                   </Button>
                   <Button

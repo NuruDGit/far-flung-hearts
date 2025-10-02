@@ -28,12 +28,12 @@ interface CalendarEvent {
 }
 
 const eventTypeColors: Record<string, { bg: string; text: string; border: string }> = {
-  date: { bg: 'bg-love-heart/10', text: 'text-love-heart', border: 'border-love-heart/20' },
-  anniversary: { bg: 'bg-love-deep/10', text: 'text-love-deep', border: 'border-love-deep/20' },
-  travel: { bg: 'bg-blue-500/10', text: 'text-blue-600', border: 'border-blue-500/20' },
-  birthday: { bg: 'bg-yellow-500/10', text: 'text-yellow-600', border: 'border-yellow-500/20' },
-  meeting: { bg: 'bg-green-500/10', text: 'text-green-600', border: 'border-green-500/20' },
-  other: { bg: 'bg-gray-500/10', text: 'text-gray-600', border: 'border-gray-500/20' },
+  date: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
+  anniversary: { bg: 'bg-accent/10', text: 'text-accent-foreground', border: 'border-accent/20' },
+  travel: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
+  birthday: { bg: 'bg-secondary/10', text: 'text-secondary-foreground', border: 'border-secondary/20' },
+  meeting: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
+  other: { bg: 'bg-muted/10', text: 'text-muted-foreground', border: 'border-muted/20' },
 };
 
 const CalendarPage = () => {
