@@ -2,19 +2,22 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
 import WeatherWidget from '@/components/WeatherWidget';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
+import { hasFeatureAccess, SUBSCRIPTION_TIERS } from '@/config/subscriptionFeatures';
 import { toast } from 'sonner';
 
 const AppHome = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, subscription } = useAuth();
   const navigate = useNavigate();
   const [pair, setPair] = useState<any>(null);
   const [partner, setPartner] = useState<any>(null);
@@ -237,12 +240,19 @@ const AppHome = () => {
       <div className="container mx-auto p-4 max-w-md lg:max-w-4xl pt-6 pb-24">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-love-deep">
               {getGreeting()}, {getUserDisplayName()}!
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground flex items-center gap-2">
               {partner ? `Connected with ${partner.first_name || partner.display_name}` : 'Exploring solo'}
+              <Badge 
+                variant={subscription.tier === 'super_premium' ? 'default' : subscription.tier === 'premium' ? 'secondary' : 'outline'}
+                className={subscription.tier !== 'free' ? 'bg-gradient-to-r from-love-heart to-love-coral text-white border-0' : ''}
+              >
+                {subscription.tier === 'super_premium' && <Crown className="w-3 h-3 mr-1" />}
+                {SUBSCRIPTION_TIERS[subscription.tier].name}
+              </Badge>
             </p>
           </div>
           <DropdownMenu>
@@ -265,20 +275,43 @@ const AppHome = () => {
               >
                 <Smile className="mr-2 h-4 w-4" />
                 Mood Tracker
+                {!hasFeatureAccess(subscription.tier, 'moodLogging') && (
+                  <Badge variant="outline" className="ml-auto text-xs">Free</Badge>
+                )}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => navigate('/app/mood/analytics')}
+                onClick={() => {
+                  if (hasFeatureAccess(subscription.tier, 'moodAnalytics')) {
+                    navigate('/app/mood/analytics');
+                  } else {
+                    toast.error('Mood Analytics requires Premium');
+                    navigate('/#pricing');
+                  }
+                }}
                 className="cursor-pointer hover:bg-love-light/20"
               >
                 <Zap className="mr-2 h-4 w-4" />
                 Mood Analytics
+                {!hasFeatureAccess(subscription.tier, 'moodAnalytics') && (
+                  <Badge variant="outline" className="ml-auto text-xs bg-love-heart/10 text-love-heart border-love-heart/30">Premium</Badge>
+                )}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => navigate('/app/goals')}
+                onClick={() => {
+                  if (hasFeatureAccess(subscription.tier, 'goals')) {
+                    navigate('/app/goals');
+                  } else {
+                    toast.error('Goals requires Premium');
+                    navigate('/#pricing');
+                  }
+                }}
                 className="cursor-pointer hover:bg-love-light/20"
               >
                 <Heart className="mr-2 h-4 w-4" />
                 Relationship Goals
+                {!hasFeatureAccess(subscription.tier, 'goals') && (
+                  <Badge variant="outline" className="ml-auto text-xs bg-love-heart/10 text-love-heart border-love-heart/30">Premium</Badge>
+                )}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => navigate('/app/messages')}
@@ -496,41 +529,56 @@ const AppHome = () => {
             </Card>
 
             {/* Memory Vault Card */}
-            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-love-deep/20 transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-love-deep/5 to-love-soft/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
-              <CardContent className="relative p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-deep/20 to-love-soft/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
-                    <Camera className="text-love-deep h-6 w-6" />
-                  </div>
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-foreground text-lg">Memory Vault</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {pair ? "Your shared photos and precious moments together" : "Collect and share your special memories"}
-                      </p>
+            {hasFeatureAccess(subscription.tier, 'memoryVault') ? (
+              <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-love-deep/20 transition-all duration-300 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-love-deep/5 to-love-soft/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
+                <CardContent className="relative p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-love-deep/20 to-love-soft/20 flex items-center justify-center group-active:scale-110 group-focus:scale-110 transition-transform duration-300">
+                      <Camera className="text-love-deep h-6 w-6" />
                     </div>
-                    <div className="flex items-center gap-2">
-                      {pair && (
-                        <div className="flex items-center gap-1 text-xs text-love-heart bg-love-light px-2 py-1 rounded-full">
-                          <div className="w-1.5 h-1.5 bg-love-coral rounded-full"></div>
-                          Active vault
-                        </div>
-                      )}
-                      <Button 
-                        size="sm" 
-                        variant={pair ? "default" : "secondary"}
-                        disabled={!pair} 
-                        onClick={() => navigate('/memory-vault')}
-                        className="transition-all duration-200 font-medium"
-                      >
-                        {pair ? "Browse Vault" : "Preview"}
-                      </Button>
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h3 className="font-semibold text-foreground text-lg flex items-center gap-2">
+                          Memory Vault
+                          {subscription.tier === 'super_premium' && (
+                            <Badge className="text-xs bg-gradient-to-r from-love-deep to-love-heart text-white border-0">
+                              <Crown className="w-3 h-3 mr-1" />
+                              Unlimited
+                            </Badge>
+                          )}
+                        </h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {pair ? "Your shared photos and precious moments together" : "Collect and share your special memories"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {pair && (
+                          <div className="flex items-center gap-1 text-xs text-love-heart bg-love-light px-2 py-1 rounded-full">
+                            <div className="w-1.5 h-1.5 bg-love-coral rounded-full"></div>
+                            Active vault
+                          </div>
+                        )}
+                        <Button 
+                          size="sm" 
+                          variant={pair ? "default" : "secondary"}
+                          disabled={!pair} 
+                          onClick={() => navigate('/app/memory-vault')}
+                          className="transition-all duration-200 font-medium"
+                        >
+                          {pair ? "Browse Vault" : "Preview"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : (
+              <UpgradePrompt 
+                featureName="Memory Vault"
+                requiredTier="premium"
+              />
+            )}
 
             {/* Calendar Card */}
             <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 overflow-hidden">
@@ -588,6 +636,46 @@ const AppHome = () => {
                       </Button>
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Upgrade Banner for Free Users */}
+          {subscription.tier === 'free' && (
+            <Card className="bg-gradient-to-r from-love-heart via-love-coral to-love-deep text-white border-0 shadow-xl mt-6">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                      <Zap className="w-5 h-5" />
+                      Unlock Premium Features
+                    </h3>
+                    <p className="text-white/90 text-sm mb-4">
+                      Get unlimited mood tracking, analytics, goals, memory vault, and video calls
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                        Mood Analytics
+                      </Badge>
+                      <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                        Goals & Tasks
+                      </Badge>
+                      <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                        Video Calls
+                      </Badge>
+                      <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                        Love Advisor AI
+                      </Badge>
+                    </div>
+                  </div>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-love-heart hover:bg-white/90 font-bold"
+                    onClick={() => navigate('/#pricing')}
+                  >
+                    Upgrade Now
+                  </Button>
                 </div>
               </CardContent>
             </Card>

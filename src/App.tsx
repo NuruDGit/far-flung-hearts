@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { useAppOptimization } from "@/hooks/useAppOptimization";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -39,12 +40,28 @@ const App = () => {
             <Route path="/app" element={<AppHome />} />
             <Route path="/app/messages" element={<MessagesPage />} />
             <Route path="/app/mood" element={<MoodPage />} />
-            <Route path="/app/mood/analytics" element={<MoodAnalytics />} />
-            <Route path="/app/goals" element={<GoalsPage />} />
+            <Route path="/app/mood/analytics" element={
+              <SubscriptionGuard requiredTier="premium" featureName="Mood Analytics">
+                <MoodAnalytics />
+              </SubscriptionGuard>
+            } />
+            <Route path="/app/goals" element={
+              <SubscriptionGuard requiredTier="premium" featureName="Relationship Goals">
+                <GoalsPage />
+              </SubscriptionGuard>
+            } />
             <Route path="/app/profile" element={<ProfilePage />} />
             <Route path="/app/calendar" element={<CalendarPage />} />
-            <Route path="/memory-vault" element={<MemoryVault />} />
-            <Route path="/app/advisor" element={<AdvisorPage />} />
+            <Route path="/app/memory-vault" element={
+              <SubscriptionGuard requiredTier="premium" featureName="Memory Vault">
+                <MemoryVault />
+              </SubscriptionGuard>
+            } />
+            <Route path="/app/advisor" element={
+              <SubscriptionGuard requiredTier="premium" featureName="Love Advisor AI">
+                <AdvisorPage />
+              </SubscriptionGuard>
+            } />
             <Route path="/app/notification-settings" element={<NotificationSettings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

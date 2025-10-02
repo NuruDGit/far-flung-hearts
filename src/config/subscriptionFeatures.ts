@@ -1,0 +1,108 @@
+// Subscription tier feature mapping
+export const SUBSCRIPTION_TIERS = {
+  free: {
+    name: 'Free',
+    features: [
+      'Basic messaging',
+      'Profile setup',
+      'Mood logging (limited to 3 per day)',
+      'Calendar events (up to 5)',
+      'Weather widget',
+      'Daily questions',
+    ]
+  },
+  premium: {
+    name: 'Premium',
+    features: [
+      'Everything in Free',
+      'Unlimited mood logging',
+      'Mood analytics & insights',
+      'Unlimited calendar events',
+      'Relationship goals & tasks',
+      'Memory vault (up to 100 photos)',
+      'Video calls (up to 30 min)',
+      'Love advisor AI chat',
+      'Partner support features',
+      'Book recommendations',
+    ]
+  },
+  super_premium: {
+    name: 'Super Premium',
+    features: [
+      'Everything in Premium',
+      'Unlimited memory vault',
+      'Unlimited video calls',
+      'Advanced AI insights',
+      'Priority support',
+      'Custom themes',
+      'Export all data',
+      'Ad-free experience',
+    ]
+  }
+} as const;
+
+export type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
+
+export const FEATURE_GATES = {
+  // Free features (no gate needed)
+  messaging: { tier: 'free' as const, limit: null },
+  profile: { tier: 'free' as const, limit: null },
+  weather: { tier: 'free' as const, limit: null },
+  dailyQuestions: { tier: 'free' as const, limit: null },
+  
+  // Premium features
+  moodLogging: { tier: 'free' as const, limit: 3, premiumTier: 'premium' as const },
+  moodAnalytics: { tier: 'premium' as const, limit: null },
+  calendarEvents: { tier: 'free' as const, limit: 5, premiumTier: 'premium' as const },
+  goals: { tier: 'premium' as const, limit: null },
+  memoryVault: { tier: 'premium' as const, limit: 100, superPremiumTier: 'super_premium' as const },
+  videoCalls: { tier: 'premium' as const, limit: 30, superPremiumTier: 'super_premium' as const },
+  loveAdvisor: { tier: 'premium' as const, limit: null },
+  partnerSupport: { tier: 'premium' as const, limit: null },
+  bookRecommendations: { tier: 'premium' as const, limit: null },
+  
+  // Super Premium features
+  unlimitedMemory: { tier: 'super_premium' as const, limit: null },
+  unlimitedVideoCalls: { tier: 'super_premium' as const, limit: null },
+  advancedAI: { tier: 'super_premium' as const, limit: null },
+  customThemes: { tier: 'super_premium' as const, limit: null },
+  dataExport: { tier: 'super_premium' as const, limit: null },
+} as const;
+
+export const hasFeatureAccess = (
+  userTier: SubscriptionTier,
+  feature: keyof typeof FEATURE_GATES
+): boolean => {
+  const tierOrder = { free: 0, premium: 1, super_premium: 2 };
+  const featureGate = FEATURE_GATES[feature];
+  return tierOrder[userTier] >= tierOrder[featureGate.tier];
+};
+
+export const getRequiredTierForFeature = (
+  feature: keyof typeof FEATURE_GATES
+): SubscriptionTier => {
+  return FEATURE_GATES[feature].tier;
+};
+
+export const getFeatureLimit = (
+  userTier: SubscriptionTier,
+  feature: keyof typeof FEATURE_GATES
+): number | null => {
+  const featureGate = FEATURE_GATES[feature];
+  
+  // If user has higher tier than required, no limit
+  const tierOrder = { free: 0, premium: 1, super_premium: 2 };
+  if (tierOrder[userTier] > tierOrder[featureGate.tier]) {
+    return null;
+  }
+  
+  // If feature has a premium tier that removes limit
+  if ('superPremiumTier' in featureGate && userTier === 'super_premium') {
+    return null;
+  }
+  if ('premiumTier' in featureGate && tierOrder[userTier] >= tierOrder[featureGate.premiumTier]) {
+    return null;
+  }
+  
+  return featureGate.limit;
+};
