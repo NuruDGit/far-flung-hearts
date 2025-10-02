@@ -61,7 +61,8 @@ const CalendarPage = () => {
         .select('id')
         .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
         .eq('status', 'active')
-        .single();
+        .limit(1)
+        .maybeSingle();
       
       if (pairs) {
         setUserPairId(pairs.id);
