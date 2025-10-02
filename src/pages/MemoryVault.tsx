@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import MemoryVaultFilters, { FilterState } from '@/components/MemoryVaultFilters
 import MemoryVaultBulkActions from '@/components/MemoryVaultBulkActions';
 import { MemoryLightbox } from '@/components/MemoryLightbox';
 import { ShareMemoryDialog } from '@/components/ShareMemoryDialog';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
+import { getFeatureLimit } from '@/config/subscriptionFeatures';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -26,7 +28,8 @@ interface Memory {
 }
 
 const MemoryVault = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const navigate = useNavigate();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -207,6 +210,13 @@ const MemoryVault = () => {
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0 || !pair) return;
+
+    // Check subscription limit
+    const limit = getFeatureLimit(subscription.tier, 'memoryVault');
+    if (limit !== null && memories.length >= limit) {
+      toast.error(`You've reached your ${limit} photo limit. Upgrade to add more!`);
+      return;
+    }
 
     setUploading(true);
     console.log('Starting upload for', files.length, 'files');
@@ -427,6 +437,28 @@ const MemoryVault = () => {
           </div>
         </div>
 
+        {/* Storage limit warning */}
+        {(() => {
+          const limit = getFeatureLimit(subscription.tier, 'memoryVault');
+          if (limit !== null) {
+            return (
+              <div className="mb-4">
+                <UpgradePrompt
+                  featureName="Memory Vault"
+                  requiredTier={subscription.tier === 'free' ? 'premium' : 'super_premium'}
+                  compact
+                  className={memories.length >= limit ? 'animate-pulse' : ''}
+                />
+                <p className="text-sm text-muted-foreground text-center mt-2">
+                  {memories.length}/{limit} photos used
+                  {memories.length >= limit && ' - Upgrade to add more!'}
+                </p>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         {/* Upload Section */}
         <Card className="mb-6">
           <CardContent className="p-6">
@@ -441,13 +473,22 @@ const MemoryVault = () => {
                 multiple
                 accept="image/*,video/*"
                 onChange={handleFileUpload}
-                disabled={uploading}
+                disabled={uploading || (() => {
+                  const limit = getFeatureLimit(subscription.tier, 'memoryVault');
+                  return limit !== null && memories.length >= limit;
+                })()}
                 className="hidden"
                 id="file-upload"
               />
-              <Button asChild disabled={uploading}>
+              <Button asChild disabled={uploading || (() => {
+                const limit = getFeatureLimit(subscription.tier, 'memoryVault');
+                return limit !== null && memories.length >= limit;
+              })()}>
                 <label htmlFor="file-upload" className="cursor-pointer">
-                  {uploading ? "Uploading..." : "Choose Files"}
+                  {uploading ? "Uploading..." : (() => {
+                    const limit = getFeatureLimit(subscription.tier, 'memoryVault');
+                    return limit !== null && memories.length >= limit ? `Limit Reached (${limit})` : "Choose Files";
+                  })()}
                 </label>
               </Button>
             </div>

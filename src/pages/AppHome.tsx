@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown, Target, TrendingUp, Video } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,8 @@ import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
 import WeatherWidget from '@/components/WeatherWidget';
 import { UpgradePrompt } from '@/components/UpgradePrompt';
+import { LockedFeatureCard } from '@/components/LockedFeatureCard';
+import { AchievementBadge } from '@/components/AchievementBadge';
 import { hasFeatureAccess, SUBSCRIPTION_TIERS } from '@/config/subscriptionFeatures';
 import { toast } from 'sonner';
 
@@ -26,6 +28,9 @@ const AppHome = () => {
   const [dailyQuestion, setDailyQuestion] = useState<any>(null);
   const [streak, setStreak] = useState<number>(0);
   const [loadingStreak, setLoadingStreak] = useState(true);
+  const [moodCount, setMoodCount] = useState(0);
+  const [eventCount, setEventCount] = useState(0);
+  const [messageCount, setMessageCount] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,6 +85,26 @@ const AppHome = () => {
             setDailyQuestion(questionData[0]);
           }
 
+          // Get stats for achievements
+          const today = new Date().toISOString().split('T')[0];
+          const { data: moodData } = await supabase
+            .from('mood_logs')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('date', today);
+          setMoodCount(moodData?.length || 0);
+
+          const { data: eventData } = await supabase
+            .from('events')
+            .select('*')
+            .eq('pair_id', pairData?.id);
+          setEventCount(eventData?.length || 0);
+
+          const { data: messageData } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('pair_id', pairData?.id);
+          setMessageCount(messageData?.length || 0);
         }
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -641,11 +666,85 @@ const AppHome = () => {
             </Card>
           )}
           
+          {/* Achievements Section for Free Users */}
+          {subscription.tier === 'free' && (
+            <div className="mt-6">
+              <h2 className="text-lg font-bold text-love-deep mb-4">Your Progress 🏆</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <AchievementBadge
+                  icon={Smile}
+                  title="Mood Tracker"
+                  description="Log your moods daily"
+                  progress={moodCount}
+                  total={3}
+                />
+                <AchievementBadge
+                  icon={MessageSquareQuote}
+                  title="Love Letters"
+                  description="Send messages to your partner"
+                  progress={messageCount}
+                  total={10}
+                />
+                <AchievementBadge
+                  icon={Calendar}
+                  title="Event Planner"
+                  description="Create calendar events together"
+                  progress={eventCount}
+                  total={5}
+                />
+                <AchievementBadge
+                  icon={Flame}
+                  title="Streak Keeper"
+                  description="Maintain your daily streak"
+                  progress={streak}
+                  total={7}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Locked Premium Features Preview */}
+          {subscription.tier === 'free' && (
+            <div className="mt-6">
+              <h2 className="text-lg font-bold text-love-deep mb-4">Unlock More Features ✨</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <LockedFeatureCard
+                  icon={TrendingUp}
+                  title="Mood Analytics"
+                  description="Track mood patterns and get insights about your relationship"
+                  requiredTier="premium"
+                  preview="See trends, get AI recommendations, partner support alerts"
+                />
+                <LockedFeatureCard
+                  icon={Target}
+                  title="Unlimited Goals"
+                  description="Create unlimited relationship goals and track progress together"
+                  requiredTier="premium"
+                  preview="Kanban boards, AI suggestions, task assignments"
+                />
+                <LockedFeatureCard
+                  icon={Video}
+                  title="Video Calls"
+                  description="Connect face-to-face with up to 30-minute video calls"
+                  requiredTier="premium"
+                  preview="HD quality, call history, quality tracking"
+                />
+                <LockedFeatureCard
+                  icon={Zap}
+                  title="Unlimited AI Chat"
+                  description="Get unlimited relationship advice from Proxima AI"
+                  requiredTier="premium"
+                  preview="Personalized advice, book recommendations, date ideas"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Upgrade Banner for Free Users */}
           {subscription.tier === 'free' && (
             <Card className="bg-gradient-to-r from-love-heart via-love-coral to-love-deep text-white border-0 shadow-xl mt-6">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
                       <Zap className="w-5 h-5" />
@@ -659,19 +758,19 @@ const AppHome = () => {
                         Mood Analytics
                       </Badge>
                       <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
-                        Goals & Tasks
+                        Unlimited Goals
                       </Badge>
                       <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
                         Video Calls
                       </Badge>
                       <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
-                        Love Advisor AI
+                        Unlimited AI
                       </Badge>
                     </div>
                   </div>
                   <Button 
                     size="lg"
-                    className="bg-white text-love-heart hover:bg-white/90 font-bold"
+                    className="bg-white text-love-heart hover:bg-white/90 font-bold whitespace-nowrap"
                     onClick={() => navigate('/#pricing')}
                   >
                     Upgrade Now

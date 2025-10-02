@@ -5,10 +5,14 @@ export const SUBSCRIPTION_TIERS = {
     features: [
       'Basic messaging',
       'Profile setup',
-      'Mood logging (limited to 3 per day)',
+      'Mood logging (3 per day)',
       'Calendar events (up to 5)',
       'Weather widget',
       'Daily questions',
+      'Memory vault (5 photos)',
+      'AI chat (3 questions/day)',
+      'Basic goals (2 goals max)',
+      'One-time video call trial (10 min)',
     ]
   },
   premium: {
@@ -18,10 +22,10 @@ export const SUBSCRIPTION_TIERS = {
       'Unlimited mood logging',
       'Mood analytics & insights',
       'Unlimited calendar events',
-      'Relationship goals & tasks',
+      'Unlimited relationship goals & tasks',
       'Memory vault (up to 100 photos)',
       'Video calls (up to 30 min)',
-      'Love advisor AI chat',
+      'Unlimited AI chat',
       'Partner support features',
       'Book recommendations',
     ]
@@ -50,14 +54,16 @@ export const FEATURE_GATES = {
   weather: { tier: 'free' as const, limit: null },
   dailyQuestions: { tier: 'free' as const, limit: null },
   
-  // Premium features
+  // Free with limits (upgradeable to premium)
   moodLogging: { tier: 'free' as const, limit: 3, premiumTier: 'premium' as const },
-  moodAnalytics: { tier: 'premium' as const, limit: null },
   calendarEvents: { tier: 'free' as const, limit: 5, premiumTier: 'premium' as const },
-  goals: { tier: 'premium' as const, limit: null },
-  memoryVault: { tier: 'premium' as const, limit: 100, superPremiumTier: 'super_premium' as const },
-  videoCalls: { tier: 'premium' as const, limit: 30, superPremiumTier: 'super_premium' as const },
-  loveAdvisor: { tier: 'premium' as const, limit: null },
+  memoryVault: { tier: 'free' as const, limit: 5, premiumTier: 'premium' as const, premiumLimit: 100 },
+  loveAdvisor: { tier: 'free' as const, limit: 3, premiumTier: 'premium' as const },
+  goals: { tier: 'free' as const, limit: 2, premiumTier: 'premium' as const },
+  videoCalls: { tier: 'free' as const, limit: 1, duration: 10, premiumTier: 'premium' as const, premiumDuration: 30 },
+  
+  // Premium features
+  moodAnalytics: { tier: 'premium' as const, limit: null },
   partnerSupport: { tier: 'premium' as const, limit: null },
   bookRecommendations: { tier: 'premium' as const, limit: null },
   

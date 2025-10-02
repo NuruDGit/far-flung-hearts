@@ -23,13 +23,14 @@ interface LoveAdvisorProps {
 }
 
 const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [partnerData, setPartnerData] = useState<any>(null);
   const [showQuickSuggestions, setShowQuickSuggestions] = useState(true);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [dailyQuestionCount, setDailyQuestionCount] = useState(0);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -145,6 +146,16 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
+    // Check free tier limit
+    if (subscription.tier === 'free' && dailyQuestionCount >= 3) {
+      toast({
+        title: "Daily Limit Reached",
+        description: "You've used all 3 free questions today. Upgrade to Premium for unlimited AI chat!",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       text: inputMessage,
@@ -175,6 +186,11 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
       };
 
       setMessages(prev => [...prev, aiMessage]);
+      
+      // Increment daily count for free users
+      if (subscription.tier === 'free') {
+        setDailyQuestionCount(prev => prev + 1);
+      }
     } catch (error) {
       console.error('Error getting AI response:', error);
       toast({
