@@ -165,18 +165,24 @@ const PairSetup = () => {
       // Ensure profile exists before joining pair
       await ensureProfileExists();
       // Find valid invite
-      const { data: invite, error: inviteError } = await supabase
+      const { data: invites, error: inviteError } = await supabase
         .from('pair_invites')
         .select('*, pairs(*)')
         .eq('code', inviteCode.toUpperCase())
-        .gt('expires_at', new Date().toISOString())
-        .maybeSingle();
+        .gt('expires_at', new Date().toISOString());
 
-      if (inviteError || !invite) {
+      if (inviteError) {
         console.error('Invite query error:', inviteError);
+        toast.error('Error checking invite code');
+        return;
+      }
+
+      if (!invites || invites.length === 0) {
         toast.error('Invalid or expired invite code');
         return;
       }
+
+      const invite = invites[0];
 
       // Update pair with second user
       const { data: updatedPair, error: updateError } = await supabase
