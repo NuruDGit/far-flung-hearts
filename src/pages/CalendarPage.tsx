@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, parseISO, addMonths, subMonths } from 'date-fns';
 import { Calendar, Plus, ChevronLeft, ChevronRight, Clock, MapPin, Edit, Filter, Search, Heart } from 'lucide-react';
 import { DinnerPlateIcon } from '@/components/icons/DinnerPlateIcon';
@@ -36,7 +37,7 @@ const eventTypeColors: Record<string, { bg: string; text: string; border: string
 };
 
 const CalendarPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -324,6 +325,18 @@ const CalendarPage = () => {
       description: "Your event has been removed from the calendar.",
     });
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-background">

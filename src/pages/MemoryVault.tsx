@@ -28,7 +28,7 @@ interface Memory {
 }
 
 const MemoryVault = () => {
-  const { user, subscription } = useAuth();
+  const { user, subscription, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,16 +176,16 @@ const MemoryVault = () => {
     fetchData();
   }, [user]);
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart"></div>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
   }
 
   if (!pair) {

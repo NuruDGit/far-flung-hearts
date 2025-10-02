@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { MessagesList } from '@/components/messages/MessagesList';
@@ -41,7 +41,7 @@ interface Pair {
 }
 
 const MessagesPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
@@ -462,7 +462,7 @@ const MessagesPage = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center h-screen">
@@ -473,6 +473,10 @@ const MessagesPage = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
   }
 
   if (!pair) {

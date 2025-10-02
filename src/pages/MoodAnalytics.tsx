@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,7 @@ interface Profile {
 }
 
 const MoodAnalytics = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
   const [userMoods, setUserMoods] = useState<MoodData[]>([]);
   const [partnerMoods, setPartnerMoods] = useState<MoodData[]>([]);
@@ -149,7 +150,7 @@ const MoodAnalytics = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background">
         <AppNavigation />
@@ -161,6 +162,10 @@ const MoodAnalytics = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
   }
 
   return (

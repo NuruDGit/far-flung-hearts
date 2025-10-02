@@ -6,7 +6,7 @@ import AppNavigation from '@/components/AppNavigation';
 import MoodLogger from '@/components/MoodLogger';
 
 const MoodPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [pair, setPair] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,16 +33,16 @@ const MoodPage = () => {
     fetchPair();
   }, [user]);
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart"></div>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
   }
 
   return (

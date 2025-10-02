@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus, Calendar, User, Edit2, Trash2, MoreHorizontal, MoreVertical, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap, Archive, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +44,7 @@ interface Goal {
 }
 
 export default function GoalsPage() {
+  const { user, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -418,12 +421,16 @@ export default function GoalsPage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
   }
 
   return (
