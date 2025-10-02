@@ -197,7 +197,7 @@ export const ReunionCountdown = ({ pairId }: { pairId: string }) => {
         </div>
 
         {/* Countdown Timer */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {[
             { value: timeLeft.days, label: 'Days', gradient: 'from-primary to-primary/70' },
             { value: timeLeft.hours, label: 'Hours', gradient: 'from-secondary to-secondary/70' },
@@ -205,12 +205,12 @@ export const ReunionCountdown = ({ pairId }: { pairId: string }) => {
             { value: timeLeft.seconds, label: 'Seconds', gradient: 'from-primary to-primary/70' }
           ].map((item, idx) => (
             <div key={idx} className="relative group">
-              <div className={`bg-gradient-to-br ${item.gradient} p-4 rounded-xl shadow-lg transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl`}>
+              <div className={`bg-gradient-to-br ${item.gradient} p-2 sm:p-4 rounded-xl shadow-lg transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl`}>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white drop-shadow-md">
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-md">
                     {item.value}
                   </div>
-                  <div className="text-xs font-medium text-white/90 mt-1 uppercase tracking-wider">
+                  <div className="text-[10px] sm:text-xs font-medium text-white/90 mt-0.5 sm:mt-1 uppercase tracking-wider">
                     {item.label}
                   </div>
                 </div>
