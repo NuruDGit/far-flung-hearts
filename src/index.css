@@ -77,6 +77,35 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  @keyframes gradient-xy {
+    0%, 100% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+      opacity: 0.3;
+    }
+    50% {
+      transform: translateY(-100%) translateX(20px);
+      opacity: 0.6;
+    }
+  }
+
+  .animate-gradient-xy {
+    background-size: 200% 200%;
+    animation: gradient-xy 15s ease infinite;
+  }
+
+  .animate-float {
+    animation: float linear infinite;
+  }
+
   .dark {
     --background: 340 20% 8%;
     --foreground: 10 100% 95%;
