@@ -36,49 +36,56 @@ const App = () => {
         <AuthProvider>
           <Toaster />
           <Sonner />
-          <SidebarProvider>
-            <BrowserRouter>
-              <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/pair-setup" element={<PairSetup />} />
-            <Route path="/app" element={<AppHome />} />
-            <Route path="/app/messages" element={<MessagesPage />} />
-            <Route path="/app/mood" element={<MoodPage />} />
-            <Route path="/app/mood/analytics" element={
-              <SubscriptionGuard requiredTier="premium" featureName="Mood Analytics">
-                <MoodAnalytics />
-              </SubscriptionGuard>
-            } />
-            <Route path="/app/goals" element={
-              <SubscriptionGuard requiredTier="premium" featureName="Relationship Goals">
-                <GoalsPage />
-              </SubscriptionGuard>
-            } />
-            <Route path="/app/profile" element={<ProfilePage />} />
-            <Route path="/app/calendar" element={<CalendarPage />} />
-            <Route path="/app/memory-vault" element={
-              <SubscriptionGuard requiredTier="premium" featureName="Memory Vault">
-                <MemoryVault />
-              </SubscriptionGuard>
-            } />
-            <Route path="/app/advisor" element={
-              <SubscriptionGuard requiredTier="premium" featureName="Love Advisor AI">
-                <AdvisorPage />
-              </SubscriptionGuard>
-            } />
-            <Route path="/app/notification-settings" element={<NotificationSettings />} />
-            <Route path="/app/subscription" element={<SubscriptionPage />} />
-            <Route path="/app/games" element={<GamesPage />} />
-            <Route path="/app/wishlist" element={<WishlistPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/pair-setup" element={<PairSetup />} />
+              
+              {/* App routes with sidebar */}
+              <Route path="/app/*" element={
+                <SidebarProvider>
+                  <Routes>
+                    <Route index element={<AppHome />} />
+                    <Route path="messages" element={<MessagesPage />} />
+                    <Route path="mood" element={<MoodPage />} />
+                    <Route path="mood/analytics" element={
+                      <SubscriptionGuard requiredTier="premium" featureName="Mood Analytics">
+                        <MoodAnalytics />
+                      </SubscriptionGuard>
+                    } />
+                    <Route path="goals" element={
+                      <SubscriptionGuard requiredTier="premium" featureName="Relationship Goals">
+                        <GoalsPage />
+                      </SubscriptionGuard>
+                    } />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="calendar" element={<CalendarPage />} />
+                    <Route path="memory-vault" element={
+                      <SubscriptionGuard requiredTier="premium" featureName="Memory Vault">
+                        <MemoryVault />
+                      </SubscriptionGuard>
+                    } />
+                    <Route path="advisor" element={
+                      <SubscriptionGuard requiredTier="premium" featureName="Love Advisor AI">
+                        <AdvisorPage />
+                      </SubscriptionGuard>
+                    } />
+                    <Route path="notification-settings" element={<NotificationSettings />} />
+                    <Route path="subscription" element={<SubscriptionPage />} />
+                    <Route path="games" element={<GamesPage />} />
+                    <Route path="wishlist" element={<WishlistPage />} />
+                  </Routes>
+                </SidebarProvider>
+              } />
+              
+              {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </SidebarProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 
