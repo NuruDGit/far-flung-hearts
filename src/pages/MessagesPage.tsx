@@ -478,7 +478,14 @@ const MessagesPage = () => {
   if (!pair) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="flex items-center justify-center h-screen">
+        <div className="sticky top-0 z-10 bg-background border-b p-4">
+          <Link to="/app">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
+        <div className="flex items-center justify-center h-[calc(100vh-73px)]">
           <Card className="p-8 max-w-md mx-4 text-center">
             <h2 className="text-xl font-semibold mb-4">No Active Connection</h2>
             <p className="text-muted-foreground mb-6">
