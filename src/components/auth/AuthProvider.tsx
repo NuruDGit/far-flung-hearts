@@ -14,6 +14,7 @@ interface AuthContextType {
   session: Session | null;
   subscription: SubscriptionInfo;
   checkSubscription: () => Promise<void>;
+  refreshSubscription: () => Promise<void>;
   signUp: (email: string, password: string, additionalData?: { firstName?: string; lastName?: string; phoneNumber?: string }) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -207,6 +208,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     session,
     subscription,
     checkSubscription,
+    refreshSubscription: checkSubscription, // Alias for clarity
     signUp,
     signIn,
     signOut,

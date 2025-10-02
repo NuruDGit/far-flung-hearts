@@ -4,7 +4,7 @@ import { Check, Heart, Crown, Sparkles, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import AppNavigation from "@/components/AppNavigation";
 
@@ -21,9 +21,31 @@ const SUBSCRIPTION_TIERS = {
 };
 
 const SubscriptionPage = () => {
-  const { user, subscription, loading: authLoading } = useAuth();
+  const { user, subscription, loading: authLoading, refreshSubscription } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
+
+  // Check for success/cancel parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === 'true') {
+      toast({
+        title: "Payment Successful!",
+        description: "Your subscription has been upgraded. Refreshing...",
+      });
+      // Refresh subscription status
+      refreshSubscription?.();
+      // Clear the URL parameters
+      window.history.replaceState({}, '', '/app/subscription');
+    } else if (params.get('cancelled') === 'true') {
+      toast({
+        title: "Payment Cancelled",
+        description: "You can upgrade anytime you're ready.",
+      });
+      // Clear the URL parameters
+      window.history.replaceState({}, '', '/app/subscription');
+    }
+  }, [refreshSubscription]);
 
   if (!user && !authLoading) {
     return <Navigate to="/auth" />;
@@ -61,7 +83,8 @@ const SubscriptionPage = () => {
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
+        // Redirect in the same window instead of opening new tab
+        window.location.href = data.url;
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
