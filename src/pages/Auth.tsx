@@ -292,7 +292,6 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                minLength={8}
               />
               {isLogin && (
                 <button

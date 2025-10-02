@@ -13,7 +13,7 @@ export const loginSchema = z.object({
     .max(255, "Email must be less than 255 characters"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(1, "Password is required")
     .max(128, "Password must be less than 128 characters"),
 });
 
@@ -27,11 +27,7 @@ export const signupSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
-    .max(128, "Password must be less than 128 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
+    .max(128, "Password must be less than 128 characters"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
