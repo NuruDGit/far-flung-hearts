@@ -1,8 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Link2, Heart, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const HowItWorksSection = () => {
+  const navigate = useNavigate();
+  
   const steps = [
     {
       icon: UserPlus,
@@ -71,7 +74,12 @@ const HowItWorksSection = () => {
         </div>
 
         <div className="text-center">
-          <Button variant="love" size="lg" className="text-lg px-8 py-6">
+          <Button 
+            variant="love" 
+            size="lg" 
+            className="text-lg px-8 py-6"
+            onClick={() => navigate('/auth')}
+          >
             Start Your Love Story Today
             <Heart className="ml-2" size={20} />
           </Button>
