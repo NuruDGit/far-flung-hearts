@@ -17,18 +17,21 @@ async function checkLocalSubscription(supabaseClient: any, userId: string) {
   try {
     logStep("Checking local subscription fallback", { userId });
 
-    const { data: pair, error: pairError } = await supabaseClient
+    const { data: pairData, error: pairError } = await supabaseClient
       .from('pairs')
       .select('id')
       .or(`user_a.eq.${userId},user_b.eq.${userId}`)
       .eq('status', 'active')
-      .limit(1)
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1);
 
-    if (pairError) {
-      logStep("No active pair found for user (fallback)", { error: pairError.message });
+    if (pairError || !pairData || pairData.length === 0) {
+      logStep("No active pair found for user (fallback)", { error: pairError?.message });
       return null;
     }
+
+    const pair = pairData[0];
+
 
     const { data: sub, error: subError } = await supabaseClient
       .from('subscriptions')
