@@ -49,7 +49,30 @@ serve(async (req) => {
 
     console.log(`User ${user.id} attempting to join with code ${code}`);
 
-    // Look up valid invite (with row lock to prevent race conditions)
+    // PREVENT DUPLICATE ACTIVE PAIRS: Check if joiner already has an active pair
+    const { data: joinerActivePairs, error: joinerCheckError } = await supabaseAdmin
+      .from('pairs')
+      .select('id')
+      .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
+      .eq('status', 'active')
+      .limit(1);
+
+    if (joinerCheckError) {
+      console.error('Joiner active pair check error:', joinerCheckError);
+      return new Response(
+        JSON.stringify({ error: 'Error checking existing pairs' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (joinerActivePairs && joinerActivePairs.length > 0) {
+      return new Response(
+        JSON.stringify({ error: 'You already have an active pair. Please disconnect first.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Look up valid invite
     const { data: invites, error: inviteError } = await supabaseAdmin
       .from('pair_invites')
       .select('*, pairs(*)')
@@ -99,6 +122,30 @@ serve(async (req) => {
     if (pair.user_a === user.id) {
       return new Response(
         JSON.stringify({ error: 'You cannot join your own pair' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // PREVENT DUPLICATE ACTIVE PAIRS: Check if inviter has any OTHER active pair
+    const { data: inviterActivePairs, error: inviterCheckError } = await supabaseAdmin
+      .from('pairs')
+      .select('id')
+      .or(`user_a.eq.${pair.user_a},user_b.eq.${pair.user_a}`)
+      .eq('status', 'active')
+      .neq('id', pair.id) // exclude current pair
+      .limit(1);
+
+    if (inviterCheckError) {
+      console.error('Inviter active pair check error:', inviterCheckError);
+      return new Response(
+        JSON.stringify({ error: 'Error checking inviter pairs' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (inviterActivePairs && inviterActivePairs.length > 0) {
+      return new Response(
+        JSON.stringify({ error: 'The inviter is already in another active pair. Invite is no longer valid.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

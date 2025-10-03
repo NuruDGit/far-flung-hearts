@@ -1,40 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, MessageCircle } from 'lucide-react';
 import LoveAdvisor from './LoveAdvisor';
 import { useAuth } from './auth/AuthProvider';
-import { supabase } from '@/integrations/supabase/client';
+import { useActivePair } from '@/hooks/useActivePair';
 import proximaAvatar from '@/assets/proxima-avatar.jpg';
 
 const ProximaFloatingChat = () => {
   const { user } = useAuth();
-  const [pair, setPair] = useState<any>(null);
+  const { pair } = useActivePair();
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchPair = async () => {
-      if (!user) return;
-
-      try {
-        const { data: pairData } = await supabase
-          .from('pairs')
-          .select('*')
-          .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-          .eq('status', 'active')
-          .single();
-
-        setPair(pairData);
-      } catch (error) {
-        // No active pair - user can still use Proxima
-      }
-    };
-
-    if (user) {
-      fetchPair();
-    }
-  }, [user]);
 
   if (!user) return null;
 

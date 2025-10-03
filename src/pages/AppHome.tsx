@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
+import { useActivePair } from '@/hooks/useActivePair';
 import AppNavigation from '@/components/AppNavigation';
 import ProximaFloatingChat from '@/components/ProximaFloatingChat';
 import MoodLogger from '@/components/MoodLogger';
@@ -22,7 +23,7 @@ import { ReunionCountdown } from '@/components/ReunionCountdown';
 const AppHome = () => {
   const { user, signOut, subscription } = useAuth();
   const navigate = useNavigate();
-  const [pair, setPair] = useState<any>(null);
+  const { pair, loading: pairLoading } = useActivePair();
   const [partner, setPartner] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ const AppHome = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!user) return;
+      if (!user || pairLoading) return;
 
       try {
         // Get user profile
@@ -47,27 +48,18 @@ const AppHome = () => {
         
         setUserProfile(profileData);
 
-        // Get pair
-        const { data: pairData } = await supabase
-          .from('pairs')
-          .select('*')
-          .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-          .eq('status', 'active')
-          .single();
-
-        if (pairData) {
-          setPair(pairData);
+        if (pair) {
           
           // Calculate streak
           setLoadingStreak(true);
           const { data: streakData } = await supabase.rpc('calculate_pair_streak', {
-            target_pair_id: pairData.id
+            target_pair_id: pair.id
           });
           setStreak(streakData || 0);
           setLoadingStreak(false);
           
           // Get partner profile
-          const partnerId = pairData.user_a === user.id ? pairData.user_b : pairData.user_a;
+          const partnerId = pair.user_a === user.id ? pair.user_b : pair.user_a;
           const { data: partnerData } = await supabase
             .from('profiles')
             .select('*')
@@ -79,7 +71,7 @@ const AppHome = () => {
 
           // Get daily question for the pair
           const { data: questionData } = await supabase.rpc('get_or_create_daily_question', {
-            target_pair_id: pairData.id
+            target_pair_id: pair.id
           });
           
           if (questionData && questionData.length > 0) {
@@ -98,13 +90,13 @@ const AppHome = () => {
           const { data: eventData } = await supabase
             .from('events')
             .select('*')
-            .eq('pair_id', pairData?.id);
+            .eq('pair_id', pair.id);
           setEventCount(eventData?.length || 0);
 
           const { data: messageData } = await supabase
             .from('messages')
             .select('*')
-            .eq('pair_id', pairData?.id);
+            .eq('pair_id', pair.id);
           setMessageCount(messageData?.length || 0);
         }
         } catch (error) {
@@ -116,7 +108,7 @@ const AppHome = () => {
     };
 
     fetchUserData();
-  }, [user]);
+  }, [user, pair, pairLoading]);
 
   const handleAnswerQuestion = async () => {
     if (!pair || !dailyQuestion) return;

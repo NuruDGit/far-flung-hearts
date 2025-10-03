@@ -89,6 +89,40 @@ const PairSetup = () => {
     try {
       // Ensure profile exists before creating pair
       await ensureProfileExists();
+
+      // PREVENT MULTIPLE PENDING PAIRS: Check if user already has active or pending pair
+      const { data: existingPairs, error: checkError } = await supabase
+        .from('pairs')
+        .select('id, status')
+        .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (checkError) throw checkError;
+
+      if (existingPairs && existingPairs.length > 0) {
+        const existingPair = existingPairs[0];
+        if (existingPair.status === 'active') {
+          toast.error('You already have an active pair.');
+          navigate('/app', { replace: true });
+          return;
+        } else if (existingPair.status === 'pending') {
+          // Fetch existing invite code
+          const { data: inviteData } = await supabase
+            .from('pair_invites')
+            .select('code')
+            .eq('pair_id', existingPair.id)
+            .gt('expires_at', new Date().toISOString())
+            .limit(1);
+
+          if (inviteData && inviteData.length > 0) {
+            setGeneratedCode(inviteData[0].code);
+            toast.success('Using your existing invite code.');
+            setLoading(false);
+            return;
+          }
+        }
+      }
       
       const code = generateInviteCode();
       

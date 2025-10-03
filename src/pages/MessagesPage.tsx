@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
+import { useActivePair } from '@/hooks/useActivePair';
 import { MessagesList } from '@/components/messages/MessagesList';
 import { MessageInput } from '@/components/messages/MessageInput';
 import { MessageSearch } from '@/components/messages/MessageSearch';
@@ -46,6 +47,7 @@ const MessagesPage = () => {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { pair, loading: pairLoading } = useActivePair();
   const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
@@ -53,7 +55,6 @@ const MessagesPage = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [pair, setPair] = useState<Pair | null>(null);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [replyingTo, setReplyingTo] = useState<{
@@ -85,7 +86,7 @@ const MessagesPage = () => {
     profiles[pair.user_a === user?.id ? pair.user_b : pair.user_a] : null;
 
   useEffect(() => {
-    if (user) {
+    if (user && !pairLoading) {
       fetchPairAndMessages();
       
       // Check for highlight parameter in URL
@@ -101,7 +102,7 @@ const MessagesPage = () => {
         }, 5000);
       }
     }
-  }, [user]);
+  }, [user, pair, pairLoading]);
 
   useEffect(() => {
     if (pair && user) {
@@ -137,28 +138,13 @@ const MessagesPage = () => {
     if (!user) return;
 
     try {
-      // Get user's active pair
-      const { data: pairData, error: pairError } = await supabase
-        .from('pairs')
-        .select('*')
-        .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-        .eq('status', 'active')
-        .single();
-
-      if (pairError && pairError.code !== 'PGRST116') {
-        console.error('Error fetching pair:', pairError);
-        return;
-      }
-
-      if (!pairData) {
+      if (!pair) {
         setLoading(false);
         return;
       }
 
-      setPair(pairData);
-
       // Fetch profiles for both users
-      const userIds = [pairData.user_a, pairData.user_b];
+      const userIds = [pair.user_a, pair.user_b];
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
@@ -178,7 +164,7 @@ const MessagesPage = () => {
       const { data: messagesData, error: messagesError } = await supabase
         .from('messages')
         .select('*')
-        .eq('pair_id', pairData.id)
+        .eq('pair_id', pair.id)
         .is('deleted_at', null)
         .order('created_at', { ascending: true });
 
