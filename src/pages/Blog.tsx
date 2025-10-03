@@ -1,5 +1,6 @@
 import { Calendar, Clock, Heart, TrendingUp, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const Blog = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All Posts");
 
   const featuredPost = {
+    slug: "keep-spark-alive-ldr",
     title: "10 Ways to Keep the Spark Alive in Long-Distance Relationships",
     excerpt: "Distance doesn't have to mean disconnection. Discover proven strategies to maintain intimacy and excitement in your LDR.",
     author: "Dr. Sarah Johnson",
@@ -22,6 +25,7 @@ const Blog = () => {
 
   const blogPosts = [
     {
+      slug: "time-zone-challenges",
       title: "Time Zone Challenges: How to Sync Your Schedules",
       excerpt: "Practical tips for couples separated by multiple time zones to find quality time together.",
       author: "Mark Chen",
@@ -31,6 +35,7 @@ const Blog = () => {
       image: "🌍"
     },
     {
+      slug: "psychology-of-missing",
       title: "The Psychology of Missing Someone",
       excerpt: "Understanding the emotional aspects of being apart and how to cope healthily.",
       author: "Dr. Emily Roberts",
@@ -40,6 +45,7 @@ const Blog = () => {
       image: "🧠"
     },
     {
+      slug: "virtual-date-ideas",
       title: "Virtual Date Ideas That Actually Work",
       excerpt: "Creative ways to enjoy meaningful dates when you can't be physically together.",
       author: "Jessica Martinez",
@@ -49,6 +55,7 @@ const Blog = () => {
       image: "🎬"
     },
     {
+      slug: "communication-tips-busy-couples",
       title: "Communication Tips for Busy Couples",
       excerpt: "How to maintain meaningful connection when life gets hectic.",
       author: "David Thompson",
@@ -58,6 +65,7 @@ const Blog = () => {
       image: "💬"
     },
     {
+      slug: "success-story-sarah-ahmed",
       title: "Success Story: From 5,000 Miles Apart to Married",
       excerpt: "How Sarah and Ahmed overcame distance, visa challenges, and cultural differences.",
       author: "Love Beyond Borders Team",
@@ -67,6 +75,7 @@ const Blog = () => {
       image: "💍"
     },
     {
+      slug: "managing-jealousy-ldr",
       title: "Managing Jealousy in Long-Distance Relationships",
       excerpt: "Expert advice on building trust and handling insecurity when apart.",
       author: "Dr. Sarah Johnson",
@@ -146,7 +155,10 @@ const Blog = () => {
                   {featuredPost.readTime}
                 </div>
               </div>
-              <Button className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart">
+              <Button 
+                onClick={() => navigate(`/blog/${featuredPost.slug}`)}
+                className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart"
+              >
                 Read Article <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </CardContent>
@@ -156,7 +168,11 @@ const Blog = () => {
         {/* Blog Posts Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts.map((post, idx) => (
-            <Card key={idx} className="hover:shadow-lg transition-all cursor-pointer group">
+            <Card 
+              key={idx} 
+              className="hover:shadow-lg transition-all cursor-pointer group"
+              onClick={() => navigate(`/blog/${post.slug}`)}
+            >
               <div className="bg-gradient-to-br from-love-light/30 to-love-soft/30 h-48 flex items-center justify-center text-6xl">
                 {post.image}
               </div>

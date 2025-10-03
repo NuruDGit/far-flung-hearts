@@ -30,6 +30,7 @@ import HelpCenter from "./pages/HelpCenter";
 import Contact from "./pages/Contact";
 import Community from "./pages/Community";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
@@ -87,8 +88,9 @@ const App = () => {
             <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
