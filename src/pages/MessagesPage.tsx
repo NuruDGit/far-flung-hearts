@@ -382,7 +382,9 @@ const MessagesPage = () => {
   const handleViewProfile = () => {
     // Navigate to partner's profile - this is important for LDR couples to stay connected
     // and see their partner's current mood, interests, and updates
-    navigate('/app/profile');
+    if (partner?.id) {
+      navigate(`/app/profile?userId=${partner.id}`);
+    }
   };
 
   const handleSearch = (query: string) => {

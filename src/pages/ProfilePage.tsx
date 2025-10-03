@@ -7,7 +7,7 @@ import { DisconnectPairDialog } from '@/components/DisconnectPairDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Users, Heart, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface Profile {
@@ -36,11 +36,14 @@ interface PairInfo {
 export const ProfilePage = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const viewingUserId = searchParams.get('userId');
   const [profile, setProfile] = useState<Profile | null>(null);
   const [pair, setPair] = useState<PairInfo | null>(null);
   const [partner, setPartner] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const isViewingPartner = viewingUserId && viewingUserId !== user?.id;
 
   useEffect(() => {
     if (authLoading) return;
@@ -51,7 +54,7 @@ export const ProfilePage = () => {
     }
 
     fetchProfileAndPairData();
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, viewingUserId]);
 
   const fetchProfileAndPairData = async () => {
     if (!user) return;
@@ -155,15 +158,17 @@ export const ProfilePage = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl sm:text-2xl font-bold text-love-deep">Your Profile</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-love-deep">
+            {isViewingPartner ? (partner?.display_name || "Partner's Profile") : "Your Profile"}
+          </h1>
         </div>
 
         {/* Profile Card */}
         <div className="max-w-2xl mx-auto">
-          {profile && (
+          {(isViewingPartner ? partner : profile) && (
             <ProfileCard
-              profile={profile}
-              isOwnProfile={true}
+              profile={isViewingPartner ? partner! : profile!}
+              isOwnProfile={!isViewingPartner}
               onEdit={() => setIsEditing(true)}
             />
           )}
