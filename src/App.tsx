@@ -24,6 +24,15 @@ import NotFound from "./pages/NotFound";
 import GamesPage from "./pages/GamesPage";
 import WishlistPage from "./pages/WishlistPage";
 import DailyQuestionAnswers from "./pages/DailyQuestionAnswers";
+import Security from "./pages/Security";
+import API from "./pages/API";
+import HelpCenter from "./pages/HelpCenter";
+import Contact from "./pages/Contact";
+import Community from "./pages/Community";
+import Blog from "./pages/Blog";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +81,16 @@ const App = () => {
             <Route path="/app/games" element={<GamesPage />} />
             <Route path="/app/wishlist" element={<WishlistPage />} />
             <Route path="/app/daily-question-answers" element={<DailyQuestionAnswers />} />
+            {/* Public pages */}
+            <Route path="/security" element={<Security />} />
+            <Route path="/api" element={<API />} />
+            <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -36,8 +36,8 @@ const Footer = () => {
             <ul className="space-y-3 text-white/80">
               <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
               <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">API</a></li>
+              <li><a href="/security" className="hover:text-white transition-colors">Security</a></li>
+              <li><a href="/api" className="hover:text-white transition-colors">API</a></li>
             </ul>
           </div>
 
@@ -45,10 +45,10 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Support</h3>
             <ul className="space-y-3 text-white/80">
-              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+              <li><a href="/help-center" className="hover:text-white transition-colors">Help Center</a></li>
+              <li><a href="/contact" className="hover:text-white transition-colors">Contact Us</a></li>
+              <li><a href="/community" className="hover:text-white transition-colors">Community</a></li>
+              <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
             </ul>
           </div>
 
@@ -78,9 +78,9 @@ const Footer = () => {
               © 2024 Love Beyond Borders. Made with ❤️ for couples worldwide.
             </p>
             <div className="flex gap-6 text-sm text-white/80">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+              <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="/cookie-policy" className="hover:text-white transition-colors">Cookie Policy</a>
             </div>
           </div>
         </div>
