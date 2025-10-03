@@ -354,11 +354,11 @@ Healthy LDRs balance care and connection with independence and trust.`,
 
           {/* Content */}
           <Card>
-            <CardContent className="prose prose-lg max-w-none pt-8">
+            <CardContent className="pt-8 space-y-6">
               {post.content.split('\n\n').map((paragraph: string, idx: number) => {
                 if (paragraph.startsWith('## ')) {
                   return (
-                    <h2 key={idx} className="text-2xl font-bold text-love-deep mt-8 mb-4">
+                    <h2 key={idx} className="text-3xl font-bold text-love-deep mt-8 mb-4 first:mt-0">
                       {paragraph.replace('## ', '')}
                     </h2>
                   );
@@ -368,13 +368,14 @@ Healthy LDRs balance care and connection with independence and trust.`,
                       {paragraph.replace('### ', '')}
                     </h3>
                   );
-                } else {
+                } else if (paragraph.trim()) {
                   return (
-                    <p key={idx} className="text-muted-foreground mb-4 leading-relaxed">
+                    <p key={idx} className="text-foreground/80 leading-relaxed text-base">
                       {paragraph}
                     </p>
                   );
                 }
+                return null;
               })}
             </CardContent>
           </Card>
