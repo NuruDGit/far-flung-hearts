@@ -506,6 +506,8 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   // Start outgoing call with database logging
   const startCall = useCallback(async (partnerId: string, isVideo: boolean = true) => {
     try {
+      console.log('Starting call...', { partnerId, isVideo });
+      
       // Rate limiting
       if (!rateLimiter.checkLimit('video-call', RATE_LIMITS.API_CALL)) {
         toast({
@@ -517,9 +519,12 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       }
 
       const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      console.log('Generated call ID:', callId);
       
       // Create call session in database
       const callSession = await createCallSession(userId, partnerId, isVideo ? 'video' : 'audio');
+      console.log('Call session created:', callSession);
+      
       if (!callSession) {
         toast({
           title: 'Call Failed',
@@ -529,6 +534,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
         return;
       }
 
+      console.log('Setting call state to active...');
       setCallState(prev => ({
         ...prev,
         isActive: true,
@@ -539,11 +545,15 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       }));
 
       // Get user media
+      console.log('Requesting user media...');
       const stream = await getUserMedia(isVideo, true);
+      console.log('User media obtained:', stream);
       localStreamRef.current = stream;
 
       // Initialize peer connection
+      console.log('Initializing peer connection...');
       peerConnectionRef.current = initializePeerConnection();
+      console.log('Peer connection initialized');
       
       // Add local stream to peer connection
       stream.getTracks().forEach(track => {
@@ -558,21 +568,25 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
 
       // Send call offer via Supabase realtime
       if (pairId) {
+        console.log('Setting up realtime channel for pair:', pairId);
         const channel = supabase.channel(`call_${pairId}`);
         realtimeChannelRef.current = channel;
         
         await channel
           .on('broadcast', { event: 'call-answer' }, ({ payload }) => {
+            console.log('Received call answer:', payload);
             if (payload.callId === callId && peerConnectionRef.current) {
               peerConnectionRef.current.setRemoteDescription(payload.answer);
             }
           })
           .on('broadcast', { event: 'ice-candidate' }, ({ payload }) => {
+            console.log('Received ICE candidate:', payload);
             if (payload.callId === callId && peerConnectionRef.current) {
               peerConnectionRef.current.addIceCandidate(payload.candidate);
             }
           })
           .on('broadcast', { event: 'call-end' }, ({ payload }) => {
+            console.log('Received call end signal:', payload);
             if (payload.callId === callId) {
               endCall();
             }
@@ -580,6 +594,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
           .subscribe();
 
         // Send call offer
+        console.log('Sending call offer...');
         await channel.send({
           type: 'broadcast',
           event: 'call-offer',
@@ -591,12 +606,15 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
             callSessionId: callSession.id,
           },
         });
+        console.log('Call offer sent successfully');
       }
 
       // Update call session status
+      console.log('Updating call session status to ringing...');
       await updateCallSession(callSession.id, { status: 'ringing' });
 
       // Start call duration timer and quality monitoring
+      console.log('Starting call timer and quality monitoring...');
       let duration = 0;
       callTimerRef.current = setInterval(() => {
         duration += 1;
@@ -604,6 +622,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       }, 1000);
 
       monitorConnectionQuality(peerConnectionRef.current, callSession.id);
+      console.log('Call setup completed successfully');
 
     } catch (error) {
       console.error('Error starting call:', error);
@@ -625,7 +644,24 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
         variant: 'destructive',
       });
       
-      endCall('error');
+      // Clean up call session in database if it was created
+      if (callState.callSessionId) {
+        await updateCallSession(callState.callSessionId, { 
+          status: 'ended',
+          ended_at: new Date().toISOString()
+        });
+      }
+      
+      // Reset call state
+      setCallState(prev => ({
+        ...prev,
+        isActive: false,
+        isIncoming: false,
+        isConnected: false,
+        partnerId: null,
+        callId: null,
+        callSessionId: null,
+      }));
     }
   }, [userId, pairId, getUserMedia, initializePeerConnection, toast, endCall]);
 
@@ -817,6 +853,8 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     channel
       .on('broadcast', { event: 'call-offer' }, async ({ payload }) => {
         if (payload.callerId !== userId) {
+          console.log('Incoming call received:', payload);
+          
           // Incoming call
           setCallState(prev => ({
             ...prev,
@@ -827,6 +865,18 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
             isVideoOn: payload.isVideo,
             callSessionId: payload.callSessionId,
           }));
+
+          // Show browser notification
+          try {
+            const { notifyIncomingCall } = await import('@/utils/callNotifications');
+            await notifyIncomingCall(
+              'Partner', // You can enhance this to show actual partner name
+              payload.isVideo,
+              undefined // You can enhance this to show partner avatar
+            );
+          } catch (error) {
+            console.warn('Failed to show call notification:', error);
+          }
 
           // Initialize peer connection for incoming call
           peerConnectionRef.current = initializePeerConnection();
