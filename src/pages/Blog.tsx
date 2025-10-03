@@ -1,11 +1,15 @@
 import { Calendar, Clock, Heart, TrendingUp, ArrowRight } from "lucide-react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const Blog = () => {
+  const [selectedCategory, setSelectedCategory] = useState("All Posts");
+
   const featuredPost = {
     title: "10 Ways to Keep the Spark Alive in Long-Distance Relationships",
     excerpt: "Distance doesn't have to mean disconnection. Discover proven strategies to maintain intimacy and excitement in your LDR.",
@@ -83,6 +87,10 @@ const Blog = () => {
     "Practical Advice"
   ];
 
+  const filteredPosts = selectedCategory === "All Posts" 
+    ? blogPosts 
+    : blogPosts.filter(post => post.category === selectedCategory);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-love-light/20">
       <Header />
@@ -97,18 +105,20 @@ const Blog = () => {
           </p>
         </div>
 
-        {/* Categories */}
-        <div className="flex flex-wrap gap-2 justify-center mb-12">
-          {categories.map((category, idx) => (
-            <Badge
-              key={idx}
-              variant={idx === 0 ? "default" : "outline"}
-              className={idx === 0 ? "bg-gradient-to-r from-love-heart to-love-coral cursor-pointer" : "cursor-pointer hover:border-love-coral"}
-            >
-              {category}
-            </Badge>
-          ))}
-        </div>
+        {/* Categories Tabs */}
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-12">
+          <TabsList className="flex flex-wrap h-auto justify-center gap-2 bg-transparent p-0">
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category}
+                value={category}
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-love-heart data-[state=active]:to-love-coral data-[state=active]:text-white"
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
         {/* Featured Post */}
         <Card className="mb-16 border-2 border-love-coral/30 overflow-hidden">
@@ -145,7 +155,7 @@ const Blog = () => {
 
         {/* Blog Posts Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post, idx) => (
+          {filteredPosts.map((post, idx) => (
             <Card key={idx} className="hover:shadow-lg transition-all cursor-pointer group">
               <div className="bg-gradient-to-br from-love-light/30 to-love-soft/30 h-48 flex items-center justify-center text-6xl">
                 {post.image}
