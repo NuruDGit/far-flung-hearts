@@ -134,21 +134,22 @@ export default function DailyQuestionAnswers() {
 
       if (!pairData) return;
 
-      const formattedMessage = {
-        type: "daily_question_share",
-        question: question.question_text,
-        answers: answers.map(a => ({
-          user: a.profiles?.display_name || "Anonymous",
-          answer: a.answer_text
-        }))
-      };
+      // Format the message as a readable text
+      let messageText = `📝 Today's Question: ${question.question_text}\n\n`;
+      
+      answers.forEach((answer) => {
+        const userName = answer.profiles?.display_name || "Anonymous";
+        messageText += `💬 ${userName}'s answer:\n${answer.answer_text}\n\n`;
+      });
 
-      await supabase.from("messages").insert({
+      const { error } = await supabase.from("messages").insert({
         pair_id: pairData.id,
         sender_id: user.id,
-        type: "daily_question_share",
-        body: formattedMessage,
+        type: "text",
+        body: { text: messageText.trim() },
       });
+
+      if (error) throw error;
 
       toast({
         title: "Shared to messages!",
