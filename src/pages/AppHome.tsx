@@ -16,6 +16,7 @@ import WeatherWidget from '@/components/WeatherWidget';
 import { UpgradePrompt } from '@/components/UpgradePrompt';
 import { LockedFeatureCard } from '@/components/LockedFeatureCard';
 import { AchievementBadge } from '@/components/AchievementBadge';
+import { UpgradeCTA } from '@/components/UpgradeCTA';
 import { hasFeatureAccess, SUBSCRIPTION_TIERS } from '@/config/subscriptionFeatures';
 import { toast } from 'sonner';
 import { ReunionCountdown } from '@/components/ReunionCountdown';
@@ -490,6 +491,11 @@ const AppHome = () => {
           </Card>
         )}
 
+        {/* Smart Upgrade CTA - shows for free and premium users */}
+        <div className="mb-6">
+          <UpgradeCTA />
+        </div>
+
         {/* Quick Actions */}
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {quickActions.map((action, index) => (
@@ -766,10 +772,10 @@ const AppHome = () => {
             </div>
           )}
 
-          {/* Locked Premium Features Preview */}
+          {/* Locked Features Preview - Tier-aware */}
           {subscription.tier === 'free' && (
             <div className="mt-6">
-              <h2 className="text-lg font-bold text-love-deep mb-4">Unlock More Features ✨</h2>
+              <h2 className="text-lg font-bold text-love-deep mb-4">Unlock Premium Features ✨</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <LockedFeatureCard
                   icon={TrendingUp}
@@ -798,6 +804,29 @@ const AppHome = () => {
                   description="Get unlimited relationship advice from Proxima AI"
                   requiredTier="premium"
                   preview="Personalized advice, book recommendations, date ideas"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Super Premium Features for Premium Users */}
+          {subscription.tier === 'premium' && (
+            <div className="mt-6">
+              <h2 className="text-lg font-bold text-love-deep mb-4">Upgrade to Super Premium 👑</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <LockedFeatureCard
+                  icon={Camera}
+                  title="Unlimited Storage"
+                  description="Store unlimited memories, photos, and videos in your vault"
+                  requiredTier="super_premium"
+                  preview="Never worry about storage limits again"
+                />
+                <LockedFeatureCard
+                  icon={Zap}
+                  title="Unlimited Everything"
+                  description="Remove all limits on AI chats, goals, and features"
+                  requiredTier="super_premium"
+                  preview="Complete freedom to use all features"
                 />
               </div>
             </div>
