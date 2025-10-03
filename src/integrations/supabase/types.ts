@@ -676,6 +676,7 @@ export type Database = {
           id: string
           media_url: string | null
           pair_id: string
+          reply_to: string | null
           sender_id: string
           type: string
         }
@@ -687,6 +688,7 @@ export type Database = {
           id?: string
           media_url?: string | null
           pair_id: string
+          reply_to?: string | null
           sender_id: string
           type: string
         }
@@ -698,6 +700,7 @@ export type Database = {
           id?: string
           media_url?: string | null
           pair_id?: string
+          reply_to?: string | null
           sender_id?: string
           type?: string
         }
@@ -707,6 +710,13 @@ export type Database = {
             columns: ["pair_id"]
             isOneToOne: false
             referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {
