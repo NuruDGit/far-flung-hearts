@@ -152,7 +152,8 @@ serve(async (req) => {
       logStep("Determined subscription tier", { productId, tier });
 
       // PROPAGATE TO PAIR: If user has active pair, upsert subscriptions row for that pair
-      const { data: pairData } = await supabaseClient
+      // Using same robust logic as useActivePair hook: order by created_at DESC, limit 1
+      const { data: pairData, error: pairError } = await supabaseClient
         .from('pairs')
         .select('id')
         .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
@@ -160,18 +161,27 @@ serve(async (req) => {
         .order('created_at', { ascending: false })
         .limit(1);
 
-      if (pairData && pairData.length > 0) {
+      if (pairError) {
+        logStep("Error fetching active pair", { error: pairError.message });
+      } else if (pairData && pairData.length > 0) {
         const pairId = pairData[0].id;
-        logStep("Active pair detected, propagating subscription", { pairId });
+        logStep("Active pair detected, propagating subscription", { pairId, userId: user.id });
         const planTier = tier === 'super_premium' ? 'super_premium' : 'pro';
-        await supabaseClient
+        const { error: upsertError } = await supabaseClient
           .from('subscriptions')
           .upsert({
             pair_id: pairId,
             plan: planTier,
             renews_on: subscriptionEnd ? subscriptionEnd.split('T')[0] : null,
           }, { onConflict: 'pair_id' });
-        logStep("Subscription propagated to pair", { pairId, planTier });
+        
+        if (upsertError) {
+          logStep("Error propagating subscription to pair", { error: upsertError.message, pairId });
+        } else {
+          logStep("Subscription propagated to pair", { pairId, planTier });
+        }
+      } else {
+        logStep("No active pair found for user", { userId: user.id });
       }
     } else {
       logStep("No active Stripe subscription found, trying local fallback");
