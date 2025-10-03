@@ -62,6 +62,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   const realtimeChannelRef = useRef<any>(null);
   const qualityMonitorRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isNegotiating = useRef(false);
 
   // Enhanced WebRTC configuration with TURN servers for mobile reliability
   const [rtcConfig] = useState<RTCConfiguration>(() => createRTCConfiguration());
@@ -402,9 +403,20 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
 
     // Handle negotiation needed (for mobile Safari)
     peerConnection.onnegotiationneeded = async () => {
-      if (peerConnection.signalingState !== 'stable') return;
-      
+      // Prevent concurrent negotiations
+      if (isNegotiating.current) {
+        console.log('Negotiation already in progress, skipping...');
+        return;
+      }
+
+      // Check if we're in a stable state
+      if (peerConnection.signalingState !== 'stable') {
+        console.log('Signaling state not stable, skipping negotiation:', peerConnection.signalingState);
+        return;
+      }
+
       try {
+        isNegotiating.current = true;
         console.log('Negotiation needed, creating new offer...');
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
@@ -422,6 +434,11 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
         }
       } catch (error) {
         console.error('Error during renegotiation:', error);
+      } finally {
+        // Reset negotiation flag after a short delay to allow for answer
+        setTimeout(() => {
+          isNegotiating.current = false;
+        }, 100);
       }
     };
 
@@ -563,8 +580,10 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       });
 
       // Create offer
+      isNegotiating.current = true;
       const offer = await peerConnectionRef.current.createOffer();
       await peerConnectionRef.current.setLocalDescription(offer);
+      // Don't reset here - let onnegotiationneeded handler manage the flag
 
       // Send call offer via Supabase realtime
       if (pairId) {
