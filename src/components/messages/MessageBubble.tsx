@@ -215,96 +215,100 @@ export const MessageBubble = ({
           </div>
         )}
         
-        <div className="group relative">
-          {/* Emoji-only messages - no bubble */}
-          {type === 'text' && isEmojiOnly(content) ? (
-            <div className="text-4xl py-1 hover:scale-110 active:scale-105 transition-transform duration-200">
-              {content}
-            </div>
-          ) : (
-            <div
-              className={`rounded-2xl px-4 py-2 shadow-sm transition-all duration-200 ${
-                isOwn
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-card border border-border text-foreground'
-              }`}
-            >
-              {type === 'text' && (
-                <>
-                  {/* Special rendering for love messages */}
-                  {content.includes('💖 Sent you some love!') ? (
-                    <div className="flex items-center gap-2 text-center animate-scale-in">
-                      <div className="text-2xl animate-pulse">💖</div>
-                      <span className="text-sm font-medium">
-                        Sent you some love!
-                      </span>
-                    </div>
-                  ) : content.includes('👋 Thinking of you!') ? (
-                    <div className="flex items-center gap-2 text-center animate-scale-in">
-                      <div className="text-xl animate-bounce">👋</div>
-                      <span className="text-sm font-medium">
-                        Thinking of you!
-                      </span>
-                    </div>
-                  ) : (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {content}
-                    </p>
-                  )}
-                </>
-              )}
-              
-              {/* Media content */}
-              {(type === 'image' || type === 'media') && mediaUrl && (
-                <div className="space-y-2">
-                  <img 
-                    src={mediaUrl} 
-                    alt="Shared image"
-                    className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity"
-                    style={{ maxHeight: '300px' }}
-                    onClick={() => window.open(mediaUrl, '_blank')}
-                  />
-                  {content && (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {content}
-                    </p>
-                  )}
-                </div>
-              )}
-              
-              {type === 'video' && mediaUrl && (
-                <div className="space-y-2">
-                  <video 
-                    src={mediaUrl}
-                    controls
-                    className="max-w-full h-auto rounded-lg"
-                    style={{ maxHeight: '300px' }}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                  {content && (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {content}
-                    </p>
-                  )}
-                </div>
-              )}
-              
-              {type === 'system' && (
-                <p className="text-xs text-muted-foreground italic text-center">
-                  {content}
-                </p>
-              )}
-            </div>
-          )}
+        <div className="flex items-start gap-1 group">
+          {/* Message bubble */}
+          <div className="relative">
+            {/* Emoji-only messages - no bubble */}
+            {type === 'text' && isEmojiOnly(content) ? (
+              <div className="text-4xl py-1 hover:scale-110 active:scale-105 transition-transform duration-200">
+                {content}
+              </div>
+            ) : (
+              <div
+                className={`rounded-2xl px-4 py-2 shadow-sm transition-all duration-200 ${
+                  isOwn
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card border border-border text-foreground'
+                }`}
+              >
+                {type === 'text' && (
+                  <>
+                    {/* Special rendering for love messages */}
+                    {content.includes('💖 Sent you some love!') ? (
+                      <div className="flex items-center gap-2 text-center animate-scale-in">
+                        <div className="text-2xl animate-pulse">💖</div>
+                        <span className="text-sm font-medium">
+                          Sent you some love!
+                        </span>
+                      </div>
+                    ) : content.includes('👋 Thinking of you!') ? (
+                      <div className="flex items-center gap-2 text-center animate-scale-in">
+                        <div className="text-xl animate-bounce">👋</div>
+                        <span className="text-sm font-medium">
+                          Thinking of you!
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        {content}
+                      </p>
+                    )}
+                  </>
+                )}
+                
+                {/* Media content */}
+                {(type === 'image' || type === 'media') && mediaUrl && (
+                  <div className="space-y-2">
+                    <img 
+                      src={mediaUrl} 
+                      alt="Shared image"
+                      className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity"
+                      style={{ maxHeight: '300px' }}
+                      onClick={() => window.open(mediaUrl, '_blank')}
+                    />
+                    {content && (
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        {content}
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                {type === 'video' && mediaUrl && (
+                  <div className="space-y-2">
+                    <video 
+                      src={mediaUrl}
+                      controls
+                      className="max-w-full h-auto rounded-lg"
+                      style={{ maxHeight: '300px' }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                    {content && (
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        {content}
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                {type === 'system' && (
+                  <p className="text-xs text-muted-foreground italic text-center">
+                    {content}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
           
+          {/* Three-dots menu - positioned to the right of message bubble */}
           {(onEdit || onDelete || onReply) && (
             <DropdownMenu open={showMenu} onOpenChange={setShowMenu}>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`absolute -top-2 ${isOwn ? '-left-8' : '-right-8'} transition-opacity ${
+                  className={`flex-shrink-0 transition-opacity ${
                     isMobile 
                       ? 'opacity-60 h-8 w-8 p-0' 
                       : 'opacity-0 group-hover:opacity-100 h-6 w-6 p-0'
