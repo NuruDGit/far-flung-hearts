@@ -148,12 +148,13 @@ const AppHome = () => {
     if (!pair || !dailyQuestion || !user) return;
     
     const userAnswer = questionAnswers.find(a => a.user_id === user.id);
+    const partnerAnswer = questionAnswers.find(a => a.user_id !== user.id);
     
-    if (userAnswer) {
-      // Already answered, view answers
+    // If there are any answers, allow viewing the answers page
+    if (questionAnswers.length > 0) {
       navigate(`/app/daily-question-answers?questionId=${dailyQuestion.id}`);
     } else {
-      // Not answered yet, show dialog
+      // No answers yet, show dialog to answer
       setShowQuestionDialog(true);
     }
   };
@@ -552,13 +553,15 @@ const AppHome = () => {
                       )}
                       <Button 
                         size="sm" 
-                        className={`${pair && dailyQuestion && questionAnswers.find(a => a.user_id === user?.id)
+                        className={`${questionAnswers.length > 0
                           ? 'bg-secondary' 
                           : 'bg-gradient-to-r from-love-heart to-love-coral active:from-love-coral active:to-love-heart active:scale-95 focus:ring-2 focus:ring-love-heart/20'} transition-all duration-200 font-medium transform`}
                         disabled={!pair || !dailyQuestion} 
                         onClick={handleAnswerQuestion}
                       >
-                        {pair && dailyQuestion ? (questionAnswers.find(a => a.user_id === user?.id) ? "View Answers" : "Answer Now") : "Preview"}
+                        {pair && dailyQuestion 
+                          ? (questionAnswers.length > 0 ? "View Answers" : "Answer Now") 
+                          : "Preview"}
                       </Button>
                     </div>
                   </div>

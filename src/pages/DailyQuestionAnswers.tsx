@@ -190,7 +190,7 @@ export default function DailyQuestionAnswers() {
 
   return (
     <div className="container max-w-4xl mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <Button
           variant="ghost"
           onClick={() => navigate("/app")}
@@ -200,16 +200,40 @@ export default function DailyQuestionAnswers() {
           Back to Home
         </Button>
 
-        {answers.length === 2 && (
-          <Button
-            variant="outline"
-            onClick={handleShareToMessages}
-            className="gap-2"
-          >
-            <MessageSquare className="h-4 w-4" />
-            Share to Messages
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {answers.length < 2 && (
+            <Button
+              onClick={async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                
+                const userAnswer = answers.find(a => a.user_id === user.id);
+                if (!userAnswer) {
+                  navigate("/app");
+                  // Will trigger the answer dialog
+                  setTimeout(() => {
+                    const event = new CustomEvent('openDailyQuestion');
+                    window.dispatchEvent(event);
+                  }, 100);
+                }
+              }}
+              className="gap-2"
+            >
+              Answer Question
+            </Button>
+          )}
+          
+          {answers.length === 2 && (
+            <Button
+              variant="outline"
+              onClick={handleShareToMessages}
+              className="gap-2"
+            >
+              <MessageSquare className="h-4 w-4" />
+              Share to Messages
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card className="bg-gradient-to-br from-love-light/20 to-love-deep/20">
