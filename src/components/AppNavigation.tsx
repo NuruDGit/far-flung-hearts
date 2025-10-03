@@ -12,7 +12,6 @@ const AppNavigation = () => {
   const { subscription } = useAuth();
 
   const navItems = [
-    { path: '/app', icon: Home, label: 'Home', tier: 'free' as const },
     { path: '/app/messages', icon: MessageCircle, label: 'Messages', tier: 'free' as const },
     { path: '/app/calendar', icon: Calendar, label: 'Calendar', tier: 'free' as const },
     { path: '/app/goals', icon: Target, label: 'Goals', tier: 'premium' as const },
