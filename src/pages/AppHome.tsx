@@ -768,10 +768,6 @@ const AppHome = () => {
             </div>
           )}
 
-          {/* Smart Upgrade CTA - shows for free and premium users */}
-          <div className="mt-6">
-            <UpgradeCTA />
-          </div>
 
           {/* Locked Features Preview - Tier-aware */}
           {subscription.tier === 'free' && (
@@ -832,6 +828,11 @@ const AppHome = () => {
               </div>
             </div>
           )}
+
+          {/* Smart Upgrade CTA - shows for free and premium users */}
+          <div className="mt-6">
+            <UpgradeCTA />
+          </div>
 
           {/* Upgrade Banner for Free Users */}
           {subscription.tier === 'free' && (
