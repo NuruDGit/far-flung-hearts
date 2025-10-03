@@ -304,7 +304,7 @@ export const MessageBubble = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`absolute -top-2 -left-8 transition-opacity ${
+                  className={`absolute -top-2 ${isOwn ? '-left-8' : '-right-8'} transition-opacity ${
                     isMobile 
                       ? 'opacity-60 h-8 w-8 p-0' 
                       : 'opacity-0 group-hover:opacity-100 h-6 w-6 p-0'
@@ -313,7 +313,7 @@ export const MessageBubble = ({
                   <MoreVertical size={isMobile ? 16 : 12} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuContent align="end" className="w-32 z-50 bg-background">
                 {onReply && (
                   <DropdownMenuItem onClick={() => onReply(id)}>
                     <Reply size={14} className="mr-2" />
