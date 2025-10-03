@@ -19,6 +19,7 @@ import { AchievementBadge } from '@/components/AchievementBadge';
 import { hasFeatureAccess, SUBSCRIPTION_TIERS } from '@/config/subscriptionFeatures';
 import { toast } from 'sonner';
 import { ReunionCountdown } from '@/components/ReunionCountdown';
+import { DailyQuestionDialog } from '@/components/DailyQuestionDialog';
 
 const AppHome = () => {
   const { user, signOut, subscription } = useAuth();
@@ -28,6 +29,8 @@ const AppHome = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dailyQuestion, setDailyQuestion] = useState<any>(null);
+  const [questionAnswers, setQuestionAnswers] = useState<any[]>([]);
+  const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [streak, setStreak] = useState<number>(0);
   const [loadingStreak, setLoadingStreak] = useState(true);
   const [moodCount, setMoodCount] = useState(0);
@@ -76,6 +79,14 @@ const AppHome = () => {
           
           if (questionData && questionData.length > 0) {
             setDailyQuestion(questionData[0]);
+            
+            // Get answers for this question
+            const { data: answersData } = await supabase
+              .from('daily_question_answers')
+              .select('*')
+              .eq('daily_question_id', questionData[0].id);
+            
+            setQuestionAnswers(answersData || []);
           }
 
           // Get stats for achievements
@@ -108,45 +119,54 @@ const AppHome = () => {
     };
 
     fetchUserData();
-  }, [user, pair, pairLoading]);
 
-  const handleAnswerQuestion = async () => {
-    if (!pair || !dailyQuestion) return;
+    // Subscribe to answer updates
+    if (pair && dailyQuestion) {
+      const channel = supabase
+        .channel('daily_question_answers_updates')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'daily_question_answers',
+            filter: `daily_question_id=eq.${dailyQuestion.id}`,
+          },
+          (payload) => {
+            setQuestionAnswers(prev => [...prev, payload.new as any]);
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user, pair, pairLoading, dailyQuestion]);
+
+  const handleAnswerQuestion = () => {
+    if (!pair || !dailyQuestion || !user) return;
     
-    try {
-      if (dailyQuestion.answered_by) {
-        // If already answered, find the answer message and navigate to it
-        const { data: messages } = await supabase
-          .from('messages')
-          .select('id')
-          .eq('pair_id', pair.id)
-          .eq('sender_id', dailyQuestion.answered_by)
-          .ilike('body->text', `%${dailyQuestion.question_text}%`)
-          .order('created_at', { ascending: false })
-          .limit(1);
+    const userAnswer = questionAnswers.find(a => a.user_id === user.id);
+    
+    if (userAnswer) {
+      // Already answered, view answers
+      navigate(`/app/daily-question-answers?questionId=${dailyQuestion.id}`);
+    } else {
+      // Not answered yet, show dialog
+      setShowQuestionDialog(true);
+    }
+  };
 
-        if (messages && messages.length > 0) {
-          // Navigate to messages page with the specific message highlighted
-          window.location.href = `/app/messages?highlight=${messages[0].id}`;
-          return;
-        }
-      }
-
-      // If not answered yet, mark as answered and navigate with pre-filled message
-      await supabase
-        .from('daily_questions')
-        .update({ 
-          answered_by: user.id, 
-          answered_at: new Date().toISOString() 
-        })
-        .eq('id', dailyQuestion.id);
-
-      const message = `Today's Question: ${dailyQuestion.question_text}`;
-      localStorage.setItem('prefilledMessage', message);
-      window.location.href = '/app/messages';
-    } catch (error) {
-      console.error('Error handling daily question:', error);
-      toast.error('Failed to process question');
+  const handleAnswerSubmitted = async () => {
+    // Refresh answers
+    if (dailyQuestion) {
+      const { data: answersData } = await supabase
+        .from('daily_question_answers')
+        .select('*')
+        .eq('daily_question_id', dailyQuestion.id);
+      
+      setQuestionAnswers(answersData || []);
     }
   };
 
@@ -525,20 +545,20 @@ const AppHome = () => {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {pair && dailyQuestion && dailyQuestion.answered_by && (
+                      {pair && dailyQuestion && questionAnswers.length > 0 && (
                         <div className="flex items-center gap-1 text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
-                          Answered
+                          {questionAnswers.length}/2 answered
                         </div>
                       )}
                       <Button 
                         size="sm" 
-                        className={`${pair && dailyQuestion && !dailyQuestion.answered_by 
-                          ? 'bg-gradient-to-r from-love-heart to-love-coral active:from-love-coral active:to-love-heart active:scale-95 focus:ring-2 focus:ring-love-heart/20' 
-                          : 'bg-secondary'} transition-all duration-200 font-medium transform`}
+                        className={`${pair && dailyQuestion && questionAnswers.find(a => a.user_id === user?.id)
+                          ? 'bg-secondary' 
+                          : 'bg-gradient-to-r from-love-heart to-love-coral active:from-love-coral active:to-love-heart active:scale-95 focus:ring-2 focus:ring-love-heart/20'} transition-all duration-200 font-medium transform`}
                         disabled={!pair || !dailyQuestion} 
                         onClick={handleAnswerQuestion}
                       >
-                        {pair && dailyQuestion ? (dailyQuestion.answered_by ? "View Answer" : "Answer Now") : "Preview"}
+                        {pair && dailyQuestion ? (questionAnswers.find(a => a.user_id === user?.id) ? "View Answers" : "Answer Now") : "Preview"}
                       </Button>
                     </div>
                   </div>
@@ -822,6 +842,19 @@ const AppHome = () => {
         </div>
       </div>
       <ProximaFloatingChat />
+
+      {/* Daily Question Dialog */}
+      {pair && dailyQuestion && user && (
+        <DailyQuestionDialog
+          open={showQuestionDialog}
+          onOpenChange={setShowQuestionDialog}
+          question={dailyQuestion}
+          pairId={pair.id}
+          userId={user.id}
+          partnerAnswered={questionAnswers.some(a => a.user_id !== user.id)}
+          onAnswerSubmitted={handleAnswerSubmitted}
+        />
+      )}
     </div>
   );
 };

@@ -23,6 +23,7 @@ import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
 import GamesPage from "./pages/GamesPage";
 import WishlistPage from "./pages/WishlistPage";
+import DailyQuestionAnswers from "./pages/DailyQuestionAnswers";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => {
             {/* Games and Wishlist are free features accessible to all tiers */}
             <Route path="/app/games" element={<GamesPage />} />
             <Route path="/app/wishlist" element={<WishlistPage />} />
+            <Route path="/app/daily-question-answers" element={<DailyQuestionAnswers />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

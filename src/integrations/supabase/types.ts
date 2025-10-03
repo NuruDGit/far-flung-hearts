@@ -229,6 +229,51 @@ export type Database = {
           },
         ]
       }
+      daily_question_answers: {
+        Row: {
+          answer_text: string
+          created_at: string
+          daily_question_id: string
+          id: string
+          pair_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answer_text: string
+          created_at?: string
+          daily_question_id: string
+          id?: string
+          pair_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answer_text?: string
+          created_at?: string
+          daily_question_id?: string
+          id?: string
+          pair_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_question_answers_daily_question_id_fkey"
+            columns: ["daily_question_id"]
+            isOneToOne: false
+            referencedRelation: "daily_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_question_answers_pair_id_fkey"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_questions: {
         Row: {
           answered_at: string | null
