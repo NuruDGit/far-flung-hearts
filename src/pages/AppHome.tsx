@@ -431,7 +431,7 @@ const AppHome = () => {
                 <div>
                   <MessageSquareQuote className="h-5 w-5 mx-auto mb-1 text-love-deep" />
                   <p className="text-sm text-muted-foreground">Messages</p>
-                  <p className="font-semibold">--</p>
+                  <p className="font-semibold">{messageCount}</p>
                 </div>
               </div>
             </CardContent>
