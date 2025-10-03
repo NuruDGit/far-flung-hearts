@@ -45,10 +45,10 @@ async function checkLocalSubscription(supabaseClient: any, userId: string) {
       return null;
     }
 
-    let tier: 'free' | 'premium' | 'super_premium' = 'free';
-    // Map DB plans to app tiers
-    if (sub.plan === 'pro' || sub.plan === 'premium') tier = 'premium';
-    if (sub.plan === 'super_premium') tier = 'super_premium';
+    // The database now stores standard tier names directly
+    const tier = (sub.plan === 'premium' || sub.plan === 'super_premium') 
+      ? sub.plan 
+      : 'free';
 
     if (tier !== 'free') {
       logStep("Local subscription detected", { dbPlan: sub.plan, mappedTier: tier });
@@ -142,14 +142,35 @@ serve(async (req) => {
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
       productId = subscription.items.data[0].price.product;
       
-      // Map product ID to tier
-      if (productId === 'prod_T9p21HN7eGrMXW') {
+      // Fetch the product to determine tier from metadata or name
+      try {
+        const product = await stripe.products.retrieve(productId as string);
+        const productName = product.name?.toLowerCase() || '';
+        
+        // Determine tier based on product name or metadata
+        if (product.metadata?.tier) {
+          // Prefer explicit tier metadata if set
+          tier = product.metadata.tier as 'premium' | 'super_premium';
+        } else if (productName.includes('super') || productName.includes('elite')) {
+          tier = 'super_premium';
+        } else if (productName.includes('premium') || productName.includes('pro')) {
+          tier = 'premium';
+        }
+        
+        logStep("Determined subscription tier from product", { 
+          productId, 
+          productName, 
+          metadata: product.metadata,
+          tier 
+        });
+      } catch (productError) {
+        logStep("Error fetching product details, defaulting to premium", { 
+          error: productError instanceof Error ? productError.message : String(productError),
+          productId 
+        });
+        // Default to premium if we can't determine tier
         tier = 'premium';
-      } else if (productId === 'prod_T9p3BJuCvkTJaW') {
-        tier = 'super_premium';
       }
-      
-      logStep("Determined subscription tier", { productId, tier });
 
       // PROPAGATE TO PAIR: If user has active pair, upsert subscriptions row for that pair
       // Using same robust logic as useActivePair hook: order by created_at DESC, limit 1
@@ -166,7 +187,8 @@ serve(async (req) => {
       } else if (pairData && pairData.length > 0) {
         const pairId = pairData[0].id;
         logStep("Active pair detected, propagating subscription", { pairId, userId: user.id });
-        const planTier = tier === 'super_premium' ? 'super_premium' : 'pro';
+        // Use the standardized tier name directly
+        const planTier = tier === 'free' ? 'free' : tier;
         const { error: upsertError } = await supabaseClient
           .from('subscriptions')
           .upsert({
