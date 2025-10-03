@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,6 +66,9 @@ const MessagesPage = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [partnerTyping, setPartnerTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
   
   // Video call functionality
@@ -106,9 +109,11 @@ const MessagesPage = () => {
 
   useEffect(() => {
     if (pair && user) {
-      // Subscribe to real-time messages
+      const partnerId = pair.user_a === user.id ? pair.user_b : pair.user_a;
+      
+      // Subscribe to real-time messages and presence
       const channel = supabase
-        .channel('messages')
+        .channel(`pair-${pair.id}`)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -126,10 +131,46 @@ const MessagesPage = () => {
             });
           }
         })
-        .subscribe();
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState();
+          const partnerPresence = state[partnerId];
+          setIsOnline(!!partnerPresence && partnerPresence.length > 0);
+        })
+        .on('presence', { event: 'join' }, ({ key }) => {
+          if (key === partnerId) {
+            setIsOnline(true);
+          }
+        })
+        .on('presence', { event: 'leave' }, ({ key }) => {
+          if (key === partnerId) {
+            setIsOnline(false);
+          }
+        })
+        .on('broadcast', { event: 'typing' }, (payload) => {
+          if (payload.payload.userId === partnerId) {
+            setPartnerTyping(payload.payload.isTyping);
+          }
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await channel.track({
+              user_id: user.id,
+              online_at: new Date().toISOString(),
+            });
+          }
+        });
+
+      // Update presence every 30 seconds
+      const presenceInterval = setInterval(() => {
+        channel.track({
+          user_id: user.id,
+          online_at: new Date().toISOString(),
+        });
+      }, 30000);
 
       return () => {
         supabase.removeChannel(channel);
+        clearInterval(presenceInterval);
       };
     }
   }, [pair, user]);
@@ -228,6 +269,10 @@ const MessagesPage = () => {
     if (!user || !pair || (!content.trim() && !attachments?.length)) return;
 
     setSending(true);
+    
+    // Stop typing indicator
+    broadcastTyping(false);
+    
     try {
       let mediaUrls: string[] = [];
 
@@ -275,6 +320,35 @@ const MessagesPage = () => {
     } finally {
       setSending(false);
     }
+  };
+
+  const broadcastTyping = (typing: boolean) => {
+    if (!pair || !user) return;
+    
+    const channel = supabase.channel(`pair-${pair.id}`);
+    channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: user.id, isTyping: typing }
+    });
+  };
+
+  const handleTyping = () => {
+    if (!isTyping) {
+      setIsTyping(true);
+      broadcastTyping(true);
+    }
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Set new timeout to stop typing indicator after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+      broadcastTyping(false);
+    }, 2000);
   };
 
   const startVideoCall = async () => {
@@ -681,6 +755,8 @@ const MessagesPage = () => {
           placeholder={`Message ${partner?.display_name || 'your partner'}...`}
           replyingTo={replyingTo}
           onCancelReply={() => setReplyingTo(null)}
+          onTyping={handleTyping}
+          partnerTyping={partnerTyping}
         />
       </div>
     </div>

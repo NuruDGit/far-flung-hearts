@@ -19,6 +19,8 @@ interface MessageInputProps {
     senderAvatar?: string;
   };
   onCancelReply?: () => void;
+  onTyping?: () => void;
+  partnerTyping?: boolean;
 }
 
 const EMOJI_CATEGORIES = [
@@ -53,7 +55,9 @@ export const MessageInput = ({
   disabled = false,
   placeholder = "Type your message...",
   replyingTo,
-  onCancelReply
+  onCancelReply,
+  onTyping,
+  partnerTyping = false
 }: MessageInputProps) => {
   const [message, setMessage] = useState('');
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
@@ -95,6 +99,11 @@ export const MessageInput = ({
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
+    
+    // Trigger typing indicator
+    if (onTyping && e.target.value) {
+      onTyping();
+    }
     
     // Auto-resize textarea
     const textarea = e.target;
@@ -179,6 +188,20 @@ export const MessageInput = ({
           replyingTo={replyingTo}
           onCancel={onCancelReply || (() => {})}
         />
+      )}
+      
+      {/* Typing Indicator */}
+      {partnerTyping && (
+        <div className="px-4 pt-3 pb-1">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex gap-1">
+              <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            </div>
+            <span>typing...</span>
+          </div>
+        </div>
       )}
       
       <div className="p-4">
