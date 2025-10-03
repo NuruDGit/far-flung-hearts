@@ -491,10 +491,6 @@ const AppHome = () => {
           </Card>
         )}
 
-        {/* Smart Upgrade CTA - shows for free and premium users */}
-        <div className="mb-6">
-          <UpgradeCTA />
-        </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
@@ -771,6 +767,11 @@ const AppHome = () => {
               <ReunionCountdown pairId={pair.id} />
             </div>
           )}
+
+          {/* Smart Upgrade CTA - shows for free and premium users */}
+          <div className="mt-6">
+            <UpgradeCTA />
+          </div>
 
           {/* Locked Features Preview - Tier-aware */}
           {subscription.tier === 'free' && (
