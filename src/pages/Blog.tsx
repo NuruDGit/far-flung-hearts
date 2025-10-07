@@ -7,10 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Blog = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState("All Posts");
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   const featuredPost = {
     slug: "keep-spark-alive-ldr",
@@ -99,6 +105,45 @@ const Blog = () => {
   const filteredPosts = selectedCategory === "All Posts" 
     ? blogPosts 
     : blogPosts.filter(post => post.category === selectedCategory);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newsletterEmail) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubscribing(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
+        body: { email: newsletterEmail }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success! 🎉",
+        description: data.message || "You've been subscribed to our newsletter!",
+      });
+      
+      setNewsletterEmail("");
+    } catch (error: any) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        title: "Subscription failed",
+        description: error.message || "Please try again later",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-love-light/20">
@@ -207,14 +252,25 @@ const Blog = () => {
               Get our latest relationship tips and success stories delivered to your inbox
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="px-4 py-3 rounded-lg text-gray-900 flex-1"
-              />
-              <Button size="lg" className="bg-white text-love-heart hover:bg-white/90">
-                Subscribe
-              </Button>
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 w-full">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  disabled={isSubscribing}
+                  className="flex-1 bg-white text-gray-900"
+                  required
+                />
+                <Button 
+                  type="submit"
+                  size="lg" 
+                  disabled={isSubscribing}
+                  className="bg-white text-love-heart hover:bg-white/90"
+                >
+                  {isSubscribing ? "Subscribing..." : "Subscribe"}
+                </Button>
+              </form>
             </div>
           </CardContent>
         </Card>

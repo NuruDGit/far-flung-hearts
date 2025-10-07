@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.translate-message]
 verify_jwt = true
+
+[functions.newsletter-subscribe]
+verify_jwt = false
