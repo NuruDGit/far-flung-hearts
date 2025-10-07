@@ -46,7 +46,8 @@ const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  useAppOptimization();
+  // Temporarily disabled to avoid duplicate React hook runtime issue; re-enable after bundler dedupe is stable
+  // useAppOptimization();
   
   return (
     <QueryClientProvider client={queryClient}>
