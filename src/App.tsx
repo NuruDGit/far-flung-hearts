@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { useAppOptimization } from "@/hooks/useAppOptimization";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PairSetup from "./pages/PairSetup";
@@ -50,6 +51,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <CookieConsent />
+          <PWAInstallPrompt />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
