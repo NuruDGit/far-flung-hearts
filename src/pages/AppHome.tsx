@@ -71,7 +71,6 @@ const AppHome = () => {
             .single();
           
           setPartner(partnerData);
-          console.log('Partner data fetched:', partnerData);
 
           // Get daily question for the pair
           const { data: questionData } = await supabase.rpc('get_or_create_daily_question', {

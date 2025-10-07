@@ -80,14 +80,14 @@ export default function GoalsPage() {
 
   const fetchData = async () => {
     try {
-      console.log('Fetching goals and tasks data...');
+      if (import.meta.env.DEV) {
+        console.log('Fetching goals and tasks data...');
+      }
       
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) throw new Error('No authenticated user found');
-
-      console.log('Current user:', user.id);
 
       // Get user's pair
       const { data: pairData, error: pairError } = await supabase
@@ -100,16 +100,11 @@ export default function GoalsPage() {
         console.error('Pair error:', pairError);
         throw new Error('No pair found. Please set up your relationship first.');
       }
-      
-      console.log('User pair:', pairData);
 
       const [tasksResponse, goalsResponse] = await Promise.all([
         supabase.from('goal_tasks').select('*, assigned_to').eq('pair_id', pairData.id),
         supabase.from('goalboard').select('*').eq('pair_id', pairData.id)
       ]);
-
-      console.log('Tasks response:', tasksResponse);
-      console.log('Goals response:', goalsResponse);
 
       if (tasksResponse.error) throw tasksResponse.error;
       if (goalsResponse.error) throw goalsResponse.error;

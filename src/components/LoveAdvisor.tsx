@@ -65,7 +65,6 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
               .single();
             
             if (partner) {
-              console.log('Partner data fetched:', partner);
               setPartnerData(partner);
             }
           }

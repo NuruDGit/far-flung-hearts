@@ -523,7 +523,9 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
   // Start outgoing call with database logging
   const startCall = useCallback(async (partnerId: string, isVideo: boolean = true) => {
     try {
-      console.log('Starting call...', { partnerId, isVideo });
+      if (import.meta.env.DEV) {
+        console.log('Starting call...');
+      }
       
       // Rate limiting
       if (!rateLimiter.checkLimit('video-call', RATE_LIMITS.API_CALL)) {
@@ -562,15 +564,20 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
       }));
 
       // Get user media
-      console.log('Requesting user media...');
+      if (import.meta.env.DEV) {
+        console.log('Requesting user media...');
+      }
       const stream = await getUserMedia(isVideo, true);
-      console.log('User media obtained:', stream);
       localStreamRef.current = stream;
 
       // Initialize peer connection
-      console.log('Initializing peer connection...');
+      if (import.meta.env.DEV) {
+        console.log('Initializing peer connection...');
+      }
       peerConnectionRef.current = initializePeerConnection();
-      console.log('Peer connection initialized');
+      if (import.meta.env.DEV) {
+        console.log('Peer connection initialized');
+      }
       
       // Add local stream to peer connection
       stream.getTracks().forEach(track => {
