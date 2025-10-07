@@ -26,8 +26,16 @@ export const signupSchema = z.object({
     .max(255, "Email must be less than 255 characters"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password must be less than 128 characters"),
+    .min(12, "Password must be at least 12 characters")
+    .max(128, "Password must be less than 128 characters")
+    .regex(/[A-Z]/, "Must contain uppercase letter")
+    .regex(/[a-z]/, "Must contain lowercase letter")
+    .regex(/[0-9]/, "Must contain number")
+    .regex(/[^A-Za-z0-9]/, "Must contain special character")
+    .refine((pwd) => {
+      const common = ['password', '12345678', 'qwerty', 'admin'];
+      return !common.some(c => pwd.toLowerCase().includes(c));
+    }, "Password is too common"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -63,9 +71,7 @@ export const profileSchema = z.object({
   phone_number: z
     .string()
     .trim()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(20, "Phone number must be less than 20 characters")
-    .regex(/^\+?[0-9\s-()]+$/, "Invalid phone number format")
+    .regex(/^\+?[1-9]\d{9,14}$/, "Invalid phone number format (E.164 format required)")
     .optional()
     .or(z.literal("")),
   bio: z
@@ -98,7 +104,8 @@ export const messageSchema = z.object({
       text: z
         .string()
         .trim()
-        .max(10000, "Message must be less than 10,000 characters")
+        .max(10000, "Message too long (max 10,000 characters)")
+        .transform(sanitizeInput)
         .optional(),
       replyTo: z.string().uuid().optional(),
     })

@@ -293,6 +293,18 @@ const Auth = () => {
                 placeholder="••••••••"
                 required
               />
+              {!isLogin && (
+                <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                  <p className="font-medium">Password must contain:</p>
+                  <ul className="list-disc list-inside space-y-0.5 ml-2">
+                    <li>At least 12 characters</li>
+                    <li>One uppercase letter</li>
+                    <li>One lowercase letter</li>
+                    <li>One number</li>
+                    <li>One special character</li>
+                  </ul>
+                </div>
+              )}
               {isLogin && (
                 <button
                   type="button"
