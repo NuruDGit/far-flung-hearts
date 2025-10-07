@@ -2,14 +2,13 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
+// Register/cleanup Service Worker
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/service-worker.js')
       .then((registration) => {
         console.log('✅ Service Worker registered successfully:', registration.scope);
-        
         // Check for updates every hour
         setInterval(() => {
           registration.update();
@@ -18,6 +17,21 @@ if ('serviceWorker' in navigator) {
       .catch((error) => {
         console.error('❌ Service Worker registration failed:', error);
       });
+  });
+} else if ('serviceWorker' in navigator) {
+  // Development: ensure no stale service workers or caches interfere with Vite HMR
+  window.addEventListener('load', async () => {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((r) => r.unregister()));
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+      console.log('🧹 Dev cleanup: unregistered service workers and cleared caches');
+    } catch (err) {
+      console.warn('Dev SW cleanup failed:', err);
+    }
   });
 }
 

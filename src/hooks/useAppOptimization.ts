@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 export const useAppOptimization = () => {
-  useEffect(() => {
+  const isProd = import.meta.env.PROD;
+  useEffect(() => { if (!isProd) return;
     // Optimize initial page load
     const optimizeLoading = () => {
       // Remove unused CSS
@@ -42,7 +43,7 @@ export const useAppOptimization = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  useEffect(() => {
+  useEffect(() => { if (!isProd) return;
     // Memory management
     const cleanupMemory = () => {
       // Clear any cached data that's no longer needed
