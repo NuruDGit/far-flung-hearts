@@ -1,16 +1,53 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useActivePair } from '@/hooks/useActivePair';
 import Header from '@/components/Header';
 import CallHistory from '@/components/CallHistory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Phone, Loader2 } from 'lucide-react';
 
 const CallHistoryPage = () => {
   const { user } = useAuth();
+  const { pair, loading: pairLoading } = useActivePair();
+  const navigate = useNavigate();
 
-  // For demo purposes, using a sample pair ID
-  // In a real app, you'd get this from the user's active pair
-  const samplePairId = "sample-pair-id";
+  if (pairLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!pair) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>No Active Pair</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                You need to be paired to view call history.
+              </p>
+              <Button onClick={() => navigate('/app/pair-setup')}>
+                Set Up Pair
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,7 +67,7 @@ const CallHistoryPage = () => {
 
           {user ? (
             <CallHistory 
-              pairId={samplePairId} 
+              pairId={pair.id} 
               userId={user.id} 
             />
           ) : (
