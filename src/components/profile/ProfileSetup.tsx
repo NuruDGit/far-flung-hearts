@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
+import { ensureCSRFToken } from '@/lib/csrf';
 
 const INTERESTS = [
   'Hiking', 'Reading', 'Cooking', 'Travel', 'Music', 'Art', 'Movies', 'Gaming',
@@ -146,6 +147,9 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
 
     try {
       setLoading(true);
+      
+      // Get CSRF token
+      const csrfToken = ensureCSRFToken();
       
       const { error } = await supabase
         .from('profiles')

@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { ensureCSRFToken } from '@/lib/csrf';
 
 const eventSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -104,6 +105,10 @@ export const EditEventDialog = ({ open, onOpenChange, event, onEventUpdated }: E
 
   const onSubmit = async (data: EventFormData) => {
     setLoading(true);
+    
+    // Get CSRF token
+    const csrfToken = ensureCSRFToken();
+    
     try {
       let starts_at: string;
       let ends_at: string;

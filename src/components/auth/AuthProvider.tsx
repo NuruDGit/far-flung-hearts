@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { generateCSRFToken, storeCSRFToken, clearCSRFToken } from '@/lib/csrf';
 
 interface SubscriptionInfo {
   subscribed: boolean;
@@ -87,14 +88,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Create profile if user signs in and doesn't have one yet
+        // Generate CSRF token on sign in
         if (event === 'SIGNED_IN' && session?.user) {
+          const csrfToken = generateCSRFToken();
+          storeCSRFToken(csrfToken);
+          
           // Use setTimeout to avoid blocking the auth state change
           setTimeout(() => {
             ensureProfile(session.user);
             checkSubscription();
           }, 0);
         } else if (event === 'SIGNED_OUT') {
+          // Clear CSRF token on sign out
+          clearCSRFToken();
           setSubscription({
             subscribed: false,
             tier: 'free',
@@ -111,8 +117,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // Ensure profile exists for existing session
+      // Ensure profile exists and generate CSRF token for existing session
       if (session?.user) {
+        const csrfToken = generateCSRFToken();
+        storeCSRFToken(csrfToken);
+        
         setTimeout(() => {
           ensureProfile(session.user);
           checkSubscription();

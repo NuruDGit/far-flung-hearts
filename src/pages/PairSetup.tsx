@@ -8,6 +8,7 @@ import { Heart, Copy, Users } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { ensureCSRFToken } from '@/lib/csrf';
 
 const PairSetup = () => {
   const { user } = useAuth();
@@ -202,9 +203,15 @@ const PairSetup = () => {
       // Ensure profile exists before joining pair
       await ensureProfileExists();
 
+      // Get CSRF token for secure request
+      const csrfToken = ensureCSRFToken();
+
       // Invoke secure edge function
       const { data, error } = await supabase.functions.invoke('join-pair', {
-        body: { code: inviteCode.toUpperCase() }
+        body: { code: inviteCode.toUpperCase() },
+        headers: {
+          'x-csrf-token': csrfToken
+        }
       });
 
       if (error) {

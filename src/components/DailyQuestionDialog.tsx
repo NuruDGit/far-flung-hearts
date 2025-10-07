@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle2 } from "lucide-react";
+import { ensureCSRFToken } from "@/lib/csrf";
 
 interface DailyQuestionDialogProps {
   open: boolean;
@@ -44,6 +45,10 @@ export function DailyQuestionDialog({
     }
 
     setIsSubmitting(true);
+    
+    // Get CSRF token
+    const csrfToken = ensureCSRFToken();
+    
     try {
       const { error } = await supabase.from("daily_question_answers").insert({
         daily_question_id: question.id,

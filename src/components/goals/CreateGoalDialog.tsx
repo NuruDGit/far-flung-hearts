@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useToast } from '@/components/ui/use-toast';
 import { CalendarIcon, Target, Heart, Star, Trophy, Flag, Lightbulb, Zap } from 'lucide-react';
 import { format } from 'date-fns';
+import { ensureCSRFToken } from '@/lib/csrf';
 
 interface CreateGoalDialogProps {
   open: boolean;
@@ -52,6 +53,10 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
     if (!description.trim()) return;
 
     setIsSubmitting(true);
+    
+    // Get CSRF token
+    const csrfToken = ensureCSRFToken();
+    
     try {
       // Get user's pair_id from pairs table
       const { data: pairData, error: pairError } = await supabase
