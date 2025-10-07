@@ -24,14 +24,6 @@ const INTERESTS = [
   'Fashion', 'Food', 'Nature', 'Animals', 'Fitness'
 ];
 
-const RELATIONSHIP_STATUS = [
-  'In a Relationship',
-  'Living Together',
-  'Engaged',
-  'Married',
-  'Civil Partnership',
-  'Common Law Partners'
-];
 
 interface Profile {
   display_name: string;
@@ -394,23 +386,13 @@ export const ProfileSetup = ({ onComplete }: { onComplete: () => void }) => {
                   What type of relationship are you in? This helps us provide better AI recommendations.
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {RELATIONSHIP_STATUS.map((status) => (
-                  <Button
-                    key={status}
-                    type="button"
-                    variant={profile.relationship_status === status ? "default" : "outline"}
-                    className={`justify-start text-left h-auto py-4 px-4 whitespace-normal border-2 transition-all duration-200 ${
-                      profile.relationship_status === status
-                        ? 'bg-love-heart hover:bg-love-coral text-white shadow-md'
-                        : 'hover:bg-love-light/50 hover:border-love-heart hover:text-love-deep'
-                    }`}
-                    onClick={() => setProfile(prev => ({ ...prev, relationship_status: status }))}
-                  >
-                    {status}
-                  </Button>
-                ))}
-              </div>
+              <Input
+                placeholder="e.g., Long-distance dating, Married, Engaged, Living together..."
+                value={profile.relationship_status}
+                onChange={(e) => setProfile(prev => ({ ...prev, relationship_status: e.target.value }))}
+                className="text-base"
+                maxLength={100}
+              />
             </div>
 
             {/* Relationship Start Date */}
