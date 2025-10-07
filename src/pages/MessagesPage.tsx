@@ -408,19 +408,60 @@ const MessagesPage = () => {
   };
 
   const handleAddReaction = async (messageId: string, emoji: string) => {
-    // TODO: Implement reaction functionality with database
-    toast({
-      title: "Feature coming soon",
-      description: "Message reactions will be available soon!"
-    });
+    if (!user) return;
+
+    try {
+      // Check if user already reacted with this emoji
+      const { data: existing } = await supabase
+        .from('message_reactions')
+        .select('*')
+        .eq('message_id', messageId)
+        .eq('user_id', user.id)
+        .eq('emoji', emoji)
+        .maybeSingle();
+
+      if (existing) {
+        // Remove reaction
+        await supabase
+          .from('message_reactions')
+          .delete()
+          .eq('id', existing.id);
+      } else {
+        // Add reaction
+        await supabase
+          .from('message_reactions')
+          .insert({
+            message_id: messageId,
+            user_id: user.id,
+            emoji
+          });
+      }
+    } catch (error) {
+      console.error('Reaction error:', error);
+      toast({
+        title: "Failed to add reaction",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleRemoveReaction = async (messageId: string, emoji: string) => {
-    // TODO: Implement reaction removal with database
-    toast({
-      title: "Feature coming soon", 
-      description: "Message reactions will be available soon!"
-    });
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('message_reactions')
+        .delete()
+        .eq('message_id', messageId)
+        .eq('user_id', user.id)
+        .eq('emoji', emoji);
+    } catch (error) {
+      console.error('Reaction removal error:', error);
+      toast({
+        title: "Failed to remove reaction",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleFavorite = async (messageId: string) => {
