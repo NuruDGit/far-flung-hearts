@@ -7,18 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import AppNavigation from "@/components/AppNavigation";
-
-const SUBSCRIPTION_TIERS = {
-  free: { product_id: null, price_id: null },
-  premium: { 
-    product_id: 'prod_T9pU3mMeyiku9r', 
-    price_id: 'price_1SDVpoKdZMAB4bYTcDme0mJV' 
-  },
-  super_premium: { 
-    product_id: 'prod_T9pVmJTFlbCLAs', 
-    price_id: 'price_1SDVq8KdZMAB4bYTq8TEqwqO' 
-  },
-};
+import { STRIPE_CONFIG } from "@/config/stripe";
 
 const SubscriptionPage = () => {
   const { user, subscription, loading: authLoading, refreshSubscription } = useAuth();
@@ -117,9 +106,9 @@ const SubscriptionPage = () => {
     }
   };
 
-  const isCurrentPlan = (tierKey: keyof typeof SUBSCRIPTION_TIERS) => {
+  const isCurrentPlan = (tierKey: keyof typeof STRIPE_CONFIG) => {
     if (tierKey === 'free') return subscription.tier === 'free';
-    return subscription.product_id === SUBSCRIPTION_TIERS[tierKey].product_id;
+    return subscription.product_id === STRIPE_CONFIG[tierKey].product_id;
   };
 
   const plans = [
@@ -158,7 +147,7 @@ const SubscriptionPage = () => {
       ],
       buttonText: "Upgrade to Premium",
       tierKey: 'premium' as const,
-      priceId: SUBSCRIPTION_TIERS.premium.price_id,
+      priceId: STRIPE_CONFIG.premium.price_id,
     },
     {
       name: "Super Premium",
@@ -178,7 +167,7 @@ const SubscriptionPage = () => {
       ],
       buttonText: "Go Super Premium",
       tierKey: 'super_premium' as const,
-      priceId: SUBSCRIPTION_TIERS.super_premium.price_id,
+      priceId: STRIPE_CONFIG.super_premium.price_id,
     }
   ];
 
