@@ -265,6 +265,8 @@ export const MessageBubble = ({
                       className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity"
                       style={{ maxHeight: '300px' }}
                       onClick={() => window.open(mediaUrl, '_blank')}
+                      loading="lazy"
+                      decoding="async"
                     />
                     {content && (
                       <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">

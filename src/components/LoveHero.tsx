@@ -86,6 +86,8 @@ const LoveHero = () => {
                 src={heroImage} 
                 alt="Couple connecting across distance" 
                 className="w-full h-auto object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-love-heart/20 to-transparent mb-8"></div>
             </div>

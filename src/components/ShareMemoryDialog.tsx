@@ -106,6 +106,8 @@ export const ShareMemoryDialog: React.FC<ShareMemoryDialogProps> = ({
                 src={mediaUrl}
                 alt={fileName}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <video

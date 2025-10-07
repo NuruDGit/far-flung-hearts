@@ -291,6 +291,8 @@ export default function WishlistPage() {
                   src={currentUserProfile.avatar_url} 
                   alt={getUserName(currentUserProfile)}
                   className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-lg"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
@@ -390,6 +392,8 @@ export default function WishlistPage() {
                   src={partnerProfile.avatar_url} 
                   alt={getUserName(partnerProfile)}
                   className="h-12 w-12 rounded-full object-cover border-2 border-accent shadow-lg"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg">

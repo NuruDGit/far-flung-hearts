@@ -151,7 +151,8 @@ export const MemoryLightbox: React.FC<MemoryLightboxProps> = ({
                 src={mediaUrl}
                 alt={fileName}
                 className="max-w-full max-h-full object-contain"
-                loading="eager"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <video

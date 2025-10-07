@@ -121,6 +121,8 @@ export const CameraCapture = ({
               src={capturedImage} 
               alt="Captured" 
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <video

@@ -157,6 +157,8 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
         src={`https://flagcdn.com/w20/${isoCode}.png`}
         alt={`${country} flag`}
         className="w-4 h-3 object-cover rounded-sm"
+        loading="lazy"
+        decoding="async"
         onError={(e) => {
           // Fallback to emoji if SVG fails to load
           const target = e.target as HTMLImageElement;
@@ -298,6 +300,8 @@ export const ProfileCard = ({ profile, isOwnProfile = false, onEdit }: ProfileCa
               src={profile.avatar_url}
               alt={profile.display_name}
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              loading="lazy"
+              decoding="async"
             />
             <Button
               variant="secondary"

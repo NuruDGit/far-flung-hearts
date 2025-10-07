@@ -220,6 +220,8 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                 src={loveLifestyle} 
                 alt="Beautiful romantic lifestyle" 
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="flex items-center justify-center">
