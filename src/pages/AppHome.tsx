@@ -286,10 +286,10 @@ const AppHome = () => {
             <p className="text-muted-foreground flex items-center gap-2">
               {partner ? `Connected with ${partner.first_name || partner.display_name}` : 'Exploring solo'}
               <Badge 
-                variant={subscription.tier === 'super_premium' ? 'default' : subscription.tier === 'premium' ? 'secondary' : 'outline'}
+                variant={subscription.tier === 'premium' ? 'secondary' : 'outline'}
                 className={subscription.tier !== 'free' ? 'bg-gradient-to-r from-love-heart to-love-coral text-white border-0' : ''}
               >
-                {subscription.tier === 'super_premium' && <Crown className="w-3 h-3 mr-1" />}
+                {subscription.tier === 'premium' && <Crown className="w-3 h-3 mr-1" />}
                 {SUBSCRIPTION_TIERS[subscription.tier].name}
               </Badge>
             </p>
@@ -583,7 +583,7 @@ const AppHome = () => {
                       <div>
                         <h3 className="font-semibold text-foreground text-lg flex items-center gap-2">
                           Memory Vault
-                          {subscription.tier === 'super_premium' && (
+                          {subscription.tier === 'premium' && (
                             <Badge className="text-xs bg-gradient-to-r from-love-deep to-love-heart text-white border-0">
                               <Crown className="w-3 h-3 mr-1" />
                               Unlimited
@@ -814,14 +814,14 @@ const AppHome = () => {
                   icon={Camera}
                   title="Unlimited Storage"
                   description="Store unlimited memories, photos, and videos in your vault"
-                  requiredTier="super_premium"
+                  requiredTier="premium"
                   preview="Never worry about storage limits again"
                 />
                 <LockedFeatureCard
                   icon={Zap}
                   title="Unlimited Everything"
                   description="Remove all limits on AI chats, goals, and features"
-                  requiredTier="super_premium"
+                  requiredTier="premium"
                   preview="Complete freedom to use all features"
                 />
               </div>

@@ -7,14 +7,13 @@ import { Lock } from 'lucide-react';
 
 interface SubscriptionGuardProps {
   children: ReactNode;
-  requiredTier: 'premium' | 'super_premium';
+  requiredTier: 'premium';
   featureName: string;
 }
 
 const tierOrder = {
   free: 0,
   premium: 1,
-  super_premium: 2,
 };
 
 export const SubscriptionGuard = ({ 
@@ -33,7 +32,6 @@ export const SubscriptionGuard = ({
 
   const tierNames = {
     premium: 'Premium',
-    super_premium: 'Super Premium',
   };
 
   return (

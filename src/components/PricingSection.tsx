@@ -65,9 +65,10 @@ const PricingSection = () => {
     }
   };
 
-  const isCurrentPlan = (tierKey: keyof typeof STRIPE_CONFIG) => {
+  const isCurrentPlan = (tierKey: 'free' | 'premium_monthly' | 'premium_annual') => {
     if (tierKey === 'free') return subscription.tier === 'free';
-    return subscription.product_id === STRIPE_CONFIG[tierKey].product_id;
+    return subscription.product_id === STRIPE_CONFIG.premium_monthly.product_id || 
+           subscription.product_id === STRIPE_CONFIG.premium_annual.product_id;
   };
 
   const plans = [
@@ -76,13 +77,14 @@ const PricingSection = () => {
       price: "$0",
       period: "forever",
       icon: Heart,
-      description: "Perfect for getting started",
+      description: "Try before you commit",
       features: [
-        "Real-time messaging",
-        "Shared calendar",
-        "Basic mood tracking",
-        "Memory vault (50 items)",
-        "Community support"
+        "Basic messaging (100/day)",
+        "Mood logging (3/day)",
+        "Memory vault (5 photos)",
+        "AI chat (3 questions/day)",
+        "Basic goals (2 max)",
+        "Lovable branding"
       ],
       buttonText: "Get Started Free",
       popular: false,
@@ -92,47 +94,45 @@ const PricingSection = () => {
     },
     {
       name: "Premium",
-      price: "$9.99",
+      price: "$6.99",
       period: "month",
       icon: Crown,
-      description: "Everything you need for love",
+      description: "Everything unlimited",
       features: [
         "Everything in Free",
-        "Unlimited memory vault storage",
-        "Advanced mood analytics",
-        "Video calling (beta)",
-        "AI relationship advisor",
-        "Shared goals & tasks",
-        "Priority support",
-        "Weekly relationship insights"
+        "Unlimited messaging & video calls",
+        "Unlimited mood analytics",
+        "Unlimited calendar & goals",
+        "Unlimited memory vault",
+        "Advanced AI insights",
+        "No ads or branding",
+        "Priority support"
       ],
-      buttonText: "Upgrade to Premium",
+      buttonText: "Upgrade Monthly",
       popular: true,
       variant: "love" as const,
-      tierKey: 'premium' as const,
-      priceId: STRIPE_CONFIG.premium.price_id,
+      tierKey: 'premium_monthly' as const,
+      priceId: STRIPE_CONFIG.premium_monthly.price_id,
     },
     {
-      name: "Super Premium",
-      price: "$19.99",
-      period: "month",
+      name: "Premium Annual",
+      price: "$59",
+      period: "year",
+      originalPrice: "$83.88",
+      savings: "Save 30%",
       icon: Sparkles,
-      description: "The ultimate love experience",
+      description: "Best value - 2 months free!",
       features: [
         "Everything in Premium",
-        "Enhanced AI relationship coaching",
-        "Unlimited AI advisor queries",
-        "Custom book recommendations",
-        "Advanced mood insights & reports",
-        "Priority video call quality",
-        "Early access to new features",
-        "24/7 premium support"
+        "Save $24.88 per year",
+        "Lock in current pricing",
+        "Priority feature requests"
       ],
-      buttonText: "Go Super Premium",
+      buttonText: "Upgrade Annually",
       popular: false,
       variant: "love" as const,
-      tierKey: 'super_premium' as const,
-      priceId: STRIPE_CONFIG.super_premium.price_id,
+      tierKey: 'premium_annual' as const,
+      priceId: STRIPE_CONFIG.premium_annual.price_id,
     }
   ];
 

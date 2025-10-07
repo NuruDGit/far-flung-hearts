@@ -8,7 +8,7 @@ interface LockedFeatureCardProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  requiredTier: 'premium' | 'super_premium';
+  requiredTier: 'premium';
   preview?: string;
 }
 
@@ -24,13 +24,8 @@ export const LockedFeatureCard = ({
   const tierInfo = {
     premium: {
       name: 'Premium',
-      badgeIcon: Zap,
-      gradient: 'from-love-heart to-love-coral'
-    },
-    super_premium: {
-      name: 'Super Premium',
       badgeIcon: Crown,
-      gradient: 'from-love-deep to-love-heart'
+      gradient: 'from-love-heart to-love-coral'
     }
   };
 

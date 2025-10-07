@@ -8,28 +8,19 @@ export const UpgradeCTA = () => {
   const navigate = useNavigate();
   const { subscription } = useAuth();
 
-  // Don't show for super_premium users (no higher tier)
-  if (subscription.tier === 'super_premium') {
+  // Don't show for premium users (highest tier)
+  if (subscription.tier === 'premium') {
     return null;
   }
 
-  const ctaContent = subscription.tier === 'premium' 
-    ? {
-        title: "Ready for Unlimited?",
-        description: "Upgrade to Super Premium and unlock everything with no limits",
-        features: ["Unlimited AI insights", "Unlimited storage", "Priority support"],
-        icon: Crown,
-        gradient: "from-love-deep via-love-heart to-love-coral",
-        buttonText: "Upgrade to Super Premium"
-      }
-    : {
-        title: "Unlock Premium Features",
-        description: "Get unlimited access to video calls, AI insights, and more",
-        features: ["Video calls", "AI Love Advisor", "Unlimited memories"],
-        icon: Zap,
-        gradient: "from-love-heart via-love-coral to-love-accent",
-        buttonText: "Upgrade to Premium"
-      };
+  const ctaContent = {
+    title: "Unlock Premium Features",
+    description: "Get unlimited access to everything - messaging, video calls, AI insights, and more",
+    features: ["Unlimited everything", "Advanced AI insights", "Priority support"],
+    icon: Crown,
+    gradient: "from-love-heart via-love-coral to-love-accent",
+    buttonText: "Upgrade to Premium"
+  };
 
   const Icon = ctaContent.icon;
 

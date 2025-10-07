@@ -445,7 +445,7 @@ const MemoryVault = () => {
               <div className="mb-4">
                 <UpgradePrompt
                   featureName="Memory Vault"
-                  requiredTier={subscription.tier === 'free' ? 'premium' : 'super_premium'}
+                  requiredTier="premium"
                   compact
                   className={memories.length >= limit ? 'animate-pulse' : ''}
                 />

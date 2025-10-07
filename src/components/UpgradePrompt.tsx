@@ -6,7 +6,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 
 interface UpgradePromptProps {
   featureName: string;
-  requiredTier: 'premium' | 'super_premium';
+  requiredTier: 'premium';
   compact?: boolean;
   className?: string;
 }
@@ -21,7 +21,7 @@ export const UpgradePrompt = ({
   const { subscription } = useAuth();
 
   // Don't show if user already has access
-  const tierOrder = { free: 0, premium: 1, super_premium: 2 };
+  const tierOrder = { free: 0, premium: 1 };
   if (tierOrder[subscription.tier] >= tierOrder[requiredTier]) {
     return null;
   }
@@ -29,13 +29,8 @@ export const UpgradePrompt = ({
   const tierInfo = {
     premium: {
       name: 'Premium',
-      icon: Zap,
-      gradient: 'from-love-heart to-love-coral'
-    },
-    super_premium: {
-      name: 'Super Premium',
       icon: Crown,
-      gradient: 'from-love-deep to-love-heart'
+      gradient: 'from-love-heart to-love-coral'
     }
   };
 

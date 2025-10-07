@@ -5,7 +5,7 @@ import { generateCSRFToken, storeCSRFToken, clearCSRFToken } from '@/lib/csrf';
 
 interface SubscriptionInfo {
   subscribed: boolean;
-  tier: 'free' | 'premium' | 'super_premium';
+  tier: 'free' | 'premium';
   product_id: string | null;
   subscription_end: string | null;
 }

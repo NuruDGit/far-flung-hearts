@@ -106,9 +106,10 @@ const SubscriptionPage = () => {
     }
   };
 
-  const isCurrentPlan = (tierKey: keyof typeof STRIPE_CONFIG) => {
+  const isCurrentPlan = (tierKey: 'free' | 'premium_monthly' | 'premium_annual') => {
     if (tierKey === 'free') return subscription.tier === 'free';
-    return subscription.product_id === STRIPE_CONFIG[tierKey].product_id;
+    return subscription.product_id === STRIPE_CONFIG.premium_monthly.product_id || 
+           subscription.product_id === STRIPE_CONFIG.premium_annual.product_id;
   };
 
   const plans = [
@@ -117,13 +118,15 @@ const SubscriptionPage = () => {
       price: "$0",
       period: "forever",
       icon: Heart,
-      description: "Perfect for getting started",
+      description: "Try before you commit",
       features: [
-        "Unlimited texting",
-        "One daily game",
-        "Single calendar sync",
-        "Basic profile features",
-        "Community support"
+        "Basic messaging (100/day)",
+        "Mood logging (3/day)",
+        "Memory vault (5 photos)",
+        "AI chat (3 questions/day)",
+        "Basic goals (2 max)",
+        "One video call trial (10 min)",
+        "Lovable branding"
       ],
       buttonText: "Current Plan",
       tierKey: 'free' as const,
@@ -131,43 +134,44 @@ const SubscriptionPage = () => {
     },
     {
       name: "Premium",
-      price: "$9.99",
+      price: "$6.99",
       period: "month",
       icon: Crown,
       description: "Everything you need for love",
       features: [
         "Everything in Free",
-        "Multi-device sync",
-        "Joint streaming",
-        "Advanced games",
+        "Unlimited messaging & calling",
+        "Unlimited mood logging & analytics",
+        "Unlimited calendar events & sync",
+        "Unlimited goals, tasks & memory vault",
+        "Advanced AI insights & recommendations",
+        "Book recommendations",
         "Priority support",
-        "Gift marketplace access",
-        "Custom stickers & themes",
-        "Weekly relationship insights"
+        "Custom themes & data export",
+        "Ad-free, no branding"
       ],
-      buttonText: "Upgrade to Premium",
-      tierKey: 'premium' as const,
-      priceId: STRIPE_CONFIG.premium.price_id,
+      buttonText: "Upgrade Monthly",
+      tierKey: 'premium_monthly' as const,
+      priceId: STRIPE_CONFIG.premium_monthly.price_id,
+      popular: true,
     },
     {
-      name: "Super Premium",
-      price: "$19.99",
-      period: "month",
+      name: "Premium Annual",
+      price: "$59",
+      period: "year",
+      originalPrice: "$83.88",
+      savings: "Save 30%",
       icon: Sparkles,
-      description: "The ultimate love experience",
+      description: "Best value - 2 months free!",
       features: [
-        "Everything in Premium",
-        "Quarterly gift boxes",
-        "Travel concierge service",
-        "Personal relationship coach",
-        "Exclusive couple events",
-        "Priority gift delivery",
-        "Custom app themes",
-        "24/7 premium support"
+        "Everything in Premium Monthly",
+        "Save $24.88 per year",
+        "Lock in current pricing",
+        "Priority feature requests",
       ],
-      buttonText: "Go Super Premium",
-      tierKey: 'super_premium' as const,
-      priceId: STRIPE_CONFIG.super_premium.price_id,
+      buttonText: "Upgrade Annually",
+      tierKey: 'premium_annual' as const,
+      priceId: STRIPE_CONFIG.premium_annual.price_id,
     }
   ];
 
@@ -202,15 +206,23 @@ const SubscriptionPage = () => {
               <Card 
                 key={index} 
                 className={`relative hover:shadow-lg transition-all duration-300 ${
-                  plan.tierKey === 'premium' ? 'ring-2 ring-love-heart transform scale-105' : ''
+                  plan.popular ? 'ring-2 ring-love-heart transform scale-105' : ''
                 } ${
                   isCurrent ? 'ring-2 ring-green-500' : 'border-love-coral/20'
                 }`}
               >
-                {plan.tierKey === 'premium' && (
+                {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="bg-gradient-to-r from-love-heart to-love-deep text-white px-4 py-2 rounded-full text-sm font-semibold">
                       Most Popular
+                    </div>
+                  </div>
+                )}
+                
+                {plan.savings && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      {plan.savings}
                     </div>
                   </div>
                 )}
@@ -225,14 +237,21 @@ const SubscriptionPage = () => {
                 
                 <CardHeader className="text-center pb-6">
                   <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mx-auto ${
-                    plan.tierKey === 'premium' ? 'bg-gradient-to-r from-love-heart to-love-deep' : 'bg-gradient-to-r from-love-light to-love-coral'
+                    plan.popular || plan.savings ? 'bg-gradient-to-r from-love-heart to-love-deep' : 'bg-gradient-to-r from-love-light to-love-coral'
                   } mb-4`}>
                     <plan.icon className="text-white" size={28} />
                   </div>
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                  <div className="text-4xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
-                    {plan.price}
-                    <span className="text-lg text-muted-foreground font-normal">/{plan.period}</span>
+                  <div className="space-y-1">
+                    <div className="text-4xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+                      {plan.price}
+                      <span className="text-lg text-muted-foreground font-normal">/{plan.period}</span>
+                    </div>
+                    {plan.originalPrice && (
+                      <div className="text-sm text-muted-foreground line-through">
+                        {plan.originalPrice}/year
+                      </div>
+                    )}
                   </div>
                   <p className="text-muted-foreground">{plan.description}</p>
                 </CardHeader>
