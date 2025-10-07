@@ -17,6 +17,14 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+interface CallQualityMetrics {
+  video: 'good' | 'fair' | 'poor';
+  audio: 'good' | 'fair' | 'poor';
+  bandwidth: number;
+  latency: number;
+  packetLoss: number;
+}
+
 interface VideoCallInterfaceProps {
   isActive: boolean;
   isIncoming: boolean;
@@ -30,6 +38,7 @@ interface VideoCallInterfaceProps {
   partnerAvatar?: string;
   connectionQuality?: 'excellent' | 'good' | 'poor' | 'disconnected';
   isReconnecting?: boolean;
+  peerConnection?: RTCPeerConnection | null;
   localVideoRef: React.RefObject<HTMLVideoElement>;
   remoteVideoRef: React.RefObject<HTMLVideoElement>;
   onAccept: () => void;
@@ -54,6 +63,7 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
     partnerAvatar,
     connectionQuality = 'excellent',
     isReconnecting = false,
+    peerConnection,
     localVideoRef,
     remoteVideoRef,
     onAccept,
@@ -65,6 +75,13 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
   } = props;
 
   const [isMinimized, setIsMinimized] = useState(false);
+  const [callQuality, setCallQuality] = useState<CallQualityMetrics>({
+    video: 'good',
+    audio: 'good',
+    bandwidth: 0,
+    latency: 0,
+    packetLoss: 0
+  });
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -120,6 +137,50 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
       localVideoRef.current.muted = true;
     }
   }, [localVideoRef]);
+
+  // Monitor call quality metrics
+  useEffect(() => {
+    if (!peerConnection || !isConnected) return;
+
+    const monitorQuality = setInterval(async () => {
+      try {
+        const stats = await peerConnection.getStats();
+        let videoPacketLoss = 0;
+        let audioJitter = 0;
+        let bytesReceived = 0;
+        let packetsReceived = 0;
+        let packetsLost = 0;
+
+        stats.forEach((report) => {
+          if (report.type === 'inbound-rtp') {
+            if (report.kind === 'video') {
+              packetsReceived = report.packetsReceived || 0;
+              packetsLost = report.packetsLost || 0;
+              bytesReceived = report.bytesReceived || 0;
+              
+              if (packetsReceived > 0) {
+                videoPacketLoss = (packetsLost / (packetsReceived + packetsLost)) * 100;
+              }
+            } else if (report.kind === 'audio') {
+              audioJitter = (report.jitter || 0) * 1000; // Convert to ms
+            }
+          }
+        });
+
+        setCallQuality({
+          video: videoPacketLoss > 5 ? 'poor' : videoPacketLoss > 2 ? 'fair' : 'good',
+          audio: audioJitter > 100 ? 'poor' : audioJitter > 50 ? 'fair' : 'good',
+          bandwidth: packetsReceived > 0 ? (bytesReceived * 8) / 1024 : 0, // kbps
+          latency: audioJitter,
+          packetLoss: videoPacketLoss
+        });
+      } catch (error) {
+        console.error('Error monitoring call quality:', error);
+      }
+    }, 2000);
+
+    return () => clearInterval(monitorQuality);
+  }, [peerConnection, isConnected]);
 
   if (!isActive) {
     return null;
@@ -278,8 +339,38 @@ export const VideoCallInterface = (props: VideoCallInterfaceProps) => {
           </Button>
         </div>
 
+        {/* Quality Indicator */}
+        <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm p-3 rounded-lg shadow-lg z-20">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${
+                callQuality.video === 'good' ? 'bg-success' :
+                callQuality.video === 'fair' ? 'bg-warning' : 'bg-destructive'
+              }`} />
+              <span className="text-foreground text-xs font-medium">
+                Video: {callQuality.video}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${
+                callQuality.audio === 'good' ? 'bg-success' :
+                callQuality.audio === 'fair' ? 'bg-warning' : 'bg-destructive'
+              }`} />
+              <span className="text-foreground text-xs font-medium">
+                Audio: {callQuality.audio}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <span>{callQuality.bandwidth.toFixed(0)} kbps</span>
+              {callQuality.packetLoss > 0 && (
+                <span>• {callQuality.packetLoss.toFixed(1)}% loss</span>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Local video (picture-in-picture) */}
-        <div className="absolute top-20 right-4 w-32 h-24 bg-gray-800 rounded-lg overflow-hidden shadow-lg z-20">
+        <div className="absolute top-36 right-4 w-32 h-24 bg-gray-800 rounded-lg overflow-hidden shadow-lg z-20">
           <video
             ref={localVideoRef}
             autoPlay

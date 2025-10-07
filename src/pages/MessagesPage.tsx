@@ -76,6 +76,7 @@ const MessagesPage = () => {
     callState,
     localVideoRef,
     remoteVideoRef,
+    peerConnection,
     startCall,
     acceptCall,
     endCall,
@@ -645,6 +646,7 @@ const MessagesPage = () => {
         partnerAvatar={partner?.avatar_url}
         connectionQuality={callState.connectionQuality}
         isReconnecting={callState.isReconnecting}
+        peerConnection={peerConnection}
         localVideoRef={localVideoRef}
         remoteVideoRef={remoteVideoRef}
         onAccept={acceptCall}

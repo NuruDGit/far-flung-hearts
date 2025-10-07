@@ -31,6 +31,7 @@ interface UseVideoCallReturn {
   callState: CallState;
   localVideoRef: React.RefObject<HTMLVideoElement>;
   remoteVideoRef: React.RefObject<HTMLVideoElement>;
+  peerConnection: RTCPeerConnection | null;
   startCall: (partnerId: string, isVideo?: boolean) => Promise<void>;
   acceptCall: () => Promise<void>;
   endCall: () => void;
@@ -928,6 +929,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
     callState,
     localVideoRef,
     remoteVideoRef,
+    peerConnection: peerConnectionRef.current,
     startCall,
     acceptCall,
     endCall: () => endCall('completed'),
