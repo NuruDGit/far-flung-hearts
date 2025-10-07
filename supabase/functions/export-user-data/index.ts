@@ -113,6 +113,27 @@ serve(async (req) => {
       }
     };
 
+    // Log the data export event
+    try {
+      await supabase.rpc('log_security_event', {
+        p_user_id: user.id,
+        p_severity: 'info',
+        p_action: 'data_exported',
+        p_event_type: 'data_export',
+        p_resource_type: 'user_data',
+        p_resource_id: user.id,
+        p_metadata: {
+          export_size_bytes: JSON.stringify(exportData).length,
+          exported_tables: ['profile', 'messages', 'mood_logs', 'mood_analytics', 'goals', 'tasks', 'events', 'wishlist', 'game_scores', 'game_sessions', 'daily_question_answers', 'notification_preferences', 'call_history'],
+          timestamp: new Date().toISOString()
+        },
+        p_success: true
+      });
+    } catch (logError) {
+      logStep("WARNING: Failed to log export event", { error: logError });
+      // Don't fail the export if logging fails
+    }
+
     // Generate JSON file
     const json = JSON.stringify(exportData, null, 2);
     

@@ -59,6 +59,10 @@ export const UserManagement = () => {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
+      // Get current role for logging
+      const currentUser = users.find(u => u.id === userId);
+      const oldRole = currentUser?.roles?.[0] || 'user';
+
       // First, delete existing roles for this user
       await supabase
         .from('user_roles')
@@ -75,6 +79,26 @@ export const UserManagement = () => {
           }]);
 
         if (error) throw error;
+      }
+
+      // Log the admin action
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await supabase.functions.invoke('log-admin-action', {
+            body: {
+              target_user_id: userId,
+              old_role: oldRole,
+              new_role: newRole,
+              action: 'role_changed'
+            },
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          });
+        }
+      } catch (logError) {
+        console.error('Failed to log admin action:', logError);
       }
 
       toast.success(`Role updated successfully`);

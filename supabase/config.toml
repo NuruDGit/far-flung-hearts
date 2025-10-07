@@ -38,3 +38,18 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.log-failed-login]
+verify_jwt = false
+
+[functions.log-admin-action]
+verify_jwt = true
+
+[functions.change-password]
+verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.export-user-data]
+verify_jwt = true

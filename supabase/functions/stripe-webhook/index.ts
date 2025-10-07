@@ -104,6 +104,35 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription, supab
       console.error('Error updating subscription status:', error);
     } else {
       console.log('Subscription status updated successfully');
+      
+      // Log subscription change
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', customer.email)
+          .maybeSingle();
+        
+        if (profile) {
+          await supabase.rpc('log_security_event', {
+            p_user_id: profile.id,
+            p_severity: 'info',
+            p_action: 'subscription_updated',
+            p_event_type: 'subscription_change',
+            p_resource_type: 'subscription',
+            p_resource_id: null,
+            p_metadata: {
+              subscription_id: subscription.id,
+              status: subscription.status,
+              product_id: subscription.items.data[0]?.price?.product,
+              cancel_at_period_end: subscription.cancel_at_period_end
+            },
+            p_success: true
+          });
+        }
+      } catch (logError) {
+        console.error('Failed to log subscription update:', logError);
+      }
     }
   } catch (error) {
     console.error('Error in handleSubscriptionUpdate:', error);
@@ -126,6 +155,42 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription, su
       console.error('Error updating cancelled subscription:', error);
     } else {
       console.log('Subscription cancelled successfully');
+      
+      // Log subscription cancellation
+      try {
+        const { data: statusData } = await supabase
+          .from('subscription_status')
+          .select('customer_email')
+          .eq('subscription_id', subscription.id)
+          .maybeSingle();
+        
+        if (statusData) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', statusData.customer_email)
+            .maybeSingle();
+          
+          if (profile) {
+            await supabase.rpc('log_security_event', {
+              p_user_id: profile.id,
+              p_severity: 'warning',
+              p_action: 'subscription_cancelled',
+              p_event_type: 'subscription_change',
+              p_resource_type: 'subscription',
+              p_resource_id: null,
+              p_metadata: {
+                subscription_id: subscription.id,
+                cancelled_at: new Date().toISOString()
+              },
+              p_success: true
+            });
+          }
+        }
+      } catch (logError) {
+        console.error('Failed to log subscription cancellation:', logError);
+      }
+      
       // TODO: Send cancellation email via Resend
     }
   } catch (error) {

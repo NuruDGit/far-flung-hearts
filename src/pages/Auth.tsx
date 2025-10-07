@@ -93,6 +93,22 @@ const Auth = () => {
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
           toast.error('Invalid email or password. Please try again.');
+          
+          // Log failed login attempt
+          if (isLogin) {
+            try {
+              const { supabase } = await import('@/integrations/supabase/client');
+              await supabase.functions.invoke('log-failed-login', {
+                body: {
+                  email: sanitizedEmail,
+                  ip_address: null,
+                  user_agent: navigator.userAgent
+                }
+              });
+            } catch (logError) {
+              console.error('Failed to log failed login:', logError);
+            }
+          }
         } else if (error.message.includes('User already registered')) {
           toast.error('This email is already registered. Try signing in instead.');
         } else {
