@@ -1441,29 +1441,44 @@ export type Database = {
       }
       security_audit_log: {
         Row: {
-          created_at: string | null
-          event_data: Json | null
+          action: string
+          created_at: string
           event_type: string
           id: string
-          ip_address: unknown | null
+          ip_address: string | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          severity: string
+          success: boolean | null
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
-          created_at?: string | null
-          event_data?: Json | null
+          action: string
+          created_at?: string
           event_type: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          severity: string
+          success?: boolean | null
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
-          created_at?: string | null
-          event_data?: Json | null
+          action?: string
+          created_at?: string
           event_type?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          severity?: string
+          success?: boolean | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1643,6 +1658,25 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          p_action: string
+          p_event_type: string
+          p_ip_address?: string
+          p_metadata?: Json
+          p_resource_id?: string
+          p_resource_type?: string
+          p_severity: string
+          p_success?: boolean
+          p_user_agent?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      track_failed_login: {
+        Args: { p_email: string; p_ip_address?: string; p_user_agent?: string }
+        Returns: undefined
       }
     }
     Enums: {

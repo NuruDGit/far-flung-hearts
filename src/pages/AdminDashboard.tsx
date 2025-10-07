@@ -6,6 +6,7 @@ import { ArrowLeft, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { SecurityLogs } from '@/components/admin/SecurityLogs';
+import { SecurityAuditLogs } from '@/components/admin/SecurityAuditLogs';
 import { SubscriptionStats } from '@/components/admin/SubscriptionStats';
 import { ContentModeration } from '@/components/admin/ContentModeration';
 
@@ -72,6 +73,7 @@ const AdminDashboard = () => {
           </TabsContent>
           
           <TabsContent value="security" className="space-y-6">
+            <SecurityAuditLogs />
             <SecurityLogs />
           </TabsContent>
           
