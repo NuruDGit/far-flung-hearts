@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { checkRateLimit, RATE_LIMITS, logSecurityEvent } from "../_shared/rateLimiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -35,6 +36,33 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(
+      supabaseAdmin,
+      user.id,
+      'join-pair',
+      RATE_LIMITS.PAIR_INVITE_CREATE
+    );
+
+    if (!rateLimitResult.allowed) {
+      await logSecurityEvent(
+        supabaseAdmin,
+        user.id,
+        'rate_limit_exceeded',
+        { endpoint: 'join-pair', limit: RATE_LIMITS.PAIR_INVITE_CREATE },
+        req.headers.get('x-forwarded-for') || 'unknown',
+        req.headers.get('user-agent') || 'unknown'
+      );
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again later.',
+          resetTime: rateLimitResult.resetTime
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

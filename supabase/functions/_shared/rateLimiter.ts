@@ -157,4 +157,29 @@ export const RATE_LIMITS = {
     maxRequests: 10,
     windowMinutes: 60,
   },
+  // Pair invite creation: 3 per hour
+  PAIR_INVITE_CREATE: {
+    maxRequests: 3,
+    windowMinutes: 60,
+  },
+  // Gift wishlist creation: 20 per hour
+  GIFT_WISHLIST_CREATE: {
+    maxRequests: 20,
+    windowMinutes: 60,
+  },
+  // Mood log creation: 10 per hour
+  MOOD_LOG_CREATE: {
+    maxRequests: 10,
+    windowMinutes: 60,
+  },
+  // Message sending: 100 per minute
+  MESSAGE_SEND: {
+    maxRequests: 100,
+    windowMinutes: 1,
+  },
+  // Video call start: 10 per hour
+  VIDEO_CALL_START: {
+    maxRequests: 10,
+    windowMinutes: 60,
+  },
 } as const;
