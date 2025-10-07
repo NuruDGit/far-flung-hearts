@@ -97,6 +97,65 @@ serve(async (req) => {
       );
     }
 
+    // Check subscription tier for AI usage limits
+    const { data: subscriptionData } = await supabaseServiceRole.functions.invoke('check-subscription', {
+      headers: { Authorization: authHeader }
+    });
+
+    const tier = subscriptionData?.product_id ? 'premium' : 'free';
+    
+    // Define usage limits
+    const FREE_TIER_LIMIT = 10000; // tokens per month
+    const PREMIUM_TIER_LIMIT = 100000; // tokens per month
+    const limit = tier === 'free' ? FREE_TIER_LIMIT : PREMIUM_TIER_LIMIT;
+
+    // Check current usage for this month
+    const { data: usage, error: usageError } = await supabaseServiceRole
+      .from('ai_usage_tracking')
+      .select('tokens_used')
+      .eq('user_id', user.id)
+      .eq('feature', 'advisor')
+      .gte('reset_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (usageError) {
+      console.error('Error checking usage:', usageError);
+    }
+
+    const currentUsage = usage?.tokens_used || 0;
+
+    if (currentUsage >= limit) {
+      await logSecurityEvent(
+        supabaseServiceRole,
+        user.id,
+        'AI_USAGE_LIMIT_EXCEEDED',
+        { 
+          endpoint: 'love-advisor',
+          currentUsage,
+          limit,
+          tier
+        },
+        ipAddress,
+        userAgent
+      );
+
+      return new Response(
+        JSON.stringify({ 
+          error: 'Monthly AI limit reached. Please upgrade to premium or wait for your monthly reset.',
+          currentUsage,
+          limit,
+          tier,
+          resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        }), 
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     // Input validation
     const sanitizedMessage = message.trim().slice(0, 1000); // Limit message length
     if (sanitizedMessage.length < 1) {
@@ -294,7 +353,30 @@ Remember: You're not just giving advice - you're supporting two people who care 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    return new Response(JSON.stringify({ response: aiResponse }), {
+    // Track usage after successful API call
+    const tokensUsed = data.usage?.total_tokens || 0;
+    const costUsd = tokensUsed * 0.00002; // Estimate: $0.00002 per token for gpt-4o-mini
+
+    try {
+      await supabaseServiceRole.from('ai_usage_tracking').insert({
+        user_id: user.id,
+        feature: 'advisor',
+        tokens_used: tokensUsed,
+        cost_usd: costUsd
+      });
+    } catch (trackingError) {
+      console.error('Error tracking usage:', trackingError);
+      // Don't fail the request if tracking fails
+    }
+
+    return new Response(JSON.stringify({ 
+      response: aiResponse,
+      usage: {
+        tokensUsed,
+        limit: tier === 'free' ? FREE_TIER_LIMIT : PREMIUM_TIER_LIMIT,
+        tier
+      }
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

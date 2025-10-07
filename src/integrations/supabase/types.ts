@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage_tracking: {
+        Row: {
+          cost_usd: number | null
+          created_at: string | null
+          feature: string
+          id: string
+          reset_at: string | null
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string | null
+          feature: string
+          id?: string
+          reset_at?: string | null
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string | null
+          feature?: string
+          id?: string
+          reset_at?: string | null
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       call_history: {
         Row: {
           call_type: string
