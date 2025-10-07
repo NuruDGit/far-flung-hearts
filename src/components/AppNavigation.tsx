@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar, Gamepad2, Gift, Crown } from 'lucide-react';
+import { Home, MessageCircle, Target, User, Menu, X, Bot, BarChart3, Calendar, Gamepad2, Gift, Crown, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useAdmin } from '@/hooks/useAdmin';
 import { hasFeatureAccess } from '@/config/subscriptionFeatures';
 
 const AppNavigation = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { subscription } = useAuth();
+  const { isAdmin } = useAdmin();
 
   const navItems = [
     { path: '/app/messages', icon: MessageCircle, label: 'Messages', tier: 'free' as const },
@@ -60,6 +62,18 @@ const AppNavigation = () => {
                   </Link>
                 );
               })}
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button
+                    variant={isActive('/admin') ? "default" : "ghost"}
+                    size="sm"
+                    className={`gap-2 ${isActive('/admin') ? 'bg-love-heart text-white' : 'text-love-deep hover:bg-love-coral/20 hover:text-love-deep'}`}
+                  >
+                    <Shield size={16} />
+                    Admin
+                  </Button>
+                </Link>
+              )}
               <Link to="/app/subscription">
                 <Button
                   variant="ghost"
@@ -115,6 +129,18 @@ const AppNavigation = () => {
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link to="/admin" className="flex-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`w-full flex-col gap-1 h-auto py-2 ${isActive('/admin') ? 'text-love-heart' : 'text-muted-foreground'}`}
+                >
+                  <Shield size={20} />
+                  <span className="text-xs">Admin</span>
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
