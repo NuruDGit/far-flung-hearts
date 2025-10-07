@@ -7,6 +7,7 @@ import { CameraCapture } from './CameraCapture';
 import { ReplyContext } from './ReplyContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 interface MessageInputProps {
   onSendMessage: (content: string, attachments?: File[], replyToId?: string) => void;
@@ -70,6 +71,7 @@ export const MessageInput = ({
   const documentInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSend = () => {
     const trimmedMessage = message.trim();
@@ -113,7 +115,32 @@ export const MessageInput = ({
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
+    
+    // Check file sizes
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    const oversized = files.filter(f => f.size > MAX_FILE_SIZE);
+    
+    if (oversized.length > 0) {
+      toast({
+        title: "File too large",
+        description: `Maximum file size is 50MB. ${oversized.length} file(s) exceeded limit.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Check total number of attachments
+    if (attachments.length + files.length > 10) {
+      toast({
+        title: "Too many files",
+        description: "Maximum 10 files per message",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setAttachments(prev => [...prev, ...files]);
+    
     // Reset the input so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';

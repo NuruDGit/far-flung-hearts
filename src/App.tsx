@@ -7,36 +7,41 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { useAppOptimization } from "@/hooks/useAppOptimization";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { CookieConsent } from "@/components/CookieConsent";
+import { lazy, Suspense } from "react";
+
+// Immediate load pages (authentication & landing)
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PairSetup from "./pages/PairSetup";
 import AppHome from "./pages/AppHome";
-import MessagesPage from "./pages/MessagesPage";
-import MoodPage from "./pages/MoodPage";
-import AdvisorPage from "./pages/AdvisorPage";
-import GoalsPage from "./pages/GoalsPage";
-import { ProfilePage } from "./pages/ProfilePage";
-import NotificationSettings from "./pages/NotificationSettings";
-import MemoryVault from "./pages/MemoryVault";
-import MoodAnalytics from "./pages/MoodAnalytics";
-import CalendarPage from "./pages/CalendarPage";
-import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
-import GamesPage from "./pages/GamesPage";
-import WishlistPage from "./pages/WishlistPage";
-import DailyQuestionAnswers from "./pages/DailyQuestionAnswers";
-import Security from "./pages/Security";
-import API from "./pages/API";
-import HelpCenter from "./pages/HelpCenter";
-import Contact from "./pages/Contact";
-import Community from "./pages/Community";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import CookiePolicy from "./pages/CookiePolicy";
-import AdminDashboard from "./pages/AdminDashboard";
-import { CookieConsent } from "@/components/CookieConsent";
+
+// Lazy load heavy pages
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const MemoryVault = lazy(() => import("./pages/MemoryVault"));
+const GoalsPage = lazy(() => import("./pages/GoalsPage"));
+const MoodAnalytics = lazy(() => import("./pages/MoodAnalytics"));
+const MessagesPage = lazy(() => import("./pages/MessagesPage"));
+const MoodPage = lazy(() => import("./pages/MoodPage"));
+const AdvisorPage = lazy(() => import("./pages/AdvisorPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
+const NotificationSettings = lazy(() => import("./pages/NotificationSettings"));
+const CalendarPage = lazy(() => import("./pages/CalendarPage"));
+const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
+const GamesPage = lazy(() => import("./pages/GamesPage"));
+const WishlistPage = lazy(() => import("./pages/WishlistPage"));
+const DailyQuestionAnswers = lazy(() => import("./pages/DailyQuestionAnswers"));
+const Security = lazy(() => import("./pages/Security"));
+const API = lazy(() => import("./pages/API"));
+const HelpCenter = lazy(() => import("./pages/HelpCenter"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Community = lazy(() => import("./pages/Community"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 
 const queryClient = new QueryClient();
 
@@ -52,6 +57,7 @@ const App = () => {
         <BrowserRouter>
           <CookieConsent />
           <PWAInstallPrompt />
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -102,6 +108,7 @@ const App = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
