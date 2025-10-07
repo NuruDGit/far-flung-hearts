@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Send, Bot, User } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Send, Bot, User, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -177,6 +178,19 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
 
       if (error) throw error;
 
+      // Handle blocked content response
+      if (data.error && data.resources) {
+        const crisisMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: `${data.error}\n\n**Crisis Resources:**\n${data.resources.map((r: any) => `• ${r.name}: ${r.contact}`).join('\n')}\n\nPlease reach out to these professionals who can provide the help you need. Your wellbeing is important. 💙`,
+          isUser: false,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, crisisMessage]);
+        setIsLoading(false);
+        return;
+      }
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: data.response,
@@ -211,6 +225,16 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
 
   return (
     <div className="h-full min-h-0 flex flex-col">
+      {/* Professional Disclaimer */}
+      <Alert className="m-4 mb-2 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
+        <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+        <AlertDescription className="text-sm text-amber-800 dark:text-amber-200">
+          <strong>Important:</strong> This AI advisor provides general relationship suggestions 
+          and is not a substitute for professional therapy or counseling. For serious issues 
+          (abuse, mental health crises, etc.), please consult a licensed professional.
+        </AlertDescription>
+      </Alert>
+
       {/* Welcoming image section */}
       {messages.length === 1 && partnerData && (
         <div className="p-4 bg-gradient-to-r from-primary/5 to-accent/5 border-b border-border flex-shrink-0">

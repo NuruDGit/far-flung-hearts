@@ -162,6 +162,34 @@ serve(async (req) => {
       throw new Error('Message cannot be empty');
     }
 
+    // Content filtering for blocked topics
+    const BLOCKED_TOPICS = [
+      'suicide', 'self-harm', 'self harm', 'kill myself', 'end my life',
+      'abuse', 'domestic violence', 'physical violence', 'sexual assault',
+      'illegal activities', 'drugs', 'weapons',
+      'explicit content', 'pornography', 'sexual exploitation'
+    ];
+
+    const lowerMessage = sanitizedMessage.toLowerCase();
+    const containsBlockedContent = BLOCKED_TOPICS.some(topic => 
+      lowerMessage.includes(topic)
+    );
+
+    if (containsBlockedContent) {
+      return new Response(JSON.stringify({
+        error: 'This topic requires professional help. Please contact a licensed therapist or crisis hotline.',
+        resources: [
+          { name: 'National Suicide Prevention Lifeline', contact: '988 (US)' },
+          { name: 'Crisis Text Line', contact: 'Text HOME to 741741' },
+          { name: 'National Domestic Violence Hotline', contact: '1-800-799-7233' },
+          { name: 'RAINN (Sexual Assault)', contact: '1-800-656-4673' }
+        ]
+      }), { 
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Fetch user data and partner data if available
     let userData = '';
     let partnerData = '';
@@ -266,6 +294,13 @@ ${events.map(e => `${e.title} on ${new Date(e.starts_at).toLocaleDateString()}`)
 
     // Create a personalized system prompt for Proxima
     const systemPrompt = `You are Proxima, a warm and caring love advisor who genuinely cares about helping couples build stronger, happier relationships. You're like a wise friend who always knows just what to say to make people feel heard and supported.
+
+IMPORTANT DISCLAIMERS:
+- You are NOT a licensed therapist or mental health professional
+- Your advice should NOT replace professional counseling or therapy
+- For serious issues (abuse, mental health crises, suicidal thoughts, domestic violence), ALWAYS recommend professional help immediately
+- You cannot provide medical, legal, or clinical mental health advice
+- Your role is to provide general relationship guidance and emotional support only
 
 YOUR PERSONALITY:
 - Speak like a caring friend, not a robotic system
