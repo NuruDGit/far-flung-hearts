@@ -1210,6 +1210,33 @@ export type Database = {
           },
         ]
       }
+      payment_failures: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          customer_id: string
+          id: string
+          invoice_id: string
+          reason: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          customer_id: string
+          id?: string
+          invoice_id: string
+          reason?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          customer_id?: string
+          id?: string
+          invoice_id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       presence: {
         Row: {
           device: string | null
@@ -1473,6 +1500,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscription_status: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          cancelled_at: string | null
+          created_at: string | null
+          current_period_end: string | null
+          customer_email: string
+          id: string
+          product_id: string | null
+          status: string
+          subscription_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          cancelled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          customer_email: string
+          id?: string
+          product_id?: string | null
+          status: string
+          subscription_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          cancelled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          customer_email?: string
+          id?: string
+          product_id?: string | null
+          status?: string
+          subscription_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
