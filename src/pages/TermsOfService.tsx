@@ -18,7 +18,7 @@ const TermsOfService = () => {
             Terms of Service
           </h1>
           <p className="text-muted-foreground">
-            Last updated: March 2024
+            Last updated: January 2025
           </p>
         </div>
 
@@ -190,11 +190,61 @@ const TermsOfService = () => {
 
           <Card>
             <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-love-deep mb-4">10. Governing Law</h2>
+              <h2 className="text-2xl font-bold text-love-deep mb-4">10. Governing Law & Jurisdiction</h2>
+              <div className="text-muted-foreground space-y-4">
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>US Users: Governed by laws of Delaware, USA</li>
+                  <li>EU Users: Governed by EU consumer protection laws</li>
+                  <li>Dispute Resolution: Mandatory arbitration (location to be determined based on user jurisdiction)</li>
+                  <li>Class Action Waiver: Users waive right to class action lawsuits</li>
+                  <li>Small Claims Court: Users may pursue claims in small claims court</li>
+                </ul>
+                <p className="mt-4">
+                  These Terms shall be governed by and construed in accordance with applicable laws, 
+                  without regard to conflict of law provisions.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-love-deep mb-4">11. Age Verification & COPPA Compliance</h2>
+              <div className="text-muted-foreground space-y-4">
+                <p className="font-semibold">
+                  This service is strictly for users 18 years and older. We do not knowingly collect data from minors under 18.
+                </p>
+                <p>If you believe a minor has created an account:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Email: legal@lovebeyondborders.com</li>
+                  <li>We will investigate and delete within 24 hours</li>
+                  <li>Parents/guardians can request data deletion</li>
+                </ul>
+                <p className="mt-4 font-medium">
+                  COPPA Compliance Statement: We comply with the Children's Online Privacy Protection Act.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-love-deep mb-4">12. AI-Generated Content Disclaimer</h2>
               <div className="text-muted-foreground space-y-4">
                 <p>
-                  These Terms shall be governed by and construed in accordance with the laws of the jurisdiction 
-                  in which Love Beyond Borders operates, without regard to conflict of law provisions.
+                  Our AI Love Advisor feature provides suggestions based on algorithms, not professional therapy.
+                </p>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 my-4">
+                  <p className="font-semibold text-amber-900 mb-2">IMPORTANT:</p>
+                  <ul className="list-disc list-inside space-y-1 text-amber-800">
+                    <li>AI advice is not a substitute for professional counseling</li>
+                    <li>Do not rely solely on AI for serious relationship decisions</li>
+                    <li>We are not liable for actions taken based on AI suggestions</li>
+                    <li>For mental health emergencies, contact local services</li>
+                  </ul>
+                </div>
+                <p className="text-sm">
+                  If you need professional help, we recommend seeking licensed relationship counselors or therapists.
                 </p>
               </div>
             </CardContent>

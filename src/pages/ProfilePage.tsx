@@ -6,7 +6,7 @@ import { ProfileSetup } from '@/components/profile/ProfileSetup';
 import { DisconnectPairDialog } from '@/components/DisconnectPairDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Users, Heart, User } from 'lucide-react';
+import { ArrowLeft, Users, Heart, User, Download } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -118,6 +118,41 @@ export const ProfilePage = () => {
     fetchProfileAndPairData();
   };
 
+  const handleExportData = async () => {
+    if (!user) return;
+    
+    try {
+      toast.loading('Preparing your data export...');
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session found');
+
+      const response = await supabase.functions.invoke('export-user-data', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      // Create blob and download
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `love-beyond-borders-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('Data export downloaded successfully!');
+    } catch (error: any) {
+      console.error('Export error:', error);
+      toast.error(error.message || 'Failed to export data');
+    }
+  };
+
   const isProfileComplete = () => {
     if (!profile) return false;
     return !!(
@@ -227,18 +262,34 @@ export const ProfilePage = () => {
         </div>
 
         {/* Additional Actions */}
-        <div className="max-w-2xl mx-auto mt-8 text-center">
+        <div className="max-w-2xl mx-auto mt-8">
           {!isProfileComplete() && (
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 text-center">
               Make your profile shine! Complete all sections to help your partner get to know you better.
             </p>
           )}
-          <Button
-            onClick={() => setIsEditing(true)}
-            className="bg-love-heart hover:bg-love-coral text-white"
-          >
-            Edit Profile
-          </Button>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => setIsEditing(true)}
+              className="bg-love-heart hover:bg-love-coral text-white"
+            >
+              Edit Profile
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={handleExportData}
+              className="border-love-coral text-love-deep hover:bg-love-light"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export My Data (GDPR)
+            </Button>
+          </div>
+          
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            Export includes all your personal data in compliance with GDPR and CCPA regulations
+          </p>
         </div>
       </div>
     </div>

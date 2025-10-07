@@ -34,6 +34,7 @@ import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
+import { CookieConsent } from "@/components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => {
       <AuthProvider>
         <Toaster />
         <Sonner />
+        <CookieConsent />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />

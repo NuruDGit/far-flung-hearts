@@ -61,7 +61,7 @@ const PrivacyPolicy = () => {
             Privacy Policy
           </h1>
           <p className="text-muted-foreground">
-            Last updated: March 2024
+            Last updated: January 2025
           </p>
         </div>
 
@@ -144,6 +144,84 @@ const PrivacyPolicy = () => {
                 personal information from children under 18. If you become aware that a child has provided us 
                 with personal information, please contact us immediately.
               </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-love-deep mb-4">GDPR Rights (EU Users)</h2>
+              <div className="text-muted-foreground space-y-4">
+                <p>Under GDPR, EU users have the right to:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Right to Access (Article 15)</li>
+                  <li>Right to Rectification (Article 16)</li>
+                  <li>Right to Erasure ("Right to be Forgotten", Article 17)</li>
+                  <li>Right to Data Portability (Article 20)</li>
+                  <li>Right to Object (Article 21)</li>
+                </ul>
+                <p className="font-medium mt-4">
+                  To exercise these rights, email: gdpr@lovebeyondborders.com
+                </p>
+                <p className="text-sm">Response time: 30 days maximum</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-love-deep mb-4">CCPA Rights (California Users)</h2>
+              <div className="text-muted-foreground space-y-4">
+                <p>California residents have the right to:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Know what personal information is collected</li>
+                  <li>Know if personal information is sold or disclosed</li>
+                  <li>Say no to the sale of personal information</li>
+                  <li>Access their personal information</li>
+                  <li>Request deletion of personal information</li>
+                  <li>Not be discriminated against for exercising CCPA rights</li>
+                </ul>
+                <p className="font-medium mt-4">
+                  To exercise these rights, email: privacy@lovebeyondborders.com
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-love-deep mb-4">Data Retention Policy</h2>
+              <div className="text-muted-foreground space-y-4">
+                <p>We retain your data as follows:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Active accounts: Indefinitely while account is active</li>
+                  <li>Deleted accounts: 30 days grace period, then permanent deletion</li>
+                  <li>Messages: 90 days after account deletion</li>
+                  <li>Payment records: 7 years (legal requirement)</li>
+                  <li>Analytics data: 2 years</li>
+                  <li>Backup data: 90 days maximum</li>
+                </ul>
+                <p className="mt-4">You can request early deletion by contacting support.</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-love-deep mb-4">Third-Party Data Processors</h2>
+              <div className="text-muted-foreground space-y-4">
+                <p>We share data with:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Supabase (Database hosting) - USA</li>
+                  <li>Stripe (Payment processing) - USA</li>
+                  <li>Resend (Email delivery) - USA</li>
+                  <li>OpenAI (AI features) - USA</li>
+                  <li>OpenWeather (Weather data) - USA</li>
+                  <li>LibreTranslate (Message translation) - Open source</li>
+                </ul>
+                <p className="mt-4">
+                  All processors are GDPR-compliant and have signed Data Processing Agreements.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
