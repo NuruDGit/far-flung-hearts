@@ -457,11 +457,17 @@ Healthy LDRs balance care and connection with independence and trust.`,
                 );
               }
               
-              // Body paragraphs
+              // Body paragraphs with inline bold support
               if (paragraph.trim()) {
+                const parts = paragraph.split(/(\*\*.*?\*\*)/g);
                 return (
-                  <p key={idx} className="text-base leading-relaxed text-foreground/70 font-sans">
-                    {paragraph}
+                  <p key={idx} className="text-base md:text-lg leading-[1.8] text-foreground/75 font-sans">
+                    {parts.map((part, i) => {
+                      if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={i} className="font-semibold text-foreground">{part.replace(/\*\*/g, '')}</strong>;
+                      }
+                      return part;
+                    })}
                   </p>
                 );
               }
