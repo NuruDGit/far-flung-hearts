@@ -321,19 +321,67 @@ export default function NotificationSettings() {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="UTC">UTC</SelectItem>
-                  <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                  <SelectItem value="America/Chicago">Central Time</SelectItem>
-                  <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                  <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                  <SelectItem value="Europe/London">London</SelectItem>
-                  <SelectItem value="Europe/Paris">Paris</SelectItem>
-                  <SelectItem value="Europe/Berlin">Berlin</SelectItem>
-                  <SelectItem value="Asia/Tokyo">Tokyo</SelectItem>
-                  <SelectItem value="Asia/Shanghai">Shanghai</SelectItem>
-                  <SelectItem value="Australia/Sydney">Sydney</SelectItem>
-                </SelectContent>
+              <SelectContent>
+                <SelectItem value="UTC">UTC</SelectItem>
+                
+                {/* Americas */}
+                <SelectItem value="America/New_York">Eastern Time (US)</SelectItem>
+                <SelectItem value="America/Chicago">Central Time (US)</SelectItem>
+                <SelectItem value="America/Denver">Mountain Time (US)</SelectItem>
+                <SelectItem value="America/Los_Angeles">Pacific Time (US)</SelectItem>
+                <SelectItem value="America/Anchorage">Alaska Time</SelectItem>
+                <SelectItem value="Pacific/Honolulu">Hawaii Time</SelectItem>
+                <SelectItem value="America/Toronto">Toronto</SelectItem>
+                <SelectItem value="America/Vancouver">Vancouver</SelectItem>
+                <SelectItem value="America/Mexico_City">Mexico City</SelectItem>
+                <SelectItem value="America/Bogota">Bogotá</SelectItem>
+                <SelectItem value="America/Lima">Lima</SelectItem>
+                <SelectItem value="America/Santiago">Santiago</SelectItem>
+                <SelectItem value="America/Sao_Paulo">São Paulo</SelectItem>
+                <SelectItem value="America/Buenos_Aires">Buenos Aires</SelectItem>
+                
+                {/* Europe */}
+                <SelectItem value="Europe/London">London</SelectItem>
+                <SelectItem value="Europe/Dublin">Dublin</SelectItem>
+                <SelectItem value="Europe/Paris">Paris</SelectItem>
+                <SelectItem value="Europe/Berlin">Berlin</SelectItem>
+                <SelectItem value="Europe/Madrid">Madrid</SelectItem>
+                <SelectItem value="Europe/Rome">Rome</SelectItem>
+                <SelectItem value="Europe/Amsterdam">Amsterdam</SelectItem>
+                <SelectItem value="Europe/Brussels">Brussels</SelectItem>
+                <SelectItem value="Europe/Vienna">Vienna</SelectItem>
+                <SelectItem value="Europe/Stockholm">Stockholm</SelectItem>
+                <SelectItem value="Europe/Warsaw">Warsaw</SelectItem>
+                <SelectItem value="Europe/Athens">Athens</SelectItem>
+                <SelectItem value="Europe/Istanbul">Istanbul</SelectItem>
+                <SelectItem value="Europe/Moscow">Moscow</SelectItem>
+                
+                {/* Asia */}
+                <SelectItem value="Asia/Dubai">Dubai</SelectItem>
+                <SelectItem value="Asia/Karachi">Karachi</SelectItem>
+                <SelectItem value="Asia/Kolkata">Mumbai/Delhi</SelectItem>
+                <SelectItem value="Asia/Dhaka">Dhaka</SelectItem>
+                <SelectItem value="Asia/Bangkok">Bangkok</SelectItem>
+                <SelectItem value="Asia/Singapore">Singapore</SelectItem>
+                <SelectItem value="Asia/Hong_Kong">Hong Kong</SelectItem>
+                <SelectItem value="Asia/Shanghai">Shanghai</SelectItem>
+                <SelectItem value="Asia/Tokyo">Tokyo</SelectItem>
+                <SelectItem value="Asia/Seoul">Seoul</SelectItem>
+                <SelectItem value="Asia/Manila">Manila</SelectItem>
+                <SelectItem value="Asia/Jakarta">Jakarta</SelectItem>
+                
+                {/* Africa */}
+                <SelectItem value="Africa/Cairo">Cairo</SelectItem>
+                <SelectItem value="Africa/Johannesburg">Johannesburg</SelectItem>
+                <SelectItem value="Africa/Lagos">Lagos</SelectItem>
+                <SelectItem value="Africa/Nairobi">Nairobi</SelectItem>
+                
+                {/* Oceania */}
+                <SelectItem value="Australia/Sydney">Sydney</SelectItem>
+                <SelectItem value="Australia/Melbourne">Melbourne</SelectItem>
+                <SelectItem value="Australia/Perth">Perth</SelectItem>
+                <SelectItem value="Pacific/Auckland">Auckland</SelectItem>
+              </SelectContent>
               </Select>
             </div>
           </CardContent>
