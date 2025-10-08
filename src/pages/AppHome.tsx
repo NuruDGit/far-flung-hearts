@@ -398,7 +398,7 @@ const AppHome = () => {
             <h1 className="text-2xl font-bold text-love-deep">
               {getGreeting()}, {getUserDisplayName()}!
             </h1>
-            <p className="text-muted-foreground flex items-center gap-2">
+            <p className="text-sm text-muted-foreground flex items-center gap-2 flex-wrap">
               {partner ? `Connected with ${partner.first_name || partner.display_name}` : 'Exploring solo'}
               <Badge 
                 variant={subscription.tier === 'premium' ? 'secondary' : 'outline'}
@@ -442,107 +442,255 @@ const AppHome = () => {
           </Card>
         )}
 
-        {/* Weather Widget - Show partner's city weather (or user's city if no partner) */}
+        {/* HERO: Quick Actions - Most Important CTAs */}
         {pair && (
+          <div className="mb-6 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                size="lg" 
+                onClick={() => navigate('/app/messages')}
+                className="h-20 bg-gradient-to-br from-love-heart to-love-coral hover:shadow-xl hover:scale-105 transition-all duration-300 text-white border-0"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <MessageSquareQuote className="h-6 w-6" />
+                  <span className="text-sm font-semibold">Send Message</span>
+                </div>
+              </Button>
+              <Button 
+                size="lg" 
+                onClick={() => navigate('/app/mood')}
+                className="h-20 bg-gradient-to-br from-love-deep to-love-heart hover:shadow-xl hover:scale-105 transition-all duration-300 text-white border-0"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <Smile className="h-6 w-6" />
+                  <span className="text-sm font-semibold">Log Mood</span>
+                </div>
+              </Button>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/app/calendar')}
+                className="h-16 hover:bg-love-light/50 hover:border-love-coral transition-all"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <Calendar className="h-5 w-5" />
+                  <span className="text-xs">Calendar</span>
+                </div>
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/app/goals')}
+                className="h-16 hover:bg-love-light/50 hover:border-love-coral transition-all"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <Target className="h-5 w-5" />
+                  <span className="text-xs">Goals</span>
+                </div>
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/app/messages')}
+                className="h-16 hover:bg-love-light/50 hover:border-love-coral transition-all"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <Video className="h-5 w-5" />
+                  <span className="text-xs">Video Call</span>
+                </div>
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Daily Question - Highlighted for Engagement */}
+        {pair && dailyQuestion && (
+          <Card 
+            onClick={handleAnswerQuestion}
+            className="mb-6 bg-gradient-to-br from-love-heart/10 via-love-coral/5 to-love-deep/10 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer animate-fade-in border-2 border-love-coral/20 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-love-heart/5 to-love-coral/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <CardHeader className="pb-3 relative z-10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-love-heart to-love-coral flex items-center justify-center shadow-lg">
+                    <MessageSquareQuote className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Daily Question</CardTitle>
+                    <p className="text-xs text-muted-foreground">Share your thoughts together</p>
+                  </div>
+                </div>
+                <Badge variant={questionAnswers.length === 2 ? "default" : "secondary"} className="bg-love-coral text-white">
+                  {questionAnswers.length}/2
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <p className="text-base font-medium text-love-deep mb-3">"{dailyQuestion.question_text}"</p>
+              <div className="flex items-center gap-2 text-sm">
+                {questionAnswers.length === 0 && (
+                  <span className="text-muted-foreground">Be the first to answer!</span>
+                )}
+                {questionAnswers.length === 1 && (
+                  <span className="text-muted-foreground">One answer • Tap to respond</span>
+                )}
+                {questionAnswers.length === 2 && (
+                  <span className="text-love-heart font-medium">Both answered! • Tap to view</span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Compact Partner Card - Only show if paired */}
+        {pair && partner && (
+          <Collapsible defaultOpen={false} className="mb-6">
+            <Card className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 animate-fade-in border-0 shadow-lg overflow-hidden">
+              <CollapsibleTrigger className="w-full">
+                <CardHeader className="pb-4 cursor-pointer hover:bg-love-light/30 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center relative">
+                        <div className="w-12 h-12 rounded-full love-gradient p-1 shadow-lg z-10">
+                          <Avatar className="w-full h-full">
+                            <AvatarImage src={userProfile?.avatar_url} />
+                            <AvatarFallback className="bg-love-gradient text-white text-sm">
+                              {userProfile?.display_name?.charAt(0).toUpperCase() || userProfile?.first_name?.charAt(0).toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="w-12 h-12 rounded-full love-gradient p-1 shadow-lg -ml-3">
+                          <Avatar className="w-full h-full">
+                            <AvatarImage src={partner.avatar_url} />
+                            <AvatarFallback className="bg-love-gradient text-white text-sm">
+                              {partner.display_name?.charAt(0).toUpperCase() || <Heart size={16} />}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                      </div>
+                      <div className="text-left">
+                        <h2 className="text-base font-semibold">{partner.display_name}</h2>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                          Active now
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform" />
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0 pb-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Time Together */}
+                    <div className="text-center p-3 rounded-lg bg-gradient-to-br from-love-light to-love-coral/10 hover:shadow-md transition-shadow">
+                      <Clock className="mx-auto mb-2 text-love-heart" size={24} />
+                      <p className="text-xs text-muted-foreground">Together</p>
+                      <p className="font-semibold text-sm">
+                        {pair?.created_at ? 
+                          Math.floor((new Date().getTime() - new Date(pair.created_at).getTime()) / (1000 * 60 * 60 * 24)) 
+                          : 0} days
+                      </p>
+                    </div>
+
+                    {/* Streak */}
+                    <div className="text-center p-3 rounded-lg bg-gradient-to-br from-love-heart/10 to-love-coral/10 hover:shadow-md transition-all">
+                      <div className="relative mx-auto mb-2 w-8 h-8 flex items-center justify-center">
+                        {streak > 0 && <div className="absolute inset-0 bg-love-heart/20 rounded-full animate-pulse" />}
+                        <Flame className={`relative z-10 ${streak > 0 ? 'text-love-heart' : 'text-muted-foreground'}`} size={24} />
+                      </div>
+                      <p className="text-xs text-muted-foreground">Streak</p>
+                      <p className="font-semibold text-sm flex items-center justify-center gap-1">
+                        {loadingStreak ? '...' : streak} days
+                      </p>
+                    </div>
+
+                    {/* Messages Sent */}
+                    <div className="text-center p-3 rounded-lg bg-gradient-to-br from-love-deep/10 to-love-heart/10 hover:shadow-md transition-shadow">
+                      <Heart className="mx-auto mb-2 text-love-deep" size={24} />
+                      <p className="text-xs text-muted-foreground">Messages</p>
+                      <p className="font-semibold text-sm">{messageCount}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        )}
+
+        {/* Weather Widget - Contextual */}
+        {pair && partner?.city && (
           <WeatherWidget 
-            partnerCity={partner?.city || userProfile?.city} 
-            partnerCountry={partner?.country || userProfile?.country}
+            partnerCity={partner?.city} 
+            partnerCountry={partner?.country}
             partnerName={partner?.first_name || partner?.display_name}
           />
         )}
 
-        {/* Partner Card - Only show if paired */}
-        {pair && partner && (
-          <Card className="mb-6 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in border-0 shadow-lg">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3">
-                <div className="flex items-center relative">
-                  <div className="w-14 h-14 rounded-full love-gradient p-1 shadow-lg z-10">
-                    <Avatar className="w-full h-full">
-                      <AvatarImage src={userProfile?.avatar_url} />
-                      <AvatarFallback className="bg-love-gradient text-white">
-                        {userProfile?.display_name?.charAt(0).toUpperCase() || userProfile?.first_name?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="w-14 h-14 rounded-full love-gradient p-1 shadow-lg -ml-4">
-                    <Avatar className="w-full h-full">
-                      <AvatarImage src={partner.avatar_url} />
-                      <AvatarFallback className="bg-love-gradient text-white">
-                        {partner.display_name?.charAt(0).toUpperCase() || <Heart size={20} />}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold">{partner.display_name}</h2>
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    Active now
-                  </p>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
-                  <Clock className="h-5 w-5 mx-auto mb-1 text-love-coral" />
-                  <p className="text-sm text-muted-foreground">Their time</p>
-                  <p className="font-semibold">{currentTime}</p>
-                </div>
-                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors cursor-pointer" onClick={() => setShowStreakDetails(!showStreakDetails)}>
-                  <div className="relative mx-auto w-fit">
-                    {streak > 0 && (
-                      <div className="absolute -top-1 -right-1 flex h-5 w-5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-5 w-5 bg-accent items-center justify-center">
-                          <Flame className="h-3 w-3 text-white" />
-                        </span>
-                      </div>
-                    )}
-                    <Flame className="h-5 w-5 mx-auto mb-1 text-accent" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">Streak</p>
-                  <p className="font-semibold">
-                    {loadingStreak ? (
-                      <span className="inline-block w-8 h-4 bg-muted animate-pulse rounded"></span>
-                    ) : (
-                      `${streak} ${streak === 1 ? 'day' : 'days'}`
-                    )}
-                  </p>
-                </div>
-                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
-                  <MessageSquareQuote className="h-5 w-5 mx-auto mb-1 text-love-deep" />
-                  <p className="text-sm text-muted-foreground">Messages</p>
-                  <p className="font-semibold">{messageCount}</p>
-                </div>
-              </div>
-              
-              {/* Collapsible Streak Details */}
-              <Collapsible open={showStreakDetails}>
-                <CollapsibleContent>
-                  <div className="mt-4 p-4 bg-gradient-to-r from-accent/10 to-love-heart/10 rounded-lg border border-accent/20 animate-fade-in">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Flame className="h-4 w-4 text-accent" />
-                      <p className="text-sm font-semibold">Streak Details</p>
+        {/* Collapsible Progress & Stats Section */}
+        {pair && (
+          <Collapsible defaultOpen={false} className="mb-6">
+            <Card className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 animate-fade-in border-0 shadow-lg overflow-hidden">
+              <CollapsibleTrigger className="w-full">
+                <CardHeader className="pb-4 cursor-pointer hover:bg-love-light/30 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-love-heart" />
+                      <CardTitle className="text-base">Your Progress & Achievements</CardTitle>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {streak === 0 
-                        ? "Send a message or log your mood to start your streak!"
-                        : `Amazing! You've stayed connected for ${streak} consecutive ${streak === 1 ? 'day' : 'days'}. Keep it up!`
-                      }
-                    </p>
-                    {streak >= 7 && (
-                      <div className="mt-2 flex items-center gap-1 text-xs text-accent">
-                        <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
-                        <span>Week milestone achieved! 🎉</span>
-                      </div>
-                    )}
+                    <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform" />
                   </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </CardContent>
-          </Card>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0 pb-4 space-y-4">
+                  {/* Streak Details */}
+                  {streak > 0 && (
+                    <div className="p-4 bg-gradient-to-br from-love-heart/10 to-love-coral/10 rounded-lg border border-love-coral/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Flame className="h-6 w-6 text-love-heart" />
+                        <div>
+                          <p className="font-semibold text-love-deep">
+                            {streak === 1 && "Great start! Keep it going! 🎉"}
+                            {streak >= 2 && streak < 7 && "You're on fire! 🔥"}
+                            {streak >= 7 && streak < 30 && "Amazing dedication! ⭐"}
+                            {streak >= 30 && "Legendary streak! 🏆"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {streak} day{streak !== 1 ? 's' : ''} of daily connection
+                          </p>
+                        </div>
+                      </div>
+                      {streak >= 7 && (
+                        <div className="pt-2 mt-2 border-t border-love-coral/20">
+                          <p className="text-xs font-medium text-love-heart">🎯 Milestone Unlocked!</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Activity Stats */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-love-light/50 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Smile className="h-4 w-4 text-love-heart" />
+                        <p className="text-xs text-muted-foreground">Mood Logs</p>
+                      </div>
+                      <p className="text-lg font-semibold">{moodCount}</p>
+                    </div>
+                    <div className="p-3 bg-love-light/50 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="h-4 w-4 text-love-deep" />
+                        <p className="text-xs text-muted-foreground">Events</p>
+                      </div>
+                      <p className="text-lg font-semibold">{eventCount}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         )}
 
         {/* Solo Mode - Demo Partner Card */}
