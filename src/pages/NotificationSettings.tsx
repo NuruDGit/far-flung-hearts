@@ -234,6 +234,14 @@ export default function NotificationSettings() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <div className="mb-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-4 -ml-2"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
         <h1 className="text-3xl font-bold text-foreground mb-2">Notification Settings</h1>
         <p className="text-muted-foreground">
           Manage when and how you receive notifications from Lobebo.
