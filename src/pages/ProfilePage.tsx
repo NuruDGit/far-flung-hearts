@@ -355,7 +355,7 @@ export const ProfilePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-love-light/30 to-love-soft/30 rounded-lg">
+              <div className="flex flex-col gap-4 p-4 bg-gradient-to-r from-love-light/30 to-love-soft/30 rounded-lg">
                 <div>
                   <p className="font-medium">Current Plan: {subscription.tier === 'premium' ? 'Premium' : 'Free'}</p>
                   {subscription.tier === 'premium' && (
@@ -368,7 +368,7 @@ export const ProfilePage = () => {
                 {subscription.tier === 'free' ? (
                   <Button
                     onClick={() => navigate('/app/subscription')}
-                    className="bg-love-heart hover:bg-love-coral text-white"
+                    className="bg-love-heart hover:bg-love-coral text-white w-full sm:w-auto"
                   >
                     Upgrade to Premium
                   </Button>
@@ -376,7 +376,7 @@ export const ProfilePage = () => {
                   <Button
                     onClick={handleManageSubscription}
                     variant="outline"
-                    className="border-love-coral text-love-deep hover:bg-love-light"
+                    className="border-love-coral text-love-deep hover:bg-love-light w-full sm:w-auto"
                   >
                     Manage Subscription
                   </Button>
