@@ -1,4 +1,4 @@
-import { Search, MessageCircle, Book, Video, Mail, HelpCircle } from "lucide-react";
+import { Search, MessageCircle, Book, Video, Mail, HelpCircle, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useState } from "react";
 import { getArticlesByCategory, searchArticles } from "@/data/helpArticles";
 
@@ -68,6 +69,22 @@ const HelpCenter = () => {
     <div className="min-h-screen bg-gradient-to-b from-white to-love-light/20">
       <Header />
       <main className="container mx-auto px-6 py-24">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb className="mb-8">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/" className="flex items-center gap-1">
+                <Home className="h-4 w-4" />
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Help Center</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-love-deep mb-4">
