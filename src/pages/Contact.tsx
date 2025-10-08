@@ -27,7 +27,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Us",
-      detail: "hello@lovebeyondborders.com",
+      detail: "hello@lobebo.com",
       description: "We'll respond within 24 hours"
     },
     {

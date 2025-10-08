@@ -216,7 +216,7 @@ const TermsOfService = () => {
                 </p>
                 <p>If you believe a minor has created an account:</p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li>Email: legal@lovebeyondborders.com</li>
+                  <li>Email: legal@lobebo.com</li>
                   <li>We will investigate and delete within 24 hours</li>
                   <li>Parents/guardians can request data deletion</li>
                 </ul>
@@ -257,7 +257,7 @@ const TermsOfService = () => {
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
               <div className="mt-4 space-y-2 text-muted-foreground">
-                <p>Email: legal@lovebeyondborders.com</p>
+                <p>Email: legal@lobebo.com</p>
                 <p>Address: Global • Remote First</p>
               </div>
             </CardContent>

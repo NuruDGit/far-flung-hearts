@@ -92,7 +92,7 @@ const Security = () => {
                 and penetration testing to identify and address vulnerabilities.
               </p>
               <p className="font-semibold text-love-heart">
-                Questions about our security practices? Contact our security team at security@lovebeyondborders.com
+                Questions about our security practices? Contact our security team at security@lobebo.com
               </p>
             </div>
           </CardContent>

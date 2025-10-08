@@ -160,7 +160,7 @@ const PrivacyPolicy = () => {
                   <li>Right to Object (Article 21)</li>
                 </ul>
                 <p className="font-medium mt-4">
-                  To exercise these rights, email: gdpr@lovebeyondborders.com
+                  To exercise these rights, email: gdpr@lobebo.com
                 </p>
                 <p className="text-sm">Response time: 30 days maximum</p>
               </div>
@@ -181,7 +181,7 @@ const PrivacyPolicy = () => {
                   <li>Not be discriminated against for exercising CCPA rights</li>
                 </ul>
                 <p className="font-medium mt-4">
-                  To exercise these rights, email: privacy@lovebeyondborders.com
+                  To exercise these rights, email: privacy@lobebo.com
                 </p>
               </div>
             </CardContent>
@@ -243,7 +243,7 @@ const PrivacyPolicy = () => {
                 If you have any questions about this Privacy Policy, please contact us at:
               </p>
               <div className="mt-4 space-y-2 text-muted-foreground">
-                <p>Email: privacy@lovebeyondborders.com</p>
+                <p>Email: privacy@lobebo.com</p>
                 <p>Address: Global • Remote First</p>
               </div>
             </CardContent>

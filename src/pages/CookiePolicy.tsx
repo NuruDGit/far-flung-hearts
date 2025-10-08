@@ -188,7 +188,7 @@ const CookiePolicy = () => {
               If you have any questions about our use of cookies, please contact us at:
             </p>
             <div className="space-y-2 text-muted-foreground mb-6">
-              <p>Email: privacy@lovebeyondborders.com</p>
+              <p>Email: privacy@lobebo.com</p>
               <p>Address: Global • Remote First</p>
             </div>
             <Button 
