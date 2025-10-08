@@ -134,7 +134,7 @@ export default function NotificationSettings() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">Notification Settings</h1>
         <p className="text-muted-foreground">
-          Manage when and how you receive notifications from your Lovable Calendar.
+          Manage when and how you receive notifications from Lobebo.
         </p>
       </div>
 

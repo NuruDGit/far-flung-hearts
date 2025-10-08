@@ -126,7 +126,7 @@ const SubscriptionPage = () => {
         "AI chat (3 questions/day)",
         "Basic goals (2 max)",
         "One video call trial (10 min)",
-        "Lovable branding"
+        "Lobebo branding"
       ],
       buttonText: "Current Plan",
       tierKey: 'free' as const,

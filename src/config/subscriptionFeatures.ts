@@ -12,7 +12,7 @@ export const SUBSCRIPTION_TIERS = {
       'AI chat (3 questions/day)',
       'Basic goals (2 goals max)',
       'One-time video call trial (10 min)',
-      'Lovable branding',
+      'Lobebo branding',
     ]
   },
   premium: {

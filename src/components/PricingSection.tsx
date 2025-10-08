@@ -84,7 +84,7 @@ const PricingSection = () => {
         "Memory vault (5 photos)",
         "AI chat (3 questions/day)",
         "Basic goals (2 max)",
-        "Lovable branding"
+        "Lobebo branding"
       ],
       buttonText: "Get Started Free",
       popular: false,
