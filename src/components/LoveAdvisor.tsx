@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Send, Bot, User, AlertCircle } from 'lucide-react';
+import { Send, Bot, User, AlertCircle, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -32,6 +32,10 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dailyQuestionCount, setDailyQuestionCount] = useState(0);
+  const [showDisclaimer, setShowDisclaimer] = useState(() => {
+    const dismissed = localStorage.getItem('loveAdvisorDisclaimerDismissed');
+    return dismissed !== 'true';
+  });
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -224,17 +228,32 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
     }
   };
 
+  const handleDismissDisclaimer = () => {
+    setShowDisclaimer(false);
+    localStorage.setItem('loveAdvisorDisclaimerDismissed', 'true');
+  };
+
   return (
     <div className="h-full min-h-0 flex flex-col">
-      {/* Professional Disclaimer */}
-      <Alert className="m-4 mb-2 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
-        <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-        <AlertDescription className="text-sm text-amber-800 dark:text-amber-200">
-          <strong>Important:</strong> This AI advisor provides general relationship suggestions 
-          and is not a substitute for professional therapy or counseling. For serious issues 
-          (abuse, mental health crises, etc.), please consult a licensed professional.
-        </AlertDescription>
-      </Alert>
+      {/* Professional Disclaimer - Dismissible */}
+      {showDisclaimer && (
+        <Alert className="m-4 mb-2 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
+          <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <AlertDescription className="text-sm text-amber-800 dark:text-amber-200 pr-6">
+            <strong>Important:</strong> This AI advisor provides general relationship suggestions 
+            and is not a substitute for professional therapy or counseling. For serious issues 
+            (abuse, mental health crises, etc.), please consult a licensed professional.
+          </AlertDescription>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 h-6 w-6 text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200"
+            onClick={handleDismissDisclaimer}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </Alert>
+      )}
 
       {/* Welcoming image section */}
       {messages.length === 1 && partnerData && (
