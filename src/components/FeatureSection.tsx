@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, MessageSquare, HelpCircle, Clock, Vault, Globe, Target, Brain } from "lucide-react";
 import { motion } from "framer-motion";
