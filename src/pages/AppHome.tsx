@@ -303,81 +303,14 @@ const AppHome = () => {
               </Badge>
             </p>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-love-coral/10 hover:text-love-coral transition-colors">
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-sm border border-love-coral/20">
-              <DropdownMenuItem 
-                onClick={() => navigate('/app/profile')}
-                className="cursor-pointer hover:bg-love-light/20"
-              >
-                <User className="mr-2 h-4 w-4" />
-                Profile Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => navigate('/app/mood')}
-                className="cursor-pointer hover:bg-love-light/20"
-              >
-                <Smile className="mr-2 h-4 w-4" />
-                Mood Tracker
-                {!hasFeatureAccess(subscription.tier, 'moodLogging') && (
-                  <Badge variant="outline" className="ml-auto text-xs">Free</Badge>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {
-                  if (hasFeatureAccess(subscription.tier, 'moodAnalytics')) {
-                    navigate('/app/mood/analytics');
-                  } else {
-                    toast.error('Mood Analytics requires Premium');
-                    navigate('/app/subscription');
-                  }
-                }}
-                className="cursor-pointer hover:bg-love-light/20"
-              >
-                <Zap className="mr-2 h-4 w-4" />
-                Mood Analytics
-                {!hasFeatureAccess(subscription.tier, 'moodAnalytics') && (
-                  <Badge variant="outline" className="ml-auto text-xs bg-love-heart/10 text-love-heart border-love-heart/30">Premium</Badge>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {
-                  if (hasFeatureAccess(subscription.tier, 'goals')) {
-                    navigate('/app/goals');
-                  } else {
-                    toast.error('Goals requires Premium');
-                    navigate('/app/subscription');
-                  }
-                }}
-                className="cursor-pointer hover:bg-love-light/20"
-              >
-                <Heart className="mr-2 h-4 w-4" />
-                Relationship Goals
-                {!hasFeatureAccess(subscription.tier, 'goals') && (
-                  <Badge variant="outline" className="ml-auto text-xs bg-love-heart/10 text-love-heart border-love-heart/30">Premium</Badge>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => navigate('/app/messages')}
-                className="cursor-pointer hover:bg-love-light/20"
-              >
-                <MessageSquareQuote className="mr-2 h-4 w-4" />
-                Messages
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-love-coral/20" />
-              <DropdownMenuItem 
-                onClick={signOut}
-                className="cursor-pointer hover:bg-red-50 text-red-600"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hover:bg-love-coral/10 hover:text-love-coral transition-colors"
+            onClick={() => navigate('/app/profile')}
+          >
+            <User className="h-5 w-5" />
+          </Button>
         </div>
 
         {/* Solo Mode - Invite Partner Banner */}
