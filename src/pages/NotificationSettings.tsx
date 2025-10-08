@@ -236,7 +236,7 @@ export default function NotificationSettings() {
       <div className="mb-8">
         <Button
           variant="ghost"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/app')}
           className="mb-4 -ml-2"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
