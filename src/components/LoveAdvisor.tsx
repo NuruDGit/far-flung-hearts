@@ -237,7 +237,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
     <div className="h-full min-h-0 flex flex-col">
       {/* Professional Disclaimer - Dismissible */}
       {showDisclaimer && (
-        <Alert className="m-4 mb-2 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
+        <Alert className="mx-auto my-4 max-w-2xl border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
           <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           <AlertDescription className="text-sm text-amber-800 dark:text-amber-200 pr-6">
             <strong>Important:</strong> This AI advisor provides general relationship suggestions 
