@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { formatDistanceToNow, format } from 'date-fns';
 import { MoreVertical, Edit3, Trash2, Reply } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageReactions } from './MessageReactions';
 import { MessageActionBar } from './MessageActionBar';
+import { ReadReceipts } from './ReadReceipts';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -183,7 +185,10 @@ export const MessageBubble = ({
         />
       )}
       
-      <div 
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className={`flex items-start gap-3 mb-4 group ${isOwn ? 'flex-row-reverse' : 'flex-row'} ${
           isSelected ? 'bg-primary/5 rounded-lg p-2 -m-2 border border-primary/20' : ''
         } transition-all duration-200`}
@@ -346,12 +351,17 @@ export const MessageBubble = ({
           )}
         </div>
         
-        <span 
-          className="text-xs text-muted-foreground mt-1 px-1"
-          title={fullTime}
-        >
-          {timeAgo}
-        </span>
+        <div className="flex items-center gap-2 mt-1">
+          <span 
+            className="text-xs text-muted-foreground px-1"
+            title={fullTime}
+          >
+            {timeAgo}
+          </span>
+          {isOwn && (
+            <ReadReceipts isSent={true} isDelivered={true} isRead={false} />
+          )}
+        </div>
 
         {/* Message Reactions */}
         <MessageReactions
@@ -362,7 +372,7 @@ export const MessageBubble = ({
           isSelected={isSelected}
         />
       </div>
-      </div>
+      </motion.div>
     </>
   );
 };

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, parseISO, addMonths, subMonths } from 'date-fns';
 import { Calendar, Plus, ChevronLeft, ChevronRight, Clock, MapPin, Edit, Filter, Search, Heart } from 'lucide-react';
 import { DinnerPlateIcon } from '@/components/icons/DinnerPlateIcon';
@@ -13,6 +14,8 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { CreateEventDialog } from '@/components/calendar/CreateEventDialog';
 import { EventDetailsDialog } from '@/components/calendar/EventDetailsDialog';
 import { EditEventDialog } from '@/components/calendar/EditEventDialog';
+import { AnimatedCalendar } from '@/components/calendar/AnimatedCalendar';
+import { EventCard } from '@/components/calendar/EventCard';
 import { useToast } from '@/hooks/use-toast';
 import AppNavigation from '@/components/AppNavigation';
 import { SubscriptionGuard } from '@/components/SubscriptionGuard';
@@ -137,92 +140,6 @@ const CalendarPage = () => {
     });
   };
 
-  const renderCalendarGrid = () => {
-    const monthStart = startOfMonth(currentDate);
-    const monthEnd = endOfMonth(currentDate);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
-
-    const dateFormat = "d";
-    const rows = [];
-    let days = [];
-    let day = startDate;
-
-    // Create header
-    const daysOfWeek = [];
-    for (let i = 0; i < 7; i++) {
-      daysOfWeek.push(
-        <div key={i} className="py-4 text-center text-sm font-medium text-muted-foreground">
-          {format(addDays(startOfWeek(new Date()), i), 'EEE')}
-        </div>
-      );
-    }
-
-    while (day <= endDate) {
-      for (let i = 0; i < 7; i++) {
-        const formattedDate = format(day, dateFormat);
-        const cloneDay = day;
-        const dayEvents = getEventsForDate(day);
-        const isCurrentMonth = isSameMonth(day, monthStart);
-        const isToday = isSameDay(day, new Date());
-        const isSelected = isSameDay(day, selectedDate);
-
-        days.push(
-          <div
-            key={day.toString()}
-            className={`
-              h-16 flex flex-col items-center justify-center cursor-pointer hover:bg-secondary/50 transition-all duration-200 relative
-              ${!isCurrentMonth ? 'text-muted-foreground' : ''}
-            `}
-            onClick={() => setSelectedDate(cloneDay)}
-          >
-            <div 
-              className={`
-                w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200
-                ${isToday ? 'bg-love-heart text-white shadow-md' : ''}
-                ${isSelected && !isToday ? 'bg-love-heart/10 text-love-heart border-2 border-love-heart' : ''}
-                ${!isSelected && !isToday ? 'hover:bg-secondary' : ''}
-              `}
-            >
-              {formattedDate}
-            </div>
-            {dayEvents.length > 0 && (
-              <div className="flex gap-1 mt-1">
-                {dayEvents.slice(0, 3).map((event, index) => {
-                  const colors = eventTypeColors[event.kind] || eventTypeColors.other;
-                  return (
-                    <div
-                      key={event.id}
-                      className={`w-1.5 h-1.5 rounded-full ${colors.bg.replace('/10', '/60')}`}
-                    />
-                  );
-                })}
-                {dayEvents.length > 3 && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                )}
-              </div>
-            )}
-          </div>
-        );
-        day = addDays(day, 1);
-      }
-      rows.push(
-        <div key={day.toString()} className="grid grid-cols-7 border-b border-border/20 last:border-b-0">
-          {days}
-        </div>
-      );
-      days = [];
-    }
-
-    return (
-      <div className="bg-card rounded-lg border border-border shadow-sm">
-        <div className="grid grid-cols-7 border-b border-border/20 bg-muted/20">
-          {daysOfWeek}
-        </div>
-        {rows}
-      </div>
-    );
-  };
 
   const renderEventList = () => {
     const dayEvents = getEventsForDate(selectedDate).sort((a, b) => 
@@ -264,41 +181,36 @@ const CalendarPage = () => {
         </div>
         
         {dayEvents.length === 0 ? (
-          <div className="text-center py-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-8"
+          >
             <Calendar className="mx-auto mb-3 text-muted-foreground/50" size={32} />
             <p className="text-sm text-muted-foreground">No events for this day</p>
-          </div>
+          </motion.div>
         ) : (
           <div className="space-y-3">
-            {dayEvents.map((event) => (
-              <div 
-                key={event.id} 
-                className="flex items-start gap-3 p-3 rounded-lg bg-love-light/10 border border-border/20 cursor-pointer transition-colors"
-                onClick={() => {
-                  setSelectedEvent(event);
-                  setShowDetailsDialog(true);
-                }}
+            {dayEvents.map((event, index) => (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
               >
-                <div className="flex items-center justify-center w-12 h-16 bg-secondary/30 rounded-lg flex-shrink-0">
-                  {getEventIcon(event.kind)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-foreground mb-1">{event.title}</h4>
-                  {!event.all_day && (
-                    <p className="text-sm text-muted-foreground">
-                      {format(parseISO(event.starts_at), 'h:mm a')} - {format(parseISO(event.ends_at), 'h:mm a')}
-                    </p>
-                  )}
-                  {event.all_day && (
-                    <p className="text-sm text-muted-foreground">All day</p>
-                  )}
-                  {event.meta.location && (
-                    <p className="text-xs text-muted-foreground/70 mt-1">
-                      📍 {event.meta.location}
-                    </p>
-                  )}
-                </div>
-              </div>
+                <EventCard
+                  {...event}
+                  onEdit={() => {
+                    setSelectedEvent(event);
+                    setShowEditDialog(true);
+                  }}
+                  onDelete={() => handleEventDeleted(event.id)}
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    setShowDetailsDialog(true);
+                  }}
+                />
+              </motion.div>
             ))}
           </div>
         )}
@@ -474,7 +386,12 @@ const CalendarPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Calendar Grid */}
             <div className="lg:col-span-2">
-              {renderCalendarGrid()}
+              <AnimatedCalendar
+                currentDate={currentDate}
+                selectedDate={selectedDate}
+                events={filteredEvents}
+                onDateSelect={setSelectedDate}
+              />
             </div>
             
             {/* Event List */}
