@@ -25,6 +25,13 @@ All colors MUST be HSL.
 
     --muted: 10 100% 95%;
     --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 221 83% 53%;
+    --info-foreground: 0 0% 100%;
 
     --accent: 340 75% 55%;
     --accent-foreground: 0 0% 98%;
@@ -53,6 +60,12 @@ All colors MUST be HSL.
     --love-deep: 340 75% 55%;
     --love-coral: 10 100% 85%;
     --love-glow: 350 85% 75%;
+    
+    /* Gradient variations */
+    --gradient-subtle: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-medium: linear-gradient(135deg, hsl(var(--love-coral)) 0%, hsl(var(--love-heart)) 100%);
+    --gradient-bold: linear-gradient(135deg, hsl(var(--love-heart)) 0%, hsl(var(--love-deep)) 100%);
+    --gradient-radial: radial-gradient(circle at top right, hsl(var(--love-coral)) 0%, hsl(var(--love-heart)) 50%, hsl(var(--love-deep)) 100%);
     
     /* Shadows */
     --shadow-love: 0 8px 32px hsl(350 85% 60% / 0.15);
@@ -135,9 +148,19 @@ All colors MUST be HSL.
     --input: 340 15% 20%;
     --ring: 350 85% 65%;
     
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 221 83% 53%;
+    --info-foreground: 0 0% 100%;
+    
     /* Dark mode love tokens */
     --love-gradient: linear-gradient(135deg, hsl(350, 85%, 65%), hsl(340, 75%, 60%));
     --love-gradient-soft: linear-gradient(135deg, hsl(340, 30%, 20%), hsl(350, 40%, 25%));
+    --gradient-subtle: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-medium: linear-gradient(135deg, hsl(var(--love-coral) / 0.3) 0%, hsl(var(--love-heart) / 0.3) 100%);
+    --gradient-bold: linear-gradient(135deg, hsl(var(--love-heart)) 0%, hsl(var(--love-deep)) 100%);
     --shadow-love: 0 8px 32px hsl(350 85% 40% / 0.25);
     --shadow-card: 0 4px 16px hsl(340 20% 10% / 0.5);
     --sidebar-background: 240 5.9% 10%;
@@ -169,6 +192,36 @@ All colors MUST be HSL.
   
   .love-gradient-soft {
     background: var(--love-gradient-soft);
+  }
+  
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .glass-medium {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .glass-bold {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+  }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
   .heart-beat {
@@ -259,5 +312,40 @@ All colors MUST be HSL.
       transform: translateY(-20px) scale(1.3);
       opacity: 0.4;
     }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes counter-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 1000px 100%;
+  }
+
+  .animate-counter-up {
+    animation: counter-up 0.6s ease-out;
   }
 }

@@ -5,18 +5,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-elevation-1 hover:shadow-elevation-2",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-elevation-1",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-elevation-1",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-elevation-1",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        love: "love-gradient text-white shadow-love hover:shadow-lg transform hover:scale-105 transition-all duration-300",
-        loveOutline: "border-2 border-primary text-primary bg-transparent hover:love-gradient hover:text-white hover:shadow-love transition-all duration-300",
+        love: "bg-gradient-to-r from-love-heart to-love-deep text-white hover:from-love-deep hover:to-love-heart shadow-elevation-2 hover:shadow-elevation-4 font-semibold hover:scale-105",
+        loveOutline: "border-2 border-love-heart text-love-heart hover:bg-love-heart hover:text-white shadow-elevation-1 hover:shadow-elevation-3 font-semibold hover:scale-105",
         heart: "love-gradient text-white rounded-full p-3 hover:animate-heartbeat shadow-love",
       },
       size: {
