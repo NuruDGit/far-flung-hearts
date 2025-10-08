@@ -384,6 +384,7 @@ Healthy LDRs balance care and connection with independence and trust.`,
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container max-w-4xl mx-auto px-6 py-12 md:py-20">
+        {/* Back Button */}
         <Button 
           onClick={() => navigate("/blog")} 
           variant="ghost"
