@@ -34,6 +34,7 @@ const WishlistPage = lazy(() => import("./pages/WishlistPage"));
 const DailyQuestionAnswers = lazy(() => import("./pages/DailyQuestionAnswers"));
 const Security = lazy(() => import("./pages/Security"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
+const HelpArticle = lazy(() => import("./pages/HelpArticle"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Community = lazy(() => import("./pages/Community"));
 const Blog = lazy(() => import("./pages/Blog"));
@@ -96,6 +97,7 @@ const App = () => {
             {/* Public pages */}
             <Route path="/security" element={<Security />} />
             <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/help-center/article/:articleId" element={<HelpArticle />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/community" element={<Community />} />
           <Route path="/blog" element={<Blog />} />

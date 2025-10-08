@@ -1,4 +1,5 @@
 import { Search, MessageCircle, Book, Video, Mail, HelpCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,9 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useState } from "react";
+import { getArticlesByCategory, searchArticles } from "@/data/helpArticles";
 
 const HelpCenter = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const searchResults = searchQuery.length > 2 ? searchArticles(searchQuery) : [];
 
   const categories = [
     {
@@ -86,42 +90,98 @@ const HelpCenter = () => {
           </div>
         </div>
 
-        {/* Help Categories */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-love-deep mb-6">Browse by Category</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, idx) => (
-              <Card key={idx}>
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-love-heart/20 to-love-coral/20 flex items-center justify-center mb-4">
-                    <category.icon className="w-6 h-6 text-love-heart" />
-                  </div>
-                  <CardTitle className="text-lg">{category.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm">{category.description}</p>
+        {/* Search Results */}
+        {searchQuery.length > 2 && (
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-love-deep mb-6">
+              Search Results ({searchResults.length})
+            </h2>
+            {searchResults.length > 0 ? (
+              <div className="grid gap-4">
+                {searchResults.map((article) => (
+                  <Card 
+                    key={article.id}
+                    className="cursor-pointer hover:border-love-coral/50 transition-all hover:shadow-lg"
+                    onClick={() => navigate(`/help-center/article/${article.id}`)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm text-love-heart font-medium mb-2">{article.category}</p>
+                          <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
+                          <p className="text-muted-foreground line-clamp-2">
+                            {article.content.substring(0, 150)}...
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">No articles found matching "{searchQuery}"</p>
                 </CardContent>
               </Card>
-            ))}
+            )}
           </div>
-        </div>
+        )}
 
-        {/* FAQs */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-love-deep mb-6">Frequently Asked Questions</h2>
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, idx) => (
-              <AccordionItem key={idx} value={`item-${idx}`}>
-                <AccordionTrigger className="text-left text-lg font-semibold">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+        {/* Help Categories */}
+        {searchQuery.length <= 2 && (
+          <>
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold text-love-deep mb-6">Browse by Category</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {categories.map((category, idx) => {
+                  const categoryArticles = getArticlesByCategory(category.title);
+                  return (
+                    <Card 
+                      key={idx}
+                      className="cursor-pointer hover:border-love-coral/50 transition-all hover:shadow-lg"
+                      onClick={() => {
+                        if (categoryArticles.length > 0) {
+                          navigate(`/help-center/article/${categoryArticles[0].id}`);
+                        }
+                      }}
+                    >
+                      <CardHeader>
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-love-heart/20 to-love-coral/20 flex items-center justify-center mb-4">
+                          <category.icon className="w-6 h-6 text-love-heart" />
+                        </div>
+                        <CardTitle className="text-lg">{category.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground text-sm mb-2">{category.description}</p>
+                        <p className="text-sm text-love-heart font-medium">
+                          {categoryArticles.length} article{categoryArticles.length !== 1 ? 's' : ''}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* FAQs */}
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold text-love-deep mb-6">Frequently Asked Questions</h2>
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq, idx) => (
+                  <AccordionItem key={idx} value={`item-${idx}`}>
+                    <AccordionTrigger className="text-left text-lg font-semibold">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </>
+        )}
 
         {/* Contact Support */}
         <Card className="bg-gradient-to-br from-love-heart to-love-coral text-white">
