@@ -237,9 +237,9 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
     <div className="h-full min-h-0 flex flex-col">
       {/* Professional Disclaimer - Dismissible */}
       {showDisclaimer && (
-        <Alert className="mx-auto my-4 max-w-2xl border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
+        <Alert className="relative mx-auto my-4 max-w-2xl border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 flex-shrink-0">
           <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          <AlertDescription className="text-sm text-amber-800 dark:text-amber-200 pr-6">
+          <AlertDescription className="text-sm text-amber-800 dark:text-amber-200 pr-8">
             <strong>Important:</strong> This AI advisor provides general relationship suggestions 
             and is not a substitute for professional therapy or counseling. For serious issues 
             (abuse, mental health crises, etc.), please consult a licensed professional.
@@ -247,7 +247,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-2 right-2 h-6 w-6 text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200"
+            className="absolute top-1 right-1 h-7 w-7 text-amber-600 hover:text-amber-800 hover:bg-amber-100 dark:text-amber-400 dark:hover:text-amber-200 dark:hover:bg-amber-900/30"
             onClick={handleDismissDisclaimer}
           >
             <X className="h-4 w-4" />
