@@ -391,9 +391,9 @@ const AppHome = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
       <AppNavigation />
-      <div className="container mx-auto p-4 max-w-md md:max-w-2xl lg:max-w-4xl pt-6 pb-24 md:pb-28 lg:pb-8">
+      <div className="container mx-auto p-4 max-w-md md:max-w-2xl lg:max-w-4xl pt-2 md:pt-6 pb-24 md:pb-28 lg:pb-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4 md:mb-6">
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-love-deep">
               {getGreeting()}, {getUserDisplayName()}!
