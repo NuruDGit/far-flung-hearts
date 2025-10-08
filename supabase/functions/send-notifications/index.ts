@@ -108,11 +108,42 @@ const handler = async (req: Request): Promise<Response> => {
               deliveryResults.push({ method: 'email', success: true });
               deliverySuccess = true;
             } else if (method === 'push') {
-              console.log(`📱 Push notification to user ${notification.user_id}:`);
-              console.log(`Title: ${notification.title}`);
-              console.log(`Message: ${notification.message}`);
-              deliveryResults.push({ method: 'push', success: true });
-              deliverySuccess = true;
+              // Send actual push notification
+              const pushResponse = await fetch(
+                `${supabaseUrl}/functions/v1/send-push-notification`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${supabaseServiceKey}`,
+                  },
+                  body: JSON.stringify({
+                    userId: notification.user_id,
+                    title: notification.title,
+                    message: notification.message,
+                    data: notification.data,
+                    url: notification.data?.url || '/app',
+                  }),
+                }
+              );
+
+              if (!pushResponse.ok) {
+                throw new Error(`Push notification failed with status ${pushResponse.status}`);
+              }
+
+              const pushResult = await pushResponse.json();
+              console.log(`📱 Push sent to ${pushResult.sent} device(s)`);
+              
+              if (pushResult.sent > 0) {
+                deliveryResults.push({ method: 'push', success: true });
+                deliverySuccess = true;
+              } else {
+                deliveryResults.push({ 
+                  method: 'push', 
+                  success: false, 
+                  error: 'No active push subscriptions' 
+                });
+              }
             }
           } catch (methodError) {
             console.error(`Error sending ${method} notification:`, methodError);

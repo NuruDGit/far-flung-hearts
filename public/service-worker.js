@@ -121,17 +121,25 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push notification received');
   
+  const data = event.data ? event.data.json() : {};
+  
   const options = {
-    body: event.data ? event.data.text() : 'New update available!',
+    body: data.message || 'You have a new notification',
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     vibrate: [200, 100, 200],
-    tag: 'lbb-notification',
-    requireInteraction: false
+    tag: 'lobebo-notification',
+    requireInteraction: false,
+    data: {
+      dateOfArrival: Date.now(),
+      url: data.url || '/app',
+      ...data.data
+    },
+    actions: data.actions || []
   };
 
   event.waitUntil(
-    self.registration.showNotification('Love Beyond Borders', options)
+    self.registration.showNotification(data.title || 'Lobebo', options)
   );
 });
 
@@ -140,8 +148,23 @@ self.addEventListener('notificationclick', (event) => {
   console.log('[Service Worker] Notification clicked');
   event.notification.close();
 
+  const urlToOpen = event.notification.data.url || '/app';
+
   event.waitUntil(
-    clients.openWindow('/')
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        // Check if there's already a window open
+        for (let i = 0; i < windowClients.length; i++) {
+          const client = windowClients[i];
+          if (client.url === urlToOpen && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If no window is open, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
   );
 });
 

@@ -38,10 +38,18 @@ export default function NotificationSettings() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pushPermission, setPushPermission] = useState<NotificationPermission>("default");
 
   useEffect(() => {
     loadPreferences();
+    checkPushPermission();
   }, []);
+
+  const checkPushPermission = () => {
+    if ('Notification' in window) {
+      setPushPermission(Notification.permission);
+    }
+  };
 
   const loadPreferences = async () => {
     try {
@@ -121,8 +129,102 @@ export default function NotificationSettings() {
     }
   };
 
-  const updatePreference = (key: keyof NotificationPreferences, value: boolean | string) => {
+  const updatePreference = async (key: keyof NotificationPreferences, value: boolean | string) => {
     setPreferences(prev => ({ ...prev, [key]: value }));
+    
+    // If enabling push notifications, request permission
+    if (key === 'push_notifications' && value === true) {
+      await requestPushPermission();
+    }
+  };
+
+  const requestPushPermission = async () => {
+    if (!('Notification' in window)) {
+      toast({
+        title: "Not supported",
+        description: "Push notifications are not supported in this browser.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!('serviceWorker' in navigator)) {
+      toast({
+        title: "Not supported",
+        description: "Service workers are not supported in this browser.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      setPushPermission(permission);
+
+      if (permission === 'granted') {
+        // Register service worker and subscribe to push
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        await registration.update();
+
+        // Wait for service worker to be ready
+        const sw = await navigator.serviceWorker.ready;
+
+        // Subscribe to push notifications
+        const subscription = await sw.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(
+            'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U' // VAPID public key
+          ),
+        });
+
+        // Save subscription to database
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const subscriptionJSON = subscription.toJSON();
+          await supabase.from('push_subscriptions').upsert({
+            user_id: user.id,
+            endpoint: subscriptionJSON.endpoint!,
+            p256dh: subscriptionJSON.keys!.p256dh!,
+            auth: subscriptionJSON.keys!.auth!,
+            user_agent: navigator.userAgent,
+          });
+        }
+
+        toast({
+          title: "Success",
+          description: "Push notifications enabled successfully!",
+        });
+      } else {
+        setPreferences(prev => ({ ...prev, push_notifications: false }));
+        toast({
+          title: "Permission denied",
+          description: "Please enable notifications in your browser settings.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error requesting push permission:', error);
+      setPreferences(prev => ({ ...prev, push_notifications: false }));
+      toast({
+        title: "Error",
+        description: "Failed to enable push notifications.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Helper function to convert VAPID key
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
   };
 
   if (loading) {
@@ -169,11 +271,14 @@ export default function NotificationSettings() {
                 <Label className="text-base font-medium">Push Notifications</Label>
                 <p className="text-sm text-muted-foreground">
                   Receive browser push notifications
+                  {pushPermission === 'denied' && ' (Blocked in browser settings)'}
+                  {pushPermission === 'default' && ' (Permission required)'}
                 </p>
               </div>
               <Switch
                 checked={preferences.push_notifications}
                 onCheckedChange={(checked) => updatePreference('push_notifications', checked)}
+                disabled={pushPermission === 'denied'}
               />
             </div>
           </CardContent>
