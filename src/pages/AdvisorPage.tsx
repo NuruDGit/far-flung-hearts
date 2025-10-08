@@ -4,9 +4,11 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import LoveAdvisor from '@/components/LoveAdvisor';
+import { getFeatureLimit } from '@/config/subscriptionFeatures';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
 
 const AdvisorPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const [pair, setPair] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +51,16 @@ const AdvisorPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
       <AppNavigation />
       <div className="container mx-auto p-4 max-w-2xl pt-6 pb-24">
+        {getFeatureLimit(subscription.tier, 'loveAdvisor') !== null && (
+          <div className="mb-4">
+            <UpgradePrompt 
+              featureName="Unlimited AI Love Advisor"
+              requiredTier="premium"
+              compact={true}
+            />
+          </div>
+        )}
+        
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Love Advisor</h1>
           <p className="text-gray-600">

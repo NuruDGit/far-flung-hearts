@@ -19,6 +19,9 @@ import { AIRecommendations } from '@/components/goals/AIRecommendations';
 import { ExpandableTaskDescription } from '@/components/goals/ExpandableTaskDescription';
 import { TaskAssignmentSelector } from '@/components/goals/TaskAssignmentSelector';
 import AppNavigation from '@/components/AppNavigation';
+import { SubscriptionGuard } from '@/components/SubscriptionGuard';
+import { hasFeatureAccess, getFeatureLimit } from '@/config/subscriptionFeatures';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
 
 interface Task {
   id: string;
@@ -44,7 +47,7 @@ interface Goal {
 }
 
 export default function GoalsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -428,18 +431,51 @@ export default function GoalsPage() {
     return <Navigate to="/auth" replace />;
   }
 
+  // Check if user has access to goals feature and limits
+  const goalLimit = getFeatureLimit(subscription.tier, 'goals');
+  const hasUnlimitedGoals = hasFeatureAccess(subscription.tier, 'goals') && goalLimit === null;
+
   return (
     <>
       <AppNavigation />
       <div className="container mx-auto p-4 max-w-6xl space-y-6 pb-24">
+        {/* Premium Upgrade Prompt */}
+        {subscription.tier === 'free' && (
+          <UpgradePrompt 
+            featureName="Unlimited Goals & Tasks"
+            requiredTier="premium"
+            compact={false}
+          />
+        )}
+
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Goals & Tasks</h1>
-            <p className="text-muted-foreground mt-2">Track your relationship goals and daily tasks together</p>
+            <p className="text-muted-foreground mt-2">
+              Track your relationship goals and daily tasks together
+              {goalLimit !== null && (
+                <Badge variant="outline" className="ml-2">
+                  {goals.length}/{goalLimit} Goals Used
+                </Badge>
+              )}
+            </p>
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => setShowCreateGoal(true)} variant="outline">
+            <Button 
+              onClick={() => {
+                if (goalLimit !== null && goals.length >= goalLimit) {
+                  toast({
+                    title: "Goal limit reached",
+                    description: `Free tier allows ${goalLimit} goals. Upgrade to Premium for unlimited goals!`,
+                  });
+                  return;
+                }
+                setShowCreateGoal(true);
+              }} 
+              variant="outline"
+              disabled={goalLimit !== null && goals.length >= goalLimit}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Goal
             </Button>

@@ -15,6 +15,8 @@ import { EventDetailsDialog } from '@/components/calendar/EventDetailsDialog';
 import { EditEventDialog } from '@/components/calendar/EditEventDialog';
 import { useToast } from '@/hooks/use-toast';
 import AppNavigation from '@/components/AppNavigation';
+import { SubscriptionGuard } from '@/components/SubscriptionGuard';
+import { hasFeatureAccess } from '@/config/subscriptionFeatures';
 
 interface CalendarEvent {
   id: string;
@@ -37,7 +39,7 @@ const eventTypeColors: Record<string, { bg: string; text: string; border: string
 };
 
 const CalendarPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -340,6 +342,18 @@ const CalendarPage = () => {
 
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Premium feature guard for calendar events
+  if (!hasFeatureAccess(subscription.tier, 'calendarEvents')) {
+    return (
+      <SubscriptionGuard 
+        requiredTier="premium" 
+        featureName="Calendar & Events"
+      >
+        <></>
+      </SubscriptionGuard>
+    );
   }
 
   return (

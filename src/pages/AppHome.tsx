@@ -490,6 +490,12 @@ const AppHome = () => {
           </Card>
         )}
 
+        {/* Subscription Tier Upgrade CTA - Show for Free users */}
+        {subscription.tier === 'free' && (
+          <div className="mb-6">
+            <UpgradeCTA />
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">

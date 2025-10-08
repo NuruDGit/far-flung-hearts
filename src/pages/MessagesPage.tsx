@@ -11,6 +11,8 @@ import { CallNotification } from '@/components/messages/CallNotification';
 import { CallNotificationMobile } from '@/components/messages/CallNotificationMobile';
 import { useVideoCall } from '@/hooks/useVideoCall';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { hasFeatureAccess, getFeatureLimit } from '@/config/subscriptionFeatures';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
 
 import { Card } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -44,7 +46,7 @@ interface Pair {
 }
 
 const MessagesPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { pair, loading: pairLoading } = useActivePair();
@@ -270,6 +272,29 @@ const MessagesPage = () => {
   const sendMessage = async (content: string, attachments?: File[], replyToId?: string) => {
     if (!user || !pair || (!content.trim() && !attachments?.length)) return;
 
+    // Check message limit for free tier
+    const messageLimit = getFeatureLimit(subscription.tier, 'messaging');
+    if (messageLimit !== null) {
+      const todayMessages = messages.filter(m => {
+        const messageDate = new Date(m.created_at).toDateString();
+        const today = new Date().toDateString();
+        return m.sender_id === user.id && messageDate === today;
+      });
+      
+      if (todayMessages.length >= messageLimit) {
+        toast({
+          title: "Daily message limit reached",
+          description: `Free tier allows ${messageLimit} messages per day. Upgrade to Premium for unlimited messaging!`,
+          action: (
+            <Button size="sm" onClick={() => navigate('/app/subscription')}>
+              Upgrade
+            </Button>
+          ),
+        });
+        return;
+      }
+    }
+
     setSending(true);
     
     // Stop typing indicator
@@ -354,6 +379,19 @@ const MessagesPage = () => {
   };
 
   const startVideoCall = async () => {
+    if (!hasFeatureAccess(subscription.tier, 'videoCalls')) {
+      toast({
+        title: "Video calls require Premium",
+        description: "Upgrade to Premium for unlimited video calls",
+        action: (
+          <Button size="sm" onClick={() => navigate('/app/subscription')}>
+            Upgrade
+          </Button>
+        ),
+      });
+      return;
+    }
+    
     if (partner?.id) {
       await startCall(partner.id, true);
     }

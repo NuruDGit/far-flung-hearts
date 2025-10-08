@@ -21,6 +21,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/AuthProvider";
 import confetti from "canvas-confetti";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { hasFeatureAccess } from "@/config/subscriptionFeatures";
 
 interface GameSession {
   id: string;
@@ -84,7 +86,7 @@ export default function GamesPage() {
   const [recentSessions, setRecentSessions] = useState<GameSession[]>([]);
   const [selectedGameType, setSelectedGameType] = useState<string | null>(null);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
 
   useEffect(() => {
     loadPairAndSessions();

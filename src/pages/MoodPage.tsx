@@ -4,9 +4,12 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import AppNavigation from '@/components/AppNavigation';
 import MoodLogger from '@/components/MoodLogger';
+import { getFeatureLimit } from '@/config/subscriptionFeatures';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
+import { Badge } from '@/components/ui/badge';
 
 const MoodPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const [pair, setPair] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -45,10 +48,21 @@ const MoodPage = () => {
     return <Navigate to="/auth" replace />;
   }
 
+  const moodLimit = getFeatureLimit(subscription.tier, 'moodLogging');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
       <AppNavigation />
-      <div className="container mx-auto p-4 max-w-md pt-6">
+      <div className="container mx-auto p-4 max-w-2xl pt-6 pb-24">
+        {moodLimit !== null && (
+          <div className="mb-4">
+            <UpgradePrompt 
+              featureName="Unlimited Mood Logging"
+              requiredTier="premium"
+              compact={true}
+            />
+          </div>
+        )}
         <MoodLogger pairId={pair?.id} />
       </div>
     </div>
