@@ -73,7 +73,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       if (data) {
-        setSubscription(data);
+        // Normalize tier on the frontend as well for backwards compatibility
+        const normalizedTier = (data.tier === 'super_premium' || data.tier === 'premium_monthly' || data.tier === 'premium_annual') 
+          ? 'premium' 
+          : data.tier;
+        
+        setSubscription({
+          ...data,
+          tier: normalizedTier as 'free' | 'premium',
+        });
       }
     } catch (error) {
       console.error('Error in checkSubscription:', error);
