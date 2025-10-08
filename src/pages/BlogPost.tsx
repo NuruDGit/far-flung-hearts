@@ -415,24 +415,24 @@ Healthy LDRs balance care and connection with independence and trust.`,
               </div>
             </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] text-foreground">
+            <h1 className="text-3xl md:text-5xl font-display font-bold leading-tight text-foreground">
               {post.title}
             </h1>
             
             {post.author && (
-              <p className="text-lg md:text-xl text-muted-foreground font-medium">
+              <p className="text-base md:text-lg text-muted-foreground font-medium">
                 By <span className="text-primary font-semibold">{post.author}</span>
               </p>
             )}
           </header>
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none space-y-8 pt-8">
+          <div className="max-w-none space-y-6 pt-8">
             {post.content.split('\n\n').map((paragraph: string, idx: number) => {
               // H2 Headers
               if (paragraph.startsWith('## ')) {
                 return (
-                  <h2 key={idx} className="text-3xl md:text-4xl font-display font-bold mt-20 mb-6 first:mt-0 text-foreground">
+                  <h2 key={idx} className="text-2xl md:text-3xl font-display font-bold mt-12 mb-4 first:mt-0 text-foreground">
                     {paragraph.replace('## ', '')}
                   </h2>
                 );
@@ -441,7 +441,7 @@ Healthy LDRs balance care and connection with independence and trust.`,
               // H3 Headers
               if (paragraph.startsWith('### ')) {
                 return (
-                  <h3 key={idx} className="text-2xl md:text-3xl font-display font-semibold mt-16 mb-4 text-foreground">
+                  <h3 key={idx} className="text-xl md:text-2xl font-display font-semibold mt-10 mb-3 text-foreground">
                     {paragraph.replace('### ', '')}
                   </h3>
                 );
@@ -450,7 +450,7 @@ Healthy LDRs balance care and connection with independence and trust.`,
               // H4 Headers (bold text **text**)
               if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
                 return (
-                  <h4 key={idx} className="text-xl md:text-2xl font-sans font-semibold mt-12 mb-4 text-foreground">
+                  <h4 key={idx} className="text-lg md:text-xl font-sans font-semibold mt-8 mb-3 text-foreground">
                     {paragraph.replace(/\*\*/g, '')}
                   </h4>
                 );
@@ -459,7 +459,7 @@ Healthy LDRs balance care and connection with independence and trust.`,
               // Body paragraphs
               if (paragraph.trim()) {
                 return (
-                  <p key={idx} className="text-base md:text-lg leading-relaxed text-foreground/80 font-sans">
+                  <p key={idx} className="text-base leading-relaxed text-foreground/70 font-sans">
                     {paragraph}
                   </p>
                 );
