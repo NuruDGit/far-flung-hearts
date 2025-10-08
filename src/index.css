@@ -25,13 +25,6 @@ All colors MUST be HSL.
 
     --muted: 10 100% 95%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --info: 221 83% 53%;
-    --info-foreground: 0 0% 100%;
 
     --accent: 340 75% 55%;
     --accent-foreground: 0 0% 98%;
@@ -44,18 +37,25 @@ All colors MUST be HSL.
     --ring: 350 85% 60%;
 
     /* Love Beyond Borders Design Tokens */
-    --love-heart: 350 100% 70%;
-    --love-coral: 5 100% 71%;
-    --love-deep: 340 82% 52%;
+    --love-gradient: linear-gradient(135deg, hsl(350, 85%, 60%), hsl(340, 75%, 55%));
+    --love-gradient-soft: linear-gradient(135deg, hsl(10, 100%, 92%), hsl(350, 85%, 85%));
+    --heart-red: 350 85% 60%;
+    --coral-pink: 10 100% 85%;
+    --soft-peach: 25 100% 95%;
+    --deep-pink: 340 75% 55%;
     
-    /* Gradient variations - 3 intensities */
-    --love-gradient: linear-gradient(135deg, hsl(var(--love-coral)), hsl(var(--love-heart)));
-    --love-gradient-soft: linear-gradient(135deg, hsl(var(--love-coral) / 0.1), hsl(var(--love-heart) / 0.1));
-    --love-gradient-subtle: linear-gradient(135deg, hsl(var(--love-coral) / 0.05), hsl(var(--love-heart) / 0.05));
-    --love-gradient-bold: linear-gradient(135deg, hsl(var(--love-coral)), hsl(var(--love-heart)));
+    /* Animations */
+    --transition-love: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --bounce-heart: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Love colors with defined values */
+    --love-heart: 350 85% 60%;
+    --love-deep: 340 75% 55%;
+    --love-coral: 10 100% 85%;
+    --love-glow: 350 85% 75%;
     
     /* Shadows */
-    --shadow-love: 0 8px 32px hsl(350 100% 70% / 0.15);
+    --shadow-love: 0 8px 32px hsl(350 85% 60% / 0.15);
     --shadow-card: 0 4px 16px hsl(340 25% 88% / 0.3);
 
     --radius: 0.5rem;
@@ -135,19 +135,9 @@ All colors MUST be HSL.
     --input: 340 15% 20%;
     --ring: 350 85% 65%;
     
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --info: 221 83% 53%;
-    --info-foreground: 0 0% 100%;
-    
     /* Dark mode love tokens */
     --love-gradient: linear-gradient(135deg, hsl(350, 85%, 65%), hsl(340, 75%, 60%));
     --love-gradient-soft: linear-gradient(135deg, hsl(340, 30%, 20%), hsl(350, 40%, 25%));
-    --gradient-subtle: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--secondary)) 100%);
-    --gradient-medium: linear-gradient(135deg, hsl(var(--love-coral) / 0.3) 0%, hsl(var(--love-heart) / 0.3) 100%);
-    --gradient-bold: linear-gradient(135deg, hsl(var(--love-heart)) 0%, hsl(var(--love-deep)) 100%);
     --shadow-love: 0 8px 32px hsl(350 85% 40% / 0.25);
     --shadow-card: 0 4px 16px hsl(340 20% 10% / 0.5);
     --sidebar-background: 240 5.9% 10%;
@@ -158,43 +148,6 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  /* Focus visible styles for accessibility */
-  body.focus-visible *:focus {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
-  }
-
-  body:not(.focus-visible) *:focus {
-    outline: none;
-  }
-
-  /* RTL Support */
-  [dir="rtl"] {
-    direction: rtl;
-  }
-
-  [dir="rtl"] .rtl\:rotate-180 {
-    transform: rotate(180deg);
-  }
-
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
-    :root {
-      --border: 240 10% 25%;
-    }
-  }
-
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
   }
 }
 
@@ -210,52 +163,12 @@ All colors MUST be HSL.
 }
 
 @layer components {
-  /* Love-themed gradients - 3 intensities */
-  .love-gradient-subtle {
-    background: linear-gradient(135deg, hsl(var(--love-coral) / 0.05), hsl(var(--love-heart) / 0.05));
-  }
-
   .love-gradient {
-    background: linear-gradient(135deg, hsl(var(--love-coral) / 0.5), hsl(var(--love-heart) / 0.5));
+    background: var(--love-gradient);
   }
-
-  .love-gradient-bold {
-    background: linear-gradient(135deg, hsl(var(--love-coral)), hsl(var(--love-heart)));
-  }
-
+  
   .love-gradient-soft {
-    background: linear-gradient(135deg, hsl(var(--love-coral) / 0.1), hsl(var(--love-heart) / 0.1));
-  }
-
-  /* Glassmorphism effects */
-  .glass-subtle {
-    background: hsl(var(--background) / 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .glass-medium {
-    background: hsl(var(--background) / 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-
-  .glass-bold {
-    background: hsl(var(--background) / 0.3);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .text-shadow-sm {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-
-  .text-shadow-md {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  }
-
-  .text-shadow-lg {
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: var(--love-gradient-soft);
   }
   
   .heart-beat {
@@ -346,40 +259,5 @@ All colors MUST be HSL.
       transform: translateY(-20px) scale(1.3);
       opacity: 0.4;
     }
-  }
-  
-  @keyframes shimmer {
-    0% {
-      background-position: -1000px 0;
-    }
-    100% {
-      background-position: 1000px 0;
-    }
-  }
-
-  @keyframes counter-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-shimmer {
-    animation: shimmer 2s infinite linear;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 1000px 100%;
-  }
-
-  .animate-counter-up {
-    animation: counter-up 0.6s ease-out;
   }
 }

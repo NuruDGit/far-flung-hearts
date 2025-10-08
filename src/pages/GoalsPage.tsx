@@ -97,16 +97,10 @@ export default function GoalsPage() {
         .from('pairs')
         .select('id')
         .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-        .eq('status', 'active')
-        .limit(1)
-        .maybeSingle();
+        .single();
 
       if (pairError) {
         console.error('Pair error:', pairError);
-        throw new Error('Failed to fetch pair data.');
-      }
-
-      if (!pairData) {
         throw new Error('No pair found. Please set up your relationship first.');
       }
 
