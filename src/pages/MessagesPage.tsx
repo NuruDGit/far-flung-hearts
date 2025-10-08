@@ -187,9 +187,10 @@ const MessagesPage = () => {
 
       // Fetch profiles for both users
       const userIds = [pair.user_a, pair.user_b];
+      // For partner, use safe view; for self, get full profile
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, display_name, first_name, avatar_url')
         .in('id', userIds);
 
       if (profilesError) {

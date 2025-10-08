@@ -84,8 +84,9 @@ const MoodAnalytics = () => {
         
         // Get partner profile
         const partnerId = pairData.user_a === user.id ? pairData.user_b : pairData.user_a;
+        // Use safe view for partner data (excludes email, phone, birth_date)
         const { data: profileData } = await supabase
-          .from('profiles')
+          .from('profiles_partner_safe')
           .select('*')
           .eq('id', partnerId)
           .single();

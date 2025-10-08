@@ -222,6 +222,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "checklist_items_assignee_fkey"
+            columns: ["assignee"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "checklist_items_checklist_id_fkey"
             columns: ["checklist_id"]
             isOneToOne: false
@@ -612,6 +619,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "goal_tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "goal_tasks_goal_id_fkey"
             columns: ["goal_id"]
             isOneToOne: false
@@ -799,6 +813,13 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1157,6 +1178,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pair_invites_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pair_invites_pair_id_fkey"
             columns: ["pair_id"]
             isOneToOne: false
@@ -1202,10 +1230,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pairs_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pairs_user_b_fkey"
             columns: ["user_b"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pairs_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1272,6 +1314,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_partner_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1613,7 +1662,57 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_partner_safe: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          display_name: string | null
+          first_name: string | null
+          id: string | null
+          interests: string[] | null
+          last_name: string | null
+          pronouns: string | null
+          relationship_start_date: string | null
+          relationship_status: string | null
+          tz: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          first_name?: string | null
+          id?: string | null
+          interests?: string[] | null
+          last_name?: string | null
+          pronouns?: string | null
+          relationship_start_date?: string | null
+          relationship_status?: string | null
+          tz?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          first_name?: string | null
+          id?: string | null
+          interests?: string[] | null
+          last_name?: string | null
+          pronouns?: string | null
+          relationship_start_date?: string | null
+          relationship_status?: string | null
+          tz?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       archive_old_completed_tasks: {
@@ -1672,6 +1771,14 @@ export type Database = {
           p_user_agent?: string
           p_user_id: string
         }
+        Returns: string
+      }
+      mask_email: {
+        Args: { email: string }
+        Returns: string
+      }
+      mask_phone: {
+        Args: { phone: string }
         Returns: string
       }
       track_failed_login: {

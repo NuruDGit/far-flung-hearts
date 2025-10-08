@@ -59,8 +59,9 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
 
           if (pair) {
             const partnerId = pair.user_a === user.id ? pair.user_b : pair.user_a;
+            // Use safe view for partner data (excludes email, phone, birth_date)
             const { data: partner } = await supabase
-              .from('profiles')
+              .from('profiles_partner_safe')
               .select('*')
               .eq('id', partnerId)
               .single();

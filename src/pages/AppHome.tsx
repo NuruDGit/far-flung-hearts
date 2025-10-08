@@ -62,10 +62,10 @@ const AppHome = () => {
           setStreak(streakData || 0);
           setLoadingStreak(false);
           
-          // Get partner profile
+          // Get partner profile (using safe view - excludes email, phone, birth_date)
           const partnerId = pair.user_a === user.id ? pair.user_b : pair.user_a;
           const { data: partnerData } = await supabase
-            .from('profiles')
+            .from('profiles_partner_safe')
             .select('*')
             .eq('id', partnerId)
             .single();

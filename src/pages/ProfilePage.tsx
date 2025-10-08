@@ -84,11 +84,11 @@ export const ProfilePage = () => {
       } else if (pairData) {
         setPair(pairData);
         
-        // Fetch partner profile
+        // Fetch partner profile (using safe view - excludes email, phone, birth_date)
         const partnerId = pairData.user_a === user.id ? pairData.user_b : pairData.user_a;
         if (partnerId) {
           const { data: partnerData, error: partnerError } = await supabase
-            .from('profiles')
+            .from('profiles_partner_safe')
             .select('*')
             .eq('id', partnerId)
             .maybeSingle();
