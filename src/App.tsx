@@ -33,7 +33,6 @@ const GamesPage = lazy(() => import("./pages/GamesPage"));
 const WishlistPage = lazy(() => import("./pages/WishlistPage"));
 const DailyQuestionAnswers = lazy(() => import("./pages/DailyQuestionAnswers"));
 const Security = lazy(() => import("./pages/Security"));
-const API = lazy(() => import("./pages/API"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Community = lazy(() => import("./pages/Community"));
@@ -96,7 +95,6 @@ const App = () => {
             <Route path="/app/daily-question-answers" element={<DailyQuestionAnswers />} />
             {/* Public pages */}
             <Route path="/security" element={<Security />} />
-            <Route path="/api" element={<API />} />
             <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/community" element={<Community />} />
