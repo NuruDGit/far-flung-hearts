@@ -8,7 +8,9 @@ import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { useAppOptimization } from "@/hooks/useAppOptimization";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { CookieConsent } from "@/components/CookieConsent";
-import { lazy, Suspense } from "react";
+import { OfflineIndicator } from "@/components/mobile/OfflineIndicator";
+import { HeartLoader } from "@/components/ui/branded-loaders";
+import { lazy, Suspense, useEffect } from "react";
 
 // Immediate load pages (authentication & landing)
 import Index from "./pages/Index";
@@ -45,21 +47,35 @@ const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  // Temporarily disabled to avoid duplicate React hook runtime issue; re-enable after bundler dedupe is stable
-  // useAppOptimization();
-  
+const AppContent = () => {
+  useEffect(() => {
+    // Set focus-visible class on body for accessibility
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        document.body.classList.add('focus-visible');
+      }
+    };
+
+    const handleMouseDown = () => {
+      document.body.classList.remove('focus-visible');
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleMouseDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <CookieConsent />
-          <PWAInstallPrompt />
-          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-          <Routes>
+    <BrowserRouter>
+      <OfflineIndicator />
+      <CookieConsent />
+      <PWAInstallPrompt />
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><HeartLoader size="lg" /></div>}>
+      <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/pair-setup" element={<PairSetup />} />
@@ -110,10 +126,21 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+    </BrowserRouter>
+  );
+};
+
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <AppContent />
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 

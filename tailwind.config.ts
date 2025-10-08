@@ -112,6 +112,10 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.7' },
         },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -119,6 +123,7 @@ export default {
         heartbeat: "heartbeat 1.5s ease-in-out infinite",
         float: "float 3s ease-in-out infinite",
         'pulse-love': "pulse-love 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        shimmer: "shimmer 2s linear infinite",
       },
       backgroundImage: {
         'love-gradient': 'var(--love-gradient)',
