@@ -5,8 +5,9 @@ import { ProfileCard } from '@/components/profile/ProfileCard';
 import { ProfileSetup } from '@/components/profile/ProfileSetup';
 import { DisconnectPairDialog } from '@/components/DisconnectPairDialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Users, Heart, User, Download } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ArrowLeft, Users, Download, CreditCard, Trash2, Crown } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -34,7 +35,7 @@ interface PairInfo {
 }
 
 export const ProfilePage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const viewingUserId = searchParams.get('userId');
@@ -153,6 +154,57 @@ export const ProfilePage = () => {
     }
   };
 
+  const handleManageSubscription = async () => {
+    try {
+      toast.loading('Opening subscription portal...');
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session found');
+
+      const response = await supabase.functions.invoke('customer-portal', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      if (response.data?.url) {
+        window.open(response.data.url, '_blank');
+        toast.success('Opening Stripe Customer Portal...');
+      }
+    } catch (error: any) {
+      console.error('Portal error:', error);
+      toast.error(error.message || 'Failed to open subscription portal');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    
+    try {
+      toast.loading('Deleting your account...');
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session found');
+
+      const response = await supabase.functions.invoke('delete-account', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      toast.success('Account deleted successfully');
+      await supabase.auth.signOut();
+      navigate('/');
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      toast.error(error.message || 'Failed to delete account');
+    }
+  };
+
   const isProfileComplete = () => {
     if (!profile) return false;
     return !!(
@@ -262,7 +314,7 @@ export const ProfilePage = () => {
         </div>
 
         {/* Additional Actions */}
-        <div className="max-w-2xl mx-auto mt-8">
+        <div className="max-w-2xl mx-auto mt-8 space-y-6">
           {!isProfileComplete() && (
             <p className="text-muted-foreground mb-4 text-center">
               Make your profile shine! Complete all sections to help your partner get to know you better.
@@ -287,9 +339,108 @@ export const ProfilePage = () => {
             </Button>
           </div>
           
-          <p className="text-xs text-muted-foreground text-center mt-4">
+          <p className="text-xs text-muted-foreground text-center">
             Export includes all your personal data in compliance with GDPR and CCPA regulations
           </p>
+
+          {/* Subscription Management */}
+          <Card className="bg-white/80 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Subscription Management
+              </CardTitle>
+              <CardDescription>
+                Manage your billing and subscription settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-love-light/30 to-love-soft/30 rounded-lg">
+                <div>
+                  <p className="font-medium">Current Plan: {subscription.tier === 'premium' ? 'Premium' : 'Free'}</p>
+                  {subscription.tier === 'premium' && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      Active subscription
+                    </p>
+                  )}
+                </div>
+                {subscription.tier === 'free' ? (
+                  <Button
+                    onClick={() => navigate('/app/subscription')}
+                    className="bg-love-heart hover:bg-love-coral text-white"
+                  >
+                    Upgrade to Premium
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleManageSubscription}
+                    variant="outline"
+                    className="border-love-coral text-love-deep hover:bg-love-light"
+                  >
+                    Manage Subscription
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {subscription.tier === 'free' 
+                  ? 'Upgrade to Premium for unlimited features and priority support'
+                  : 'Manage your subscription, update payment methods, or cancel anytime through the Stripe Customer Portal'}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Danger Zone */}
+          <Card className="bg-white/80 backdrop-blur-sm border-red-200">
+            <CardHeader>
+              <CardTitle className="text-red-600 flex items-center gap-2">
+                <Trash2 className="h-5 w-5" />
+                Danger Zone
+              </CardTitle>
+              <CardDescription>
+                Irreversible actions - proceed with caution
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full sm:w-auto">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-2">
+                      <p>This action cannot be undone. This will permanently delete your account and remove all your data from our servers.</p>
+                      <p className="font-semibold text-red-600">
+                        This includes:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        <li>Your profile and personal information</li>
+                        <li>All messages and shared memories</li>
+                        <li>Your pair connection (if any)</li>
+                        <li>All subscription data (active subscriptions will be cancelled)</li>
+                      </ul>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteAccount}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Yes, delete my account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <p className="text-xs text-muted-foreground mt-3">
+                Deleting your account will automatically cancel any active subscriptions and you will not be charged further.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
