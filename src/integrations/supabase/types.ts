@@ -1522,36 +1522,36 @@ export type Database = {
           cancelled_at: string | null
           created_at: string | null
           current_period_end: string | null
-          customer_email: string
           id: string
           product_id: string | null
           status: string
           subscription_id: string
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           cancel_at_period_end?: boolean | null
           cancelled_at?: string | null
           created_at?: string | null
           current_period_end?: string | null
-          customer_email: string
           id?: string
           product_id?: string | null
           status: string
           subscription_id: string
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           cancel_at_period_end?: boolean | null
           cancelled_at?: string | null
           created_at?: string | null
           current_period_end?: string | null
-          customer_email?: string
           id?: string
           product_id?: string | null
           status?: string
           subscription_id?: string
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }

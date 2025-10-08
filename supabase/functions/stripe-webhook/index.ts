@@ -87,10 +87,22 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription, supab
       return;
     }
 
+    // Get user_id from profiles table using email
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', customer.email)
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      console.error('Could not find user profile for email:', customer.email, profileError);
+      return;
+    }
+
     const { error } = await supabase
       .from('subscription_status')
       .upsert({
-        customer_email: customer.email,
+        user_id: profile.id,
         subscription_id: subscription.id,
         status: subscription.status,
         product_id: subscription.items.data[0]?.price?.product,
@@ -160,15 +172,15 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription, su
       try {
         const { data: statusData } = await supabase
           .from('subscription_status')
-          .select('customer_email')
+          .select('user_id')
           .eq('subscription_id', subscription.id)
           .maybeSingle();
         
-        if (statusData) {
+        if (statusData?.user_id) {
           const { data: profile } = await supabase
             .from('profiles')
             .select('id')
-            .eq('email', statusData.customer_email)
+            .eq('id', statusData.user_id)
             .maybeSingle();
           
           if (profile) {
