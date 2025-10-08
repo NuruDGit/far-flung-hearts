@@ -149,10 +149,10 @@ const PricingSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+          <h2 className="text-5xl md:text-6xl font-display font-bold mb-6 bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
             Choose Your Perfect Plan
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-xl md:text-2xl font-sans font-normal text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
             Start free, upgrade anytime. No hidden fees, cancel whenever you want.
           </p>
 
@@ -166,9 +166,9 @@ const PricingSection = () => {
           >
             <button
               onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
+              className={`px-8 py-3 rounded-full font-sans font-semibold transition-all duration-300 ${
                 billingPeriod === 'monthly'
-                  ? 'bg-love-heart text-white shadow-elevation-2'
+                  ? 'bg-love-heart text-white shadow-elevation-3'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -176,14 +176,14 @@ const PricingSection = () => {
             </button>
             <button
               onClick={() => setBillingPeriod('annual')}
-              className={`px-6 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
+              className={`px-8 py-3 rounded-full font-sans font-semibold transition-all duration-300 flex items-center gap-2 ${
                 billingPeriod === 'annual'
-                  ? 'bg-love-heart text-white shadow-elevation-2'
+                  ? 'bg-love-heart text-white shadow-elevation-3'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Annual
-              <Badge className="bg-success text-success-foreground">Save 17%</Badge>
+              <Badge className="bg-success text-success-foreground font-semibold">Save 17%</Badge>
             </button>
           </motion.div>
         </motion.div>
@@ -222,8 +222,8 @@ const PricingSection = () => {
                       <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-love-coral to-love-heart rounded-2xl flex items-center justify-center shadow-glow-sm">
                         <Icon className="w-8 h-8 text-white" />
                       </div>
-                      <CardTitle className="text-2xl font-display">{plan.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
+                      <CardTitle className="text-2xl font-display font-bold">{plan.name}</CardTitle>
+                      <p className="text-base font-sans font-medium text-muted-foreground mt-2">{plan.description}</p>
                       <div className="mt-6">
                         <span className="text-5xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
                           {plan.price}
@@ -244,7 +244,7 @@ const PricingSection = () => {
                             transition={{ delay: 0.3 + (idx * 0.05) }}
                           >
                             <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                            <span className="text-sm text-foreground">{feature}</span>
+                            <span className="text-base font-sans font-normal text-foreground">{feature}</span>
                           </motion.li>
                         ))}
                       </ul>

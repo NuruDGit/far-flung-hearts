@@ -37,10 +37,10 @@ const HowItWorksSection = () => {
     <section id="how-it-works" className="py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent mb-4">
+          <h2 className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent mb-6">
             How It Works
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl font-sans font-normal text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Getting started is easy. Follow these simple steps to begin your love journey.
           </p>
         </div>
@@ -58,8 +58,8 @@ const HowItWorksSection = () => {
                       {step.step}
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                  <h3 className="text-xl font-sans font-semibold mb-3 text-foreground">{step.title}</h3>
+                  <p className="text-base font-sans font-normal text-muted-foreground leading-relaxed">{step.description}</p>
                 </CardContent>
               </Card>
               

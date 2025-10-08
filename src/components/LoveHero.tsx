@@ -63,7 +63,7 @@ const LoveHero = () => {
           >
             <div className="space-y-6">
               <motion.h1 
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight text-shadow-lg"
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent leading-tight"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
@@ -71,7 +71,7 @@ const LoveHero = () => {
                 Stay Connected Across Any Distance
               </motion.h1>
               <motion.p 
-                className="text-xl md:text-2xl text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed"
+                className="text-xl md:text-2xl font-sans font-normal text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
@@ -82,22 +82,22 @@ const LoveHero = () => {
 
             {/* Statistics */}
             <motion.div
-              className="flex flex-wrap justify-center lg:justify-start gap-8"
+              className="flex flex-wrap justify-center lg:justify-start gap-12"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
               <div className="text-center lg:text-left">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+                <div className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
                   <AnimatedCounter end={1000} suffix="+" />
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">Active Couples</div>
+                <div className="text-base font-sans font-medium text-muted-foreground mt-2">Active Couples</div>
               </div>
               <div className="text-center lg:text-left">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+                <div className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
                   <AnimatedCounter end={4} suffix=".9" />
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">App Rating</div>
+                <div className="text-base font-sans font-medium text-muted-foreground mt-2">App Rating</div>
               </div>
             </motion.div>
 
@@ -111,22 +111,22 @@ const LoveHero = () => {
                 <Button 
                   variant="love" 
                   size="lg" 
-                  className="text-lg px-8 py-6 shadow-glow hover:shadow-glow-sm transition-all"
+                  className="text-lg font-semibold px-10 py-7 shadow-glow hover:shadow-glow-sm transition-all duration-300"
                   onClick={() => navigate('/auth')}
                 >
                   Start Free Today
-                  <Heart className="ml-2" size={20} />
+                  <Heart className="ml-2" size={22} />
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 
                   variant="loveOutline" 
                   size="lg" 
-                  className="text-lg px-8 py-6 shadow-elevation-2"
+                  className="text-lg font-semibold px-10 py-7 shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300"
                   onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Learn More
-                  <ArrowRight className="ml-2" size={20} />
+                  <ArrowRight className="ml-2" size={22} />
                 </Button>
               </motion.div>
             </motion.div>
@@ -152,8 +152,8 @@ const LoveHero = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1 + (index * 0.1), duration: 0.5 }}
                 >
-                  <feature.icon className="text-love-heart group-hover:text-love-deep transition-colors" size={28} />
-                  <span className="text-sm font-medium text-foreground">{feature.label}</span>
+                  <feature.icon className="text-love-heart group-hover:text-love-deep transition-colors duration-300" size={28} />
+                  <span className="text-sm font-sans font-semibold text-foreground">{feature.label}</span>
                 </motion.div>
               ))}
             </motion.div>

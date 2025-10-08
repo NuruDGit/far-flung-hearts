@@ -90,10 +90,10 @@ const FeatureSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+          <h2 className="text-5xl md:text-6xl font-display font-bold mb-6 bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
             Everything You Need to Stay Connected
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl font-sans font-normal text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Built specifically for long-distance couples, our features help you feel closer even when you're miles apart.
           </p>
         </motion.div>
@@ -124,10 +124,10 @@ const FeatureSection = () => {
                       <feature.icon className="w-7 h-7 text-white" />
                     </motion.div>
                     <div>
-                      <h3 className="text-xl font-semibold mb-2 text-foreground">
+                      <h3 className="text-xl font-sans font-semibold mb-3 text-foreground">
                         {feature.title}
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-base font-sans font-normal text-muted-foreground leading-relaxed">
                         {feature.description}
                       </p>
                     </div>
@@ -146,10 +146,10 @@ const FeatureSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h3 className="text-3xl md:text-4xl font-display font-bold text-center mb-4 bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
+          <h3 className="text-4xl md:text-5xl font-display font-bold text-center mb-6 bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
             Loved by Couples Worldwide
           </h3>
-          <p className="text-center text-muted-foreground mb-12">
+          <p className="text-center text-lg md:text-xl font-sans font-normal text-muted-foreground mb-12">
             See what couples are saying about their Lobebo experience
           </p>
           <TestimonialCarousel />
