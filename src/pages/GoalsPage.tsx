@@ -92,16 +92,23 @@ export default function GoalsPage() {
       if (userError) throw userError;
       if (!user) throw new Error('No authenticated user found');
 
-      // Get user's pair
+      // Get user's active pair
       const { data: pairData, error: pairError } = await supabase
         .from('pairs')
         .select('id')
         .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-        .single();
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
       if (pairError) {
         console.error('Pair error:', pairError);
         throw new Error('No pair found. Please set up your relationship first.');
+      }
+
+      if (!pairData) {
+        throw new Error('No active pair found. Please set up your relationship first.');
       }
 
       const [tasksResponse, goalsResponse] = await Promise.all([
