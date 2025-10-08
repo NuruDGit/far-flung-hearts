@@ -47,7 +47,7 @@ export const MoreMenu = ({ onItemClick }: MoreMenuProps) => {
     {
       label: 'Support',
       items: [
-        { icon: Crown, label: 'Upgrade to Premium', path: '/app/subscription', highlight: true },
+        ...(subscription.tier !== 'premium' ? [{ icon: Crown, label: 'Upgrade to Premium', path: '/app/subscription', highlight: true }] : []),
         { icon: HelpCircle, label: 'Help & Support', path: '/help-center' },
       ]
     }
