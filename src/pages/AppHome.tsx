@@ -25,6 +25,15 @@ import { DailyQuestionDialog } from '@/components/DailyQuestionDialog';
 const AppHome = () => {
   const { user, signOut, subscription } = useAuth();
   const navigate = useNavigate();
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+
+  // Update clock every minute instead of every render
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 60000); // Update every 60 seconds
+    return () => clearInterval(timer);
+  }, []);
   const { pair, loading: pairLoading } = useActivePair();
   const [partner, setPartner] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -440,7 +449,7 @@ const AppHome = () => {
                 <div>
                   <Clock className="h-5 w-5 mx-auto mb-1 text-love-coral" />
                   <p className="text-sm text-muted-foreground">Their time</p>
-                  <p className="font-semibold">{new Date().toLocaleTimeString()}</p>
+                  <p className="font-semibold">{currentTime}</p>
                 </div>
                 <div>
                   <Flame className="h-5 w-5 mx-auto mb-1 text-accent" />

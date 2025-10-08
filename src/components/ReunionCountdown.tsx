@@ -48,7 +48,8 @@ export const ReunionCountdown = ({ pairId }: { pairId: string }) => {
   useEffect(() => {
     if (!reunion) return;
 
-    const timer = setInterval(() => {
+    // Calculate countdown immediately
+    const calculateCountdown = () => {
       const now = new Date().getTime();
       const target = new Date(reunion.reunion_date).getTime();
       const difference = target - now;
@@ -61,7 +62,10 @@ export const ReunionCountdown = ({ pairId }: { pairId: string }) => {
           seconds: Math.floor((difference % (1000 * 60)) / 1000)
         });
       }
-    }, 1000);
+    };
+
+    calculateCountdown();
+    const timer = setInterval(calculateCountdown, 1000);
 
     return () => clearInterval(timer);
   }, [reunion]);
