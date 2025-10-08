@@ -811,30 +811,7 @@ const AppHome = () => {
             </div>
           )}
 
-          {/* Super Premium Features for Premium Users */}
-          {subscription.tier === 'premium' && (
-            <div className="mt-6">
-              <h2 className="text-lg font-bold text-love-deep mb-4">Upgrade to Super Premium 👑</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <LockedFeatureCard
-                  icon={Camera}
-                  title="Unlimited Storage"
-                  description="Store unlimited memories, photos, and videos in your vault"
-                  requiredTier="premium"
-                  preview="Never worry about storage limits again"
-                />
-                <LockedFeatureCard
-                  icon={Zap}
-                  title="Unlimited Everything"
-                  description="Remove all limits on AI chats, goals, and features"
-                  requiredTier="premium"
-                  preview="Complete freedom to use all features"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Smart Upgrade CTA - shows for free and premium users */}
+          {/* Smart Upgrade CTA - only shows for free users */}
           <div className="mt-6">
             <UpgradeCTA />
           </div>

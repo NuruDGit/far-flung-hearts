@@ -44,11 +44,11 @@ const HelpCenter = () => {
     },
     {
       question: "What subscription plans are available?",
-      answer: "We offer three plans: Free (basic features), Premium ($9.99/month with unlimited video calls, AI advisor, and advanced features), and Super Premium ($19.99/month with unlimited everything and priority support)."
+      answer: "We offer two plans: Free (basic features with limits) and Premium ($9.99/month with unlimited messages, video calls, AI advisor, goals, mood tracking, and all advanced features)."
     },
     {
       question: "How do video calls work?",
-      answer: "Video calls are available for Premium and Super Premium users. Simply go to the Messages page and tap the video call icon. Your partner will receive a notification and can join instantly. Calls support up to 30 minutes on Premium and unlimited on Super Premium."
+      answer: "Video calls are available for Premium users. Simply go to the Messages page and tap the video call icon. Your partner will receive a notification and can join instantly. Premium users get unlimited HD video calls with call history."
     },
     {
       question: "Is my data secure?",
