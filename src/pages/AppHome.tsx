@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown, Target, TrendingUp, Video } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown, Target, TrendingUp, Video, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,6 +45,7 @@ const AppHome = () => {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [streak, setStreak] = useState<number>(0);
   const [loadingStreak, setLoadingStreak] = useState(true);
+  const [showStreakDetails, setShowStreakDetails] = useState(false);
   const [moodCount, setMoodCount] = useState(0);
   const [eventCount, setEventCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
@@ -250,8 +253,47 @@ const AppHome = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-love-heart"></div>
+      <div className="min-h-screen bg-gradient-to-br from-love-light via-white to-love-coral/10">
+        <AppNavigation />
+        <div className="container mx-auto p-4 max-w-md md:max-w-2xl lg:max-w-4xl pt-6 pb-24 md:pb-28 lg:pb-8">
+          <div className="space-y-6 animate-fade-in">
+            {/* Header Skeleton */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+              <Skeleton className="h-10 w-10 rounded-full" />
+            </div>
+            
+            {/* Partner Card Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <Skeleton className="h-14 w-full" />
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Quick Actions Skeleton */}
+            <div className="grid grid-cols-3 gap-3">
+              <Skeleton className="h-28 w-full" />
+              <Skeleton className="h-28 w-full" />
+              <Skeleton className="h-28 w-full" />
+            </div>
+            
+            {/* Cards Skeleton */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-40 w-full" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -379,10 +421,10 @@ const AppHome = () => {
 
         {/* Solo Mode - Invite Partner Banner */}
         {!pair && (
-          <Card className="mb-6 bg-gradient-to-r from-love-heart to-love-coral text-white">
+          <Card className="mb-6 bg-gradient-to-r from-love-heart to-love-coral text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in border-0">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
                   <Users className="text-white" size={20} />
                 </div>
                 <div className="flex-1">
@@ -390,7 +432,7 @@ const AppHome = () => {
                   <p className="text-sm opacity-90">Invite your partner to unlock all features</p>
                 </div>
                 <Link to="/pair-setup">
-                  <Button size="sm" variant="secondary" className="bg-white text-love-heart hover:bg-white/90">
+                  <Button size="sm" variant="secondary" className="bg-white text-love-heart hover:bg-white/90 hover:scale-105 transition-transform">
                     <Plus className="w-4 h-4 mr-1" />
                     Invite
                   </Button>
@@ -411,7 +453,7 @@ const AppHome = () => {
 
         {/* Partner Card - Only show if paired */}
         {pair && partner && (
-          <Card className="mb-6 bg-white/80 backdrop-blur-sm">
+          <Card className="mb-6 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in border-0 shadow-lg">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3">
                 <div className="flex items-center relative">
@@ -435,7 +477,7 @@ const AppHome = () => {
                 <div>
                   <h2 className="text-lg font-semibold">{partner.display_name}</h2>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                     Active now
                   </p>
                 </div>
@@ -443,31 +485,69 @@ const AppHome = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
+                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
                   <Clock className="h-5 w-5 mx-auto mb-1 text-love-coral" />
                   <p className="text-sm text-muted-foreground">Their time</p>
                   <p className="font-semibold">{currentTime}</p>
                 </div>
-                <div>
-                  <Flame className="h-5 w-5 mx-auto mb-1 text-accent" />
+                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors cursor-pointer" onClick={() => setShowStreakDetails(!showStreakDetails)}>
+                  <div className="relative mx-auto w-fit">
+                    {streak > 0 && (
+                      <div className="absolute -top-1 -right-1 flex h-5 w-5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-5 w-5 bg-accent items-center justify-center">
+                          <Flame className="h-3 w-3 text-white" />
+                        </span>
+                      </div>
+                    )}
+                    <Flame className="h-5 w-5 mx-auto mb-1 text-accent" />
+                  </div>
                   <p className="text-sm text-muted-foreground">Streak</p>
                   <p className="font-semibold">
-                    {loadingStreak ? '--' : `${streak} ${streak === 1 ? 'day' : 'days'}`}
+                    {loadingStreak ? (
+                      <span className="inline-block w-8 h-4 bg-muted animate-pulse rounded"></span>
+                    ) : (
+                      `${streak} ${streak === 1 ? 'day' : 'days'}`
+                    )}
                   </p>
                 </div>
-                <div>
+                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
                   <MessageSquareQuote className="h-5 w-5 mx-auto mb-1 text-love-deep" />
                   <p className="text-sm text-muted-foreground">Messages</p>
                   <p className="font-semibold">{messageCount}</p>
                 </div>
               </div>
+              
+              {/* Collapsible Streak Details */}
+              <Collapsible open={showStreakDetails}>
+                <CollapsibleContent>
+                  <div className="mt-4 p-4 bg-gradient-to-r from-accent/10 to-love-heart/10 rounded-lg border border-accent/20 animate-fade-in">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Flame className="h-4 w-4 text-accent" />
+                      <p className="text-sm font-semibold">Streak Details</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {streak === 0 
+                        ? "Send a message or log your mood to start your streak!"
+                        : `Amazing! You've stayed connected for ${streak} consecutive ${streak === 1 ? 'day' : 'days'}. Keep it up!`
+                      }
+                    </p>
+                    {streak >= 7 && (
+                      <div className="mt-2 flex items-center gap-1 text-xs text-accent">
+                        <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+                        <span>Week milestone achieved! 🎉</span>
+                      </div>
+                    )}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </CardContent>
           </Card>
         )}
 
         {/* Solo Mode - Demo Partner Card */}
         {!pair && (
-          <Card className="mb-6 bg-white/80 backdrop-blur-sm border-dashed border-2 border-love-coral/30">
+          <Card className="mb-6 bg-white/60 backdrop-blur-sm border-dashed border-2 border-love-coral/30 hover:border-love-coral/50 transition-all duration-300 animate-fade-in">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 flex items-center justify-center">
@@ -480,16 +560,21 @@ const AppHome = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex justify-between text-center opacity-50">
-                <div>
+              <div className="grid grid-cols-3 gap-4 text-center opacity-50">
+                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
                   <Clock className="h-5 w-5 mx-auto mb-1 text-love-coral" />
                   <p className="text-sm text-muted-foreground">Their time</p>
                   <p className="font-semibold">--:--</p>
                 </div>
-                <div>
+                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
                   <Flame className="h-5 w-5 mx-auto mb-1 text-love-heart" />
                   <p className="text-sm text-muted-foreground">Streak</p>
                   <p className="font-semibold">-- days</p>
+                </div>
+                <div className="hover:bg-accent/5 rounded-lg p-2 transition-colors">
+                  <MessageSquareQuote className="h-5 w-5 mx-auto mb-1 text-love-deep" />
+                  <p className="text-sm text-muted-foreground">Messages</p>
+                  <p className="font-semibold">--</p>
                 </div>
               </div>
             </CardContent>
@@ -504,25 +589,33 @@ const AppHome = () => {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-          {quickActions.map((action, index) => (
-            <Card 
-              key={index} 
-              className={`cursor-pointer active:scale-95 focus:ring-2 focus:ring-love-heart/20 transition-transform bg-white/80 backdrop-blur-sm ${!pair ? 'opacity-50' : ''}`}
-              onClick={pair ? action.action : () => {}}
-            >
-              <CardContent className="p-4 text-center">
-                <div className={`w-12 h-12 rounded-full ${action.color} flex items-center justify-center mx-auto mb-2`}>
-                  <action.icon className="text-white" size={20} />
-                </div>
-                <p className="text-sm font-medium">{action.label}</p>
-                {!pair && (
-                  <p className="text-xs text-muted-foreground mt-1">Pair to unlock</p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Card className="mb-6 bg-gradient-to-r from-love-heart to-love-coral text-white hover:shadow-xl transition-all duration-300 border-0 shadow-lg animate-fade-in">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-white flex items-center gap-2">
+              <Zap className="h-5 w-5" />
+              Quick Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-3">
+              {quickActions.map((action, index) => {
+                const IconComponent = action.icon;
+                return (
+                  <Button
+                    key={index}
+                    variant="secondary"
+                    className={`h-auto py-4 flex-col gap-2 hover:scale-105 transition-transform ${!pair ? 'opacity-50 cursor-not-allowed' : 'hover-scale'}`}
+                    onClick={pair ? action.action : () => toast.info('Connect with your partner to unlock this feature')}
+                    disabled={!pair}
+                  >
+                    <IconComponent size={24} />
+                    <span className="text-xs font-medium">{action.label}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Today's Features */}
         <div className="space-y-6">
@@ -542,9 +635,9 @@ const AppHome = () => {
           </div>
 
           {/* Interactive Cards Grid */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Daily Question Card */}
-            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-love-heart/20 transition-all duration-300 overflow-hidden">
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-fade-in">
               <div className="absolute inset-0 bg-gradient-to-br from-love-coral/5 to-love-heart/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
@@ -584,7 +677,7 @@ const AppHome = () => {
 
             {/* Memory Vault Card */}
             {hasFeatureAccess(subscription.tier, 'memoryVault') ? (
-              <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-love-deep/20 transition-all duration-300 overflow-hidden">
+              <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-fade-in">
                 <div className="absolute inset-0 bg-gradient-to-br from-love-deep/5 to-love-soft/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
                 <CardContent className="relative p-6">
                   <div className="flex items-start gap-4">
@@ -635,7 +728,7 @@ const AppHome = () => {
             )}
 
             {/* Calendar Card */}
-            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg active:shadow-xl focus:ring-2 focus:ring-primary/20 transition-all duration-300 overflow-hidden">
+            <Card className="group bg-card/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-fade-in">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-active:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
               <CardContent className="relative p-6">
                 <div className="flex items-start gap-4">
@@ -675,7 +768,7 @@ const AppHome = () => {
             if (isProfileComplete) {
               // Profile complete - prompt to invite partner
               return (
-                <Card className="bg-gradient-to-r from-love-heart/10 via-card to-love-coral/10 border-love-heart/30 border shadow-lg hover:shadow-xl transition-all duration-300">
+                <Card className="bg-gradient-to-r from-love-heart/10 via-card to-love-coral/10 border-love-heart/30 border shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4">
                       <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-r from-love-heart to-love-coral flex items-center justify-center shadow-lg">
