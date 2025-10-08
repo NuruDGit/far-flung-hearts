@@ -14,26 +14,22 @@ const HelpCenter = () => {
     {
       icon: MessageCircle,
       title: "Getting Started",
-      description: "Learn the basics of Love Beyond Borders",
-      articleCount: 12
+      description: "Learn the basics of Love Beyond Borders"
     },
     {
       icon: Video,
       title: "Video Calls",
-      description: "Setup and troubleshooting for video calls",
-      articleCount: 8
+      description: "Setup and troubleshooting for video calls"
     },
     {
       icon: Book,
       title: "Features Guide",
-      description: "Explore all features and capabilities",
-      articleCount: 15
+      description: "Explore all features and capabilities"
     },
     {
       icon: HelpCircle,
       title: "Troubleshooting",
-      description: "Common issues and solutions",
-      articleCount: 10
+      description: "Common issues and solutions"
     }
   ];
 
@@ -95,7 +91,7 @@ const HelpCenter = () => {
           <h2 className="text-2xl font-bold text-love-deep mb-6">Browse by Category</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, idx) => (
-              <Card key={idx} className="cursor-pointer hover:border-love-coral/50 transition-all hover:shadow-lg">
+              <Card key={idx}>
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-love-heart/20 to-love-coral/20 flex items-center justify-center mb-4">
                     <category.icon className="w-6 h-6 text-love-heart" />
@@ -103,8 +99,7 @@ const HelpCenter = () => {
                   <CardTitle className="text-lg">{category.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm mb-2">{category.description}</p>
-                  <p className="text-sm text-love-heart font-medium">{category.articleCount} articles</p>
+                  <p className="text-muted-foreground text-sm">{category.description}</p>
                 </CardContent>
               </Card>
             ))}
