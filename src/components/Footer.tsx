@@ -1,20 +1,14 @@
 import { Heart, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 const Footer = () => {
-  return (
-    <footer className="bg-gradient-to-b from-love-deep to-love-heart text-white">
+  return <footer className="bg-gradient-to-b from-love-deep to-love-heart text-white">
       <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex flex-col items-center lg:items-start mb-6">
               <div className="rounded-full p-2 mb-3 bg-white/10 backdrop-blur-sm">
-                <img 
-                  src="/logo.png" 
-                  alt="Love Beyond Borders Logo" 
-                  className="w-16 h-16 object-contain"
-                />
+                <img src="/logo.png" alt="Love Beyond Borders Logo" className="w-16 h-16 object-contain" />
               </div>
               <div className="text-center lg:text-left">
                 <span className="text-2xl font-bold">Love Beyond Borders</span>
@@ -24,9 +18,7 @@ const Footer = () => {
               Connecting hearts across continents. Making long-distance relationships stronger, one day at a time.
             </p>
             <div className="flex gap-4">
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                Download App
-              </Button>
+              
             </div>
           </div>
 
@@ -58,12 +50,9 @@ const Footer = () => {
             <div className="space-y-3 text-white/80">
               <div className="flex items-center gap-2">
                 <Mail size={16} />
-                <span>hello@lovebeyondborders.com</span>
+                <span>hello@lobebo.com</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone size={16} />
-                <span>+1 (555) 123-LOVE</span>
-              </div>
+              
               <div className="flex items-center gap-2">
                 <MapPin size={16} />
                 <span>Global • Remote First</span>
@@ -85,8 +74,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
