@@ -3,7 +3,7 @@ import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown, Target, TrendingUp, Video, ChevronDown } from 'lucide-react';
+import { Heart, Clock, Zap, Camera, LogOut, Users, Plus, Flame, MessageSquareQuote, Users2, MoreVertical, Smile, Settings, User, Calendar, Crown, Target, TrendingUp, Video, ChevronDown, Gift, Gamepad2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -470,28 +470,28 @@ const AppHome = () => {
             <div className="grid grid-cols-3 gap-2">
               <Button 
                 variant="outline"
-                onClick={() => navigate('/app/calendar')}
-                className="h-16 hover:bg-love-light/50 hover:border-love-coral transition-all"
+                onClick={() => navigate('/app/wishlist')}
+                className="h-16 hover:bg-love-light/50 hover:border-love-coral hover:text-foreground transition-all"
               >
                 <div className="flex flex-col items-center gap-1">
-                  <Calendar className="h-5 w-5" />
-                  <span className="text-xs">Calendar</span>
+                  <Gift className="h-5 w-5" />
+                  <span className="text-xs">Wishlist</span>
                 </div>
               </Button>
               <Button 
                 variant="outline"
-                onClick={() => navigate('/app/goals')}
-                className="h-16 hover:bg-love-light/50 hover:border-love-coral transition-all"
+                onClick={() => navigate('/app/games')}
+                className="h-16 hover:bg-love-light/50 hover:border-love-coral hover:text-foreground transition-all"
               >
                 <div className="flex flex-col items-center gap-1">
-                  <Target className="h-5 w-5" />
-                  <span className="text-xs">Goals</span>
+                  <Gamepad2 className="h-5 w-5" />
+                  <span className="text-xs">Games</span>
                 </div>
               </Button>
               <Button 
                 variant="outline"
                 onClick={() => navigate('/app/messages')}
-                className="h-16 hover:bg-love-light/50 hover:border-love-coral transition-all"
+                className="h-16 hover:bg-love-light/50 hover:border-love-coral hover:text-foreground transition-all"
               >
                 <div className="flex flex-col items-center gap-1">
                   <Video className="h-5 w-5" />
