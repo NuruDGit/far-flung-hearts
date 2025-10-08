@@ -315,7 +315,7 @@ const AppHome = () => {
     },
     {
       icon: Camera,
-      label: "Share Sky",
+      label: "Share Selfie",
       action: () => sharePhoto(),
       color: "bg-love-deep"
     }
