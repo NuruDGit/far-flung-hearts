@@ -381,85 +381,106 @@ Healthy LDRs balance care and connection with independence and trust.`,
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-love-light/20">
+    <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-6 py-24">
+      <main className="container max-w-4xl mx-auto px-6 py-12 md:py-20">
         <Button 
           onClick={() => navigate("/blog")} 
           variant="ghost"
-          className="mb-8"
+          className="mb-12 gap-2 hover:gap-3 transition-all group"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
           Back to Blog
         </Button>
 
-        <article className="max-w-4xl mx-auto">
+        <article className="space-y-12">
           {/* Hero Image */}
-          <Card className="mb-8 overflow-hidden border-2 border-love-coral/30">
-            <div className="bg-gradient-to-br from-love-heart/10 to-love-coral/10 h-64 flex items-center justify-center">
-              <div className="text-9xl">{post.image}</div>
-            </div>
-          </Card>
+          <div className="relative h-80 md:h-[28rem] rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 flex items-center justify-center shadow-elevation-3">
+            <div className="text-[10rem] md:text-[14rem] animate-float-slow">{post.image}</div>
+          </div>
 
-          {/* Meta Info */}
-          <div className="mb-8">
-            <Badge className="bg-gradient-to-r from-love-heart to-love-coral mb-4">
-              {post.category}
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-love-deep mb-6">
-              {post.title}
-            </h1>
-            <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
-              <div className="flex items-center gap-2">
+          {/* Article Header */}
+          <header className="space-y-6">
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <Badge className="bg-primary text-primary-foreground border-0 shadow-elevation-1 px-4 py-1.5">
+                {post.category}
+              </Badge>
+              <div className="flex items-center gap-2 text-muted-foreground font-medium">
                 <Calendar className="w-4 h-4" />
-                <span>{post.date}</span>
+                <time>{post.date}</time>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-muted-foreground font-medium">
                 <Clock className="w-4 h-4" />
                 <span>{post.readTime}</span>
               </div>
             </div>
-          </div>
 
-          {/* Content */}
-          <Card>
-            <CardContent className="pt-8 space-y-6">
-              {post.content.split('\n\n').map((paragraph: string, idx: number) => {
-                if (paragraph.startsWith('## ')) {
-                  return (
-                    <h2 key={idx} className="text-3xl font-bold text-love-deep mt-8 mb-4 first:mt-0">
-                      {paragraph.replace('## ', '')}
-                    </h2>
-                  );
-                } else if (paragraph.startsWith('### ')) {
-                  return (
-                    <h3 key={idx} className="text-xl font-semibold text-love-deep mt-6 mb-3">
-                      {paragraph.replace('### ', '')}
-                    </h3>
-                  );
-                } else if (paragraph.trim()) {
-                  return (
-                    <p key={idx} className="text-foreground/80 leading-relaxed text-base">
-                      {paragraph}
-                    </p>
-                  );
-                }
-                return null;
-              })}
-            </CardContent>
-          </Card>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] text-foreground">
+              {post.title}
+            </h1>
+            
+            {post.author && (
+              <p className="text-lg md:text-xl text-muted-foreground font-medium">
+                By <span className="text-primary font-semibold">{post.author}</span>
+              </p>
+            )}
+          </header>
 
-          {/* Back Button */}
-          <div className="mt-12 text-center">
-            <Button 
-              onClick={() => navigate("/blog")}
-              className="bg-gradient-to-r from-love-heart to-love-coral hover:from-love-coral hover:to-love-heart"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to All Posts
-            </Button>
+          {/* Article Content */}
+          <div className="prose prose-lg max-w-none space-y-8 pt-8">
+            {post.content.split('\n\n').map((paragraph: string, idx: number) => {
+              // H2 Headers
+              if (paragraph.startsWith('## ')) {
+                return (
+                  <h2 key={idx} className="text-3xl md:text-4xl font-display font-bold mt-20 mb-6 first:mt-0 text-foreground">
+                    {paragraph.replace('## ', '')}
+                  </h2>
+                );
+              }
+              
+              // H3 Headers
+              if (paragraph.startsWith('### ')) {
+                return (
+                  <h3 key={idx} className="text-2xl md:text-3xl font-display font-semibold mt-16 mb-4 text-foreground">
+                    {paragraph.replace('### ', '')}
+                  </h3>
+                );
+              }
+              
+              // H4 Headers (bold text **text**)
+              if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+                return (
+                  <h4 key={idx} className="text-xl md:text-2xl font-sans font-semibold mt-12 mb-4 text-foreground">
+                    {paragraph.replace(/\*\*/g, '')}
+                  </h4>
+                );
+              }
+              
+              // Body paragraphs
+              if (paragraph.trim()) {
+                return (
+                  <p key={idx} className="text-base md:text-lg leading-relaxed text-foreground/80 font-sans">
+                    {paragraph}
+                  </p>
+                );
+              }
+              
+              return null;
+            })}
           </div>
         </article>
+
+        {/* Back to Blog CTA */}
+        <div className="mt-20 pt-12 border-t border-border/50">
+          <Button 
+            onClick={() => navigate("/blog")}
+            size="lg"
+            className="gap-2 hover:gap-3 transition-all shadow-elevation-2 hover:shadow-elevation-4 group"
+          >
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            Back to All Posts
+          </Button>
+        </div>
       </main>
       <Footer />
     </div>
