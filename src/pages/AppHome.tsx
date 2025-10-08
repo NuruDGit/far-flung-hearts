@@ -47,6 +47,26 @@ const AppHome = () => {
   const [eventCount, setEventCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
 
+  // Function to recalculate streak
+  const recalculateStreak = async () => {
+    if (!pair) return;
+    
+    setLoadingStreak(true);
+    const { data: streakData } = await supabase.rpc('calculate_pair_streak', {
+      target_pair_id: pair.id
+    });
+    
+    const newStreak = streakData || 0;
+    
+    // Show toast if streak increased
+    if (newStreak > streak && streak > 0) {
+      toast.success(`🔥 Streak increased to ${newStreak} days!`);
+    }
+    
+    setStreak(newStreak);
+    setLoadingStreak(false);
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user || pairLoading) return;
@@ -64,12 +84,7 @@ const AppHome = () => {
         if (pair) {
           
           // Calculate streak
-          setLoadingStreak(true);
-          const { data: streakData } = await supabase.rpc('calculate_pair_streak', {
-            target_pair_id: pair.id
-          });
-          setStreak(streakData || 0);
-          setLoadingStreak(false);
+          await recalculateStreak();
           
           // Get partner profile (using safe view - excludes email, phone, birth_date)
           const partnerId = pair.user_a === user.id ? pair.user_b : pair.user_a;
@@ -152,6 +167,55 @@ const AppHome = () => {
       };
     }
   }, [user, pair, pairLoading, dailyQuestion]);
+
+  // Real-time subscriptions for streak updates
+  useEffect(() => {
+    if (!pair) return;
+
+    console.log('Setting up realtime subscriptions for streak updates');
+
+    // Subscribe to new messages in the pair
+    const messagesChannel = supabase
+      .channel('messages-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `pair_id=eq.${pair.id}`
+        },
+        (payload) => {
+          console.log('New message detected, recalculating streak', payload);
+          recalculateStreak();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to new mood logs in the pair
+    const moodLogsChannel = supabase
+      .channel('mood-logs-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'mood_logs',
+          filter: `pair_id=eq.${pair.id}`
+        },
+        (payload) => {
+          console.log('New mood log detected, recalculating streak', payload);
+          recalculateStreak();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up realtime subscriptions');
+      supabase.removeChannel(messagesChannel);
+      supabase.removeChannel(moodLogsChannel);
+    };
+  }, [pair?.id, streak]);
 
   const handleAnswerQuestion = () => {
     if (!pair || !dailyQuestion || !user) return;
