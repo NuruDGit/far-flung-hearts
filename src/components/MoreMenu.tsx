@@ -37,7 +37,6 @@ export const MoreMenu = ({ onItemClick }: MoreMenuProps) => {
       label: 'Features',
       items: [
         { icon: Image, label: 'Memory Vault', path: '/app/memory-vault', premium: true },
-        { icon: Heart, label: 'AI Advisor', path: '/app/advisor', premium: true },
         { icon: Smile, label: 'Mood Tracker', path: '/app/mood' },
         { icon: TrendingUp, label: 'Mood Analytics', path: '/app/mood/analytics', premium: true },
         { icon: Gamepad2, label: 'Games', path: '/app/games' },

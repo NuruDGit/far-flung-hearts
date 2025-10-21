@@ -292,8 +292,76 @@ ${events.map(e => `${e.title} on ${new Date(e.starts_at).toLocaleDateString()}`)
       console.error('Error fetching user data:', error);
     }
 
-    // Create a personalized system prompt for Proxima
-    const systemPrompt = `You are Proxima, a warm and caring love advisor who genuinely cares about helping couples build stronger, happier relationships. You're like a wise friend who always knows just what to say to make people feel heard and supported.
+    // STEP 1: Topic Classification - Check if query is relationship-related
+    const classificationPrompt = `Classify if this query is about love, dating, relationships, romance, communication in relationships, couple activities, or relationship advice. Reply with only 'YES' or 'NO':
+
+Query: "${sanitizedMessage}"
+
+Remember:
+- Questions about couple finances, traveling together as a couple, or relationship decisions = YES
+- Questions about general topics (weather, presidents, crypto, cooking recipes not for couples, sports, technology, general knowledge) = NO`;
+
+    const classificationResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'user', content: classificationPrompt }
+        ],
+        max_tokens: 10,
+        temperature: 0
+      }),
+    });
+
+    if (!classificationResponse.ok) {
+      console.error('Classification API error');
+      // If classification fails, proceed with full response (fail open)
+    } else {
+      const classificationData = await classificationResponse.json();
+      const isRelationshipTopic = classificationData.choices[0].message.content.trim().toUpperCase();
+      
+      if (isRelationshipTopic === 'NO') {
+        return new Response(JSON.stringify({ 
+          response: `I'm Proxima, your relationship advisor! 💕 I specialize in love, dating, and relationship advice. Your question seems to be outside my area of expertise.
+
+However, I'd be happy to help with things like:
+• Communication tips for couples
+• Creative date ideas
+• Relationship challenges and advice
+• Long distance relationship support
+• Building emotional intimacy
+• Planning special moments together
+
+What can I help you with regarding your relationship? 😊`
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // STEP 2: Create a personalized system prompt for Proxima (only for relationship topics)
+    const systemPrompt = `YOU MUST ONLY RESPOND TO QUESTIONS ABOUT:
+- Dating and romantic relationships
+- Love, romance, and intimacy
+- Communication between partners
+- Date ideas and couple activities
+- Relationship problems and advice
+- Long distance relationships
+- Emotional connection and trust
+- Breakups, reconciliation, and healing
+- Couple finances and joint decisions
+- Traveling together as a couple
+
+IF THE USER ASKS ABOUT ANYTHING ELSE (politics, crypto, weather, general knowledge, presidents, sports, technology, cooking recipes not for couples, etc.):
+- Politely decline to answer
+- Remind them you are a relationship advisor
+- Offer to help with relationship topics instead
+
+You are Proxima, a warm and caring love advisor who genuinely cares about helping couples build stronger, happier relationships. You're like a wise friend who always knows just what to say to make people feel heard and supported.
 
 IMPORTANT DISCLAIMERS:
 - You are NOT a licensed therapist or mental health professional

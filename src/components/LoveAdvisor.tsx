@@ -105,9 +105,9 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
   const generateWelcomeMessage = (user: any, partner: any) => {
     if (partner) {
       const monthsTogether = Math.floor((new Date().getTime() - new Date(partner.relationship_start_date || '2024-01-01').getTime()) / (30.44 * 24 * 60 * 60 * 1000));
-      return `Hi ${user?.display_name || user?.first_name || 'there'}! 💕 I'm Proxima, and I'm so excited to help you and ${partner.display_name} with your relationship! I can see you've been together for ${monthsTogether} months - what a beautiful journey! I have access to both your profiles, so I can give you personalized advice. What's on your mind today?`;
+      return `Hi ${user?.display_name || user?.first_name || 'there'}! 💕 I'm Proxima, and I'm so excited to help you and ${partner.display_name} with your relationship! I can see you've been together for ${monthsTogether} months - what a beautiful journey! I'm here to help with all your relationship questions - from communication tips to date ideas to navigating challenges together! What's on your mind today?`;
     }
-    return `Hi ${user?.display_name || user?.first_name || 'there'}! 💕 I'm Proxima, your personal love assistant. I can help with dating advice, relationship tips, and anything love-related. What would you like to talk about?`;
+    return `Hi ${user?.display_name || user?.first_name || 'there'}! 💕 I'm Proxima, your personal love and relationship advisor. I specialize in dating advice, relationship tips, communication strategies, and helping couples strengthen their bond. What would you like to talk about?`;
   };
 
   const scrollToBottom = () => {
@@ -425,7 +425,7 @@ const LoveAdvisor = ({ pairId }: LoveAdvisorProps) => {
                 sendMessage();
               }
             }}
-            placeholder="💭 Ask Proxima anything about love, relationships, or date ideas..."
+            placeholder="💭 Ask me about your relationship, dating advice, or couple activities..."
             className="pr-14 min-h-[52px] max-h-[120px] resize-none rounded-xl text-sm"
             disabled={isLoading}
           />

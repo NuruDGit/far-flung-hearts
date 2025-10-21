@@ -24,7 +24,6 @@ const GoalsPage = lazy(() => import("./pages/GoalsPage"));
 const MoodAnalytics = lazy(() => import("./pages/MoodAnalytics"));
 const MessagesPage = lazy(() => import("./pages/MessagesPage"));
 const MoodPage = lazy(() => import("./pages/MoodPage"));
-const AdvisorPage = lazy(() => import("./pages/AdvisorPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
 const NotificationSettings = lazy(() => import("./pages/NotificationSettings"));
 const CalendarPage = lazy(() => import("./pages/CalendarPage"));
@@ -81,11 +80,6 @@ const App = () => {
             <Route path="/app/memory-vault" element={
               <SubscriptionGuard requiredTier="premium" featureName="Memory Vault">
                 <MemoryVault />
-              </SubscriptionGuard>
-            } />
-            <Route path="/app/advisor" element={
-              <SubscriptionGuard requiredTier="premium" featureName="Love Advisor AI">
-                <AdvisorPage />
               </SubscriptionGuard>
             } />
             <Route path="/app/notification-settings" element={<NotificationSettings />} />
