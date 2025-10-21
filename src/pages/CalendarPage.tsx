@@ -79,21 +79,21 @@ const CalendarPage = () => {
     getUserPair();
   }, [user]);
 
-  // Fetch events
+  // Fetch events - get all events for the displayed month and beyond
   useEffect(() => {
     if (!userPairId) return;
 
     const fetchEvents = async () => {
       setLoading(true);
       const monthStart = startOfMonth(currentDate);
-      const monthEnd = endOfMonth(currentDate);
-
+      
+      // Fetch all events starting from the beginning of the current month
+      // This includes all future events, not just those within the current month
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('pair_id', userPairId)
         .gte('starts_at', monthStart.toISOString())
-        .lte('starts_at', monthEnd.toISOString())
         .order('starts_at');
 
       if (error) {
@@ -109,6 +109,41 @@ const CalendarPage = () => {
     };
 
     fetchEvents();
+    
+    // Set up real-time subscription for new/updated events
+    const channel = supabase
+      .channel(`calendar-events-${userPairId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'events',
+        filter: `pair_id=eq.${userPairId}`
+      }, (payload) => {
+        setEvents(prev => [...prev, payload.new as CalendarEvent]);
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'events',
+        filter: `pair_id=eq.${userPairId}`
+      }, (payload) => {
+        setEvents(prev => prev.map(event => 
+          event.id === payload.new.id ? payload.new as CalendarEvent : event
+        ));
+      })
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'events',
+        filter: `pair_id=eq.${userPairId}`
+      }, (payload) => {
+        setEvents(prev => prev.filter(event => event.id !== payload.old.id));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentDate, userPairId, toast]);
 
   // Filter events based on search and type
@@ -132,8 +167,12 @@ const CalendarPage = () => {
 
   const getEventsForDate = (date: Date) => {
     return filteredEvents.filter(event => {
-      const eventDate = parseISO(event.starts_at);
-      return isSameDay(eventDate, date);
+      const eventStartDate = parseISO(event.starts_at);
+      const eventEndDate = parseISO(event.ends_at);
+      
+      // Show event if it starts on this day, or if it's a multi-day event that spans this day
+      return isSameDay(eventStartDate, date) || 
+             (eventStartDate < date && eventEndDate >= date);
     });
   };
 
