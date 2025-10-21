@@ -9,6 +9,7 @@ import { MessageSearch } from '@/components/messages/MessageSearch';
 import { VideoCallInterface } from '@/components/messages/VideoCallInterface';
 import { CallNotification } from '@/components/messages/CallNotification';
 import { CallNotificationMobile } from '@/components/messages/CallNotificationMobile';
+import { InAppNotification } from '@/components/InAppNotification';
 import { useVideoCall } from '@/hooks/useVideoCall';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { hasFeatureAccess, getFeatureLimit } from '@/config/subscriptionFeatures';
@@ -72,6 +73,16 @@ const MessagesPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
+  const [inAppNotification, setInAppNotification] = useState<{
+    isVisible: boolean;
+    title: string;
+    message: string;
+    avatar?: string;
+  }>({
+    isVisible: false,
+    title: '',
+    message: '',
+  });
   
   // Video call functionality
   const {
@@ -94,6 +105,11 @@ const MessagesPage = () => {
   useEffect(() => {
     if (user && !pairLoading) {
       fetchPairAndMessages();
+      
+      // Request notification permission on mount
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
       
       // Check for highlight parameter in URL
       const urlParams = new URLSearchParams(window.location.search);
@@ -124,14 +140,52 @@ const MessagesPage = () => {
           filter: `pair_id=eq.${pair.id}`
         }, (payload) => {
           const newMessage = payload.new as Message;
-          setMessages(prev => [...prev, newMessage]);
+          // Immediately add to messages - real-time update
+          setMessages(prev => {
+            // Prevent duplicates
+            if (prev.some(m => m.id === newMessage.id)) {
+              return prev;
+            }
+            return [...prev, newMessage];
+          });
           
           // Show notification for partner's messages
           if (newMessage.sender_id !== user.id) {
-            toast({
-              title: "New message",
-              description: typeof newMessage.body === 'string' ? newMessage.body : "New message received",
+            const messageText = typeof newMessage.body === 'string' 
+              ? newMessage.body.substring(0, 50) 
+              : newMessage.body?.text?.substring(0, 50) || "New message";
+            
+            // Show in-app notification
+            setInAppNotification({
+              isVisible: true,
+              title: partner?.display_name || 'Partner',
+              message: messageText,
+              avatar: partner?.avatar_url,
             });
+            
+            // Browser notification if permission granted
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification(`${partner?.display_name || 'Partner'}`, {
+                body: messageText,
+                icon: partner?.avatar_url || '/logo.png',
+                tag: 'message-notification',
+                badge: '/logo.png',
+              });
+            }
+            
+            // Play notification sound
+            try {
+              const audio = new Audio('/notification-sound.mp3');
+              audio.volume = 0.3;
+              audio.play().catch(() => {});
+            } catch (error) {
+              console.warn('Failed to play notification sound');
+            }
+            
+            // Vibrate on mobile
+            if ('vibrate' in navigator) {
+              navigator.vibrate(200);
+            }
           }
         })
         .on('presence', { event: 'sync' }, () => {
@@ -297,6 +351,18 @@ const MessagesPage = () => {
 
     setSending(true);
     
+    // Optimistically add message to UI immediately for instant feedback
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage: Message = {
+      id: tempId,
+      body: { text: content },
+      sender_id: user.id,
+      created_at: new Date().toISOString(),
+      type: attachments?.length ? 'media' : 'text',
+    };
+    
+    setMessages(prev => [...prev, optimisticMessage]);
+    
     // Stop typing indicator
     broadcastTyping(false);
     
@@ -318,7 +384,7 @@ const MessagesPage = () => {
         messageBody.attachments = mediaUrls;
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           pair_id: pair.id,
@@ -327,17 +393,26 @@ const MessagesPage = () => {
           type: attachments?.length ? 'media' : 'text',
           media_url: mediaUrls.length > 0 ? mediaUrls[0] : null,
           reply_to: replyToId
-        });
+        })
+        .select()
+        .single();
 
       if (error) {
+        // Remove optimistic message on error
+        setMessages(prev => prev.filter(m => m.id !== tempId));
         console.error('Error sending message:', error);
         toast({
           title: "Error",
           description: "Failed to send message",
           variant: "destructive"
         });
+      } else {
+        // Replace temp message with real one
+        setMessages(prev => prev.map(m => m.id === tempId ? data : m));
       }
     } catch (error) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== tempId));
       console.error('Error in sendMessage:', error);
       toast({
         title: "Error",
@@ -393,12 +468,22 @@ const MessagesPage = () => {
     }
     
     if (partner?.id) {
+      // Show notification that call is being initiated
+      toast({
+        title: "Calling...",
+        description: `Video calling ${partner.display_name || 'partner'}...`,
+      });
       await startCall(partner.id, true);
     }
   };
 
   const startVoiceCall = async () => {
     if (partner?.id) {
+      // Show notification that call is being initiated
+      toast({
+        title: "Calling...",
+        description: `Voice calling ${partner.display_name || 'partner'}...`,
+      });
       await startCall(partner.id, false);
     }
   };
@@ -654,6 +739,15 @@ const MessagesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      
+      {/* In-App Message Notification */}
+      <InAppNotification
+        isVisible={inAppNotification.isVisible}
+        title={inAppNotification.title}
+        message={inAppNotification.message}
+        avatar={inAppNotification.avatar}
+        onClose={() => setInAppNotification(prev => ({ ...prev, isVisible: false }))}
+      />
       
       {/* Incoming Call Notification - Mobile & Desktop */}
       {isMobile ? (

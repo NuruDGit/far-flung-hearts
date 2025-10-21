@@ -893,7 +893,7 @@ export const useVideoCall = (userId: string, pairId?: string): UseVideoCallRetur
             callSessionId: payload.callSessionId,
           }));
 
-          // Show browser notification
+          // Show browser notification with sound and vibration
           try {
             const { notifyIncomingCall } = await import('@/utils/callNotifications');
             await notifyIncomingCall(

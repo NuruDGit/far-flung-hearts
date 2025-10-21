@@ -123,35 +123,32 @@ export const MessageBubble = ({
     }
   }, [isSelected]);
 
-  // Long press detection for mobile
-  const handleTouchStart = () => {
-    if (isMobile) {
-      const timer = setTimeout(() => {
-        setIsSelected(true);
-        // Add haptic feedback if available
-        if ('vibrate' in navigator) {
-          navigator.vibrate(50);
-        }
-      }, 500); // 500ms for long press
-      
-      setLongPressTimer(timer);
-      
-      const handleTouchEnd = () => {
-        if (longPressTimer) {
-          clearTimeout(longPressTimer);
-          setLongPressTimer(null);
-        }
-      };
-      
-      const handleTouchMove = () => {
-        if (longPressTimer) {
-          clearTimeout(longPressTimer);
-          setLongPressTimer(null);
-        }
-      };
-      
-      document.addEventListener('touchend', handleTouchEnd, { once: true });
-      document.addEventListener('touchmove', handleTouchMove, { once: true });
+  // Long press detection for mobile - only highlight on long press, not tap
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    
+    const timer = setTimeout(() => {
+      setIsSelected(true);
+      // Add haptic feedback if available
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
+    }, 500); // 500ms for long press
+    
+    setLongPressTimer(timer);
+  };
+  
+  const handleTouchEnd = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+  };
+  
+  const handleTouchMove = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
     }
   };
   
@@ -188,6 +185,8 @@ export const MessageBubble = ({
           isSelected ? 'bg-primary/5 rounded-lg p-2 -m-2 border border-primary/20' : ''
         } transition-all duration-200`}
         onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchMove}
       >
       {!isOwn && (
         <Avatar className="w-8 h-8 flex-shrink-0">
