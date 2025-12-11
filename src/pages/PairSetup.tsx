@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Heart, Copy, Users } from 'lucide-react';
+import { Heart, Copy, Users, Loader2, Share2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -124,9 +124,9 @@ const PairSetup = () => {
           }
         }
       }
-      
+
       const code = generateInviteCode();
-      
+
       // Create pair
       const { data: pair, error: pairError } = await supabase
         .from('pairs')
@@ -240,165 +240,223 @@ const PairSetup = () => {
   };
 
   const copyInviteLink = () => {
-    const link = `${window.location.origin}${window.location.pathname}?invite=${generatedCode}`;
+    const link = `${window.location.origin}/pair-setup?invite=${generatedCode}`;
     navigator.clipboard.writeText(link);
     toast.success('Invite link copied to clipboard!');
   };
 
+  const Container = ({ children }: { children: React.ReactNode }) => (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-love-light via-background to-love-coral/5 pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
+        {children}
+      </div>
+    </div>
+  );
+
   if (mode === 'choose') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-love-light via-white to-love-coral/10 p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="love-gradient rounded-full p-3">
-                <Users className="text-white" size={32} />
+      <Container>
+        <Card className="border-none shadow-xl">
+          <CardHeader className="text-center pb-2">
+            <div className="flex justify-center mb-6">
+              <div className="bg-primary/10 rounded-full p-4 ring-8 ring-primary/5">
+                <Users className="text-primary" size={32} />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
-              Connect with Your Partner
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-love-deep bg-clip-text text-transparent">
+              One Step Closer
             </CardTitle>
-            <CardDescription>
-              Create a pair or join using an invite code
+            <CardDescription className="text-base mt-2">
+              Connect with your partner to start your journey
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button 
+          <CardContent className="space-y-4 pt-6">
+            <Button
               onClick={() => setMode('create')}
-              className="w-full" 
+              className="w-full h-12 text-base shadow-love hover:shadow-lg transition-all"
               variant="love"
             >
-              Create New Pair
+              I want to create a new pair
             </Button>
-            <Button 
+            <Button
               onClick={() => setMode('join')}
-              className="w-full" 
+              className="w-full h-12 text-base"
               variant="outline"
             >
-              Join Existing Pair
+              I have an invite code
             </Button>
-            <Button 
+            <div className="relative py-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or
+                </span>
+              </div>
+            </div>
+            <Button
               onClick={() => navigate('/app')}
-              className="w-full" 
+              className="w-full text-muted-foreground hover:text-foreground"
               variant="ghost"
             >
-              Skip for Now - Explore Solo
+              Just exploring? Skip for now
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   if (mode === 'create') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-love-light via-white to-love-coral/10 p-4">
-        <Card className="w-full max-w-md">
+      <Container>
+        <Card className="border-none shadow-xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="love-gradient rounded-full p-3">
-                <Heart className="text-white" size={32} />
+              <div className="bg-love-coral/20 rounded-full p-4 animate-pulse">
+                <Heart className="text-love-heart" size={32} />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
-              Create Your Pair
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold">Create Your Pair</CardTitle>
             <CardDescription>
-              Generate an invite code for your partner
+              Share this code with your partner
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             {!generatedCode ? (
-              <Button 
-                onClick={createPair}
-                disabled={loading}
-                className="w-full" 
-                variant="love"
-              >
-                {loading ? 'Creating...' : 'Generate Invite Code'}
-              </Button>
-            ) : (
               <div className="space-y-4">
-                <div className="text-center">
-                  <Label>Your Invite Code</Label>
-                  <div className="mt-2 p-4 bg-love-light/20 rounded-lg border-2 border-dashed border-love-coral">
-                    <div className="text-2xl font-mono font-bold text-love-deep">
+                <p className="text-center text-muted-foreground">
+                  We'll generate a unique code for you to share securely with your partner.
+                </p>
+                <Button
+                  onClick={createPair}
+                  disabled={loading}
+                  className="w-full h-11"
+                  variant="love"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...
+                    </>
+                  ) : 'Generate Invite Code'}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                <div className="text-center space-y-2">
+                  <Label className="text-muted-foreground">Your Invite Code</Label>
+                  <div className="p-6 bg-muted/50 rounded-xl border-2 border-dashed border-primary/20 relative group hover:border-primary/40 transition-colors">
+                    <div className="text-4xl font-mono font-bold tracking-widest text-primary select-all">
                       {generatedCode}
                     </div>
                   </div>
                 </div>
-                <Button 
-                  onClick={copyInviteLink}
-                  className="w-full" 
-                  variant="outline"
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Invite Link
-                </Button>
-                <p className="text-sm text-muted-foreground text-center">
-                  This code expires in 15 minutes. Share it with your partner to connect.
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={copyInviteLink}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Code
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const link = `${window.location.origin}/pair-setup?invite=${generatedCode}`;
+                      if (navigator.share) {
+                        navigator.share({
+                          title: 'Join me on Love Beyond Borders',
+                          text: `Here is my invite code: ${generatedCode}`,
+                          url: link
+                        }).catch(console.error);
+                      } else {
+                        copyInviteLink();
+                      }
+                    }}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
+
+                <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg flex gap-3 text-sm text-blue-700 dark:text-blue-300">
+                  <Loader2 className="w-5 h-5 animate-spin shrink-0" />
+                  <p>Waiting for your partner to join... The screen will update automatically.</p>
+                </div>
+
+                <p className="text-xs text-muted-foreground text-center">
+                  Code expires in 15 minutes.
                 </p>
               </div>
             )}
-            <Button 
+            <Button
               onClick={() => setMode('choose')}
               variant="ghost"
               className="w-full"
             >
-              Back
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-love-light via-white to-love-coral/10 p-4">
-      <Card className="w-full max-w-md">
+    <Container>
+      <Card className="border-none shadow-xl">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="love-gradient rounded-full p-3">
-              <Users className="text-white" size={32} />
+            <div className="bg-primary/10 rounded-full p-4">
+              <Users className="text-primary" size={32} />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-love-heart to-love-deep bg-clip-text text-transparent">
-            Join Your Partner
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold">Join Partner</CardTitle>
           <CardDescription>
-            Enter the invite code they shared with you
+            Enter the code shared by your partner in
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="code">Invite Code</Label>
+            <Label htmlFor="code" className="sr-only">Invite Code</Label>
             <Input
               id="code"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-              placeholder="ABC123"
+              placeholder="ENTER CODE"
               maxLength={6}
-              className="text-center text-lg font-mono"
+              className="text-center text-3xl font-mono tracking-widest h-16 uppercase placeholder:text-muted-foreground/50"
             />
           </div>
-          <Button 
+          <Button
             onClick={joinPair}
             disabled={loading || !inviteCode.trim()}
-            className="w-full" 
+            className="w-full h-11"
             variant="love"
           >
-            {loading ? 'Joining...' : 'Join Pair'}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Joining...
+              </>
+            ) : 'Join Pair'}
           </Button>
-          <Button 
+          <Button
             onClick={() => setMode('choose')}
             variant="ghost"
             className="w-full"
           >
-            Back
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 };
 
