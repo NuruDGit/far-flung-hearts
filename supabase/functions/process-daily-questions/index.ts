@@ -32,10 +32,11 @@ Deno.serve(async (req) => {
 
     for (const pair of activePairs || []) {
       // Get or create today's question
-      const { data: question } = await supabase
+      const { data: questionData } = await supabase
         .rpc('get_or_create_daily_question', { target_pair_id: pair.id })
         .single();
 
+      const question = questionData as { id: string; question_text: string; question_date: string } | null;
       if (!question) continue;
 
       // Check if question has been answered
@@ -114,10 +115,11 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error processing daily questions:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

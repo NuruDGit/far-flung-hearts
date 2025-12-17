@@ -4,7 +4,7 @@
  * Tracks rate limits using Supabase database for persistent tracking
  */
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 interface RateLimitConfig {
   maxRequests: number;
@@ -17,11 +17,20 @@ interface RateLimitResult {
   resetTime: Date;
 }
 
+interface RateLimitEntry {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  request_count: number;
+  window_start: string;
+  last_request_at: string;
+}
+
 /**
  * Check and enforce rate limits for a user/endpoint combination
  */
 export async function checkRateLimit(
-  supabaseClient: ReturnType<typeof createClient>,
+  supabaseClient: SupabaseClient<any, any, any>,
   userId: string,
   endpoint: string,
   config: RateLimitConfig
@@ -44,14 +53,16 @@ export async function checkRateLimit(
       throw selectError;
     }
 
-    if (existing) {
+    const entry = existing as RateLimitEntry | null;
+
+    if (entry) {
       // Check if limit exceeded
-      if (existing.request_count >= config.maxRequests) {
+      if (entry.request_count >= config.maxRequests) {
         return {
           allowed: false,
           remaining: 0,
           resetTime: new Date(
-            new Date(existing.window_start).getTime() + config.windowMinutes * 60 * 1000
+            new Date(entry.window_start).getTime() + config.windowMinutes * 60 * 1000
           ),
         };
       }
@@ -60,18 +71,18 @@ export async function checkRateLimit(
       const { error: updateError } = await supabaseClient
         .from("rate_limit_tracking")
         .update({
-          request_count: existing.request_count + 1,
+          request_count: entry.request_count + 1,
           last_request_at: now.toISOString(),
         })
-        .eq("id", existing.id);
+        .eq("id", entry.id);
 
       if (updateError) throw updateError;
 
       return {
         allowed: true,
-        remaining: config.maxRequests - existing.request_count - 1,
+        remaining: config.maxRequests - entry.request_count - 1,
         resetTime: new Date(
-          new Date(existing.window_start).getTime() + config.windowMinutes * 60 * 1000
+          new Date(entry.window_start).getTime() + config.windowMinutes * 60 * 1000
         ),
       };
     }
@@ -109,7 +120,7 @@ export async function checkRateLimit(
  * Log security event to audit log
  */
 export async function logSecurityEvent(
-  supabaseClient: ReturnType<typeof createClient>,
+  supabaseClient: SupabaseClient<any, any, any>,
   userId: string | null,
   eventType: string,
   eventData: Record<string, any>,
@@ -120,7 +131,9 @@ export async function logSecurityEvent(
     await supabaseClient.from("security_audit_log").insert({
       user_id: userId,
       event_type: eventType,
-      event_data: eventData,
+      action: eventType,
+      severity: 'info',
+      metadata: eventData,
       ip_address: ipAddress,
       user_agent: userAgent,
     });

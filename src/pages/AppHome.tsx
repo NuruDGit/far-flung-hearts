@@ -16,7 +16,7 @@ import {
 } from '@/components/DashboardWidgets';
 import { SoloDashboard } from '@/components/SoloDashboard';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Gift, Gamepad2, Video } from 'lucide-react';
+import { Plus, Users, Gift, Gamepad2, Video, Smile } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 
@@ -155,12 +155,14 @@ const AppHome = () => {
   const sendLoveMessage = async () => {
     if (!pair) return;
     toast.promise(
-      supabase.from('messages').insert({
-        pair_id: pair.id,
-        sender_id: user?.id,
-        type: 'text',
-        body: { message: '💖 Sent you some love!', type: 'love_tap' }
-      }),
+      (async () => {
+        await supabase.from('messages').insert({
+          pair_id: pair.id,
+          sender_id: user?.id,
+          type: 'text',
+          body: { message: '💖 Sent you some love!', type: 'love_tap' }
+        });
+      })(),
       {
         loading: 'Sending love...',
         success: 'Love sent! 💕',
@@ -172,12 +174,14 @@ const AppHome = () => {
   const sendPing = async () => {
     if (!pair) return;
     toast.promise(
-      supabase.from('messages').insert({
-        pair_id: pair.id,
-        sender_id: user?.id,
-        type: 'text',
-        body: { message: '👋 Thinking of you!', type: 'ping' }
-      }),
+      (async () => {
+        await supabase.from('messages').insert({
+          pair_id: pair.id,
+          sender_id: user?.id,
+          type: 'text',
+          body: { message: '👋 Thinking of you!', type: 'ping' }
+        });
+      })(),
       {
         loading: 'Sending ping...',
         success: 'Ping sent! 👋',
