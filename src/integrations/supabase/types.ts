@@ -1748,10 +1748,7 @@ export type Database = {
       }
     }
     Functions: {
-      archive_old_completed_tasks: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      archive_old_completed_tasks: { Args: never; Returns: number }
       calculate_pair_streak: {
         Args: { target_pair_id: string }
         Returns: number
@@ -1783,6 +1780,12 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        SetofOptions: {
+          from: "*"
+          to: "notification_preferences"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       has_role: {
         Args: {
@@ -1806,14 +1809,8 @@ export type Database = {
         }
         Returns: string
       }
-      mask_email: {
-        Args: { email: string }
-        Returns: string
-      }
-      mask_phone: {
-        Args: { phone: string }
-        Returns: string
-      }
+      mask_email: { Args: { email: string }; Returns: string }
+      mask_phone: { Args: { phone: string }; Returns: string }
       track_failed_login: {
         Args: { p_email: string; p_ip_address?: string; p_user_agent?: string }
         Returns: undefined
